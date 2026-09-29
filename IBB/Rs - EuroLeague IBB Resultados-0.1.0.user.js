@@ -1098,3 +1098,353 @@
         }
 
         const linkedAway = normalizeOfficialTeamName(link.awayName);
+        const linkedHome = normalizeOfficialTeamName(link.homeName);
+        const freshAway = normalizeOfficialTeamName(game.away.name);
+        const freshHome = normalizeOfficialTeamName(game.home.name);
+
+        if (
+            linkedAway &&
+            linkedHome &&
+            (linkedAway !== freshAway || linkedHome !== freshHome)
+        ) {
+            return {
+                ok: false,
+                reason: "API_TEAM_IDENTITY_CHANGED",
+                linkedAway: link.awayName,
+                linkedHome: link.homeName,
+                freshAway: game.away.name,
+                freshHome: game.home.name
+            };
+        }
+
+        if (apiDateToRoverDate(game.apiDate) !== game.roverDate) {
+            return {
+                ok: false,
+                reason: "API_DATE_CHANGED",
+                roverDate: game.roverDate,
+                apiDate: game.apiDate,
+                apiRoverDate: apiDateToRoverDate(game.apiDate)
+            };
+        }
+
+        return { ok: true };
+    }
+
+    function validateCurrentScore(game) {
+        for (const [sideName, team] of [
+            ["AWAY", game.away],
+            ["HOME", game.home]
+        ]) {
+            const periodTotal = sum([
+                team.q1,
+                team.q2,
+                team.q3,
+                team.q4,
+                team.ot
+            ]);
+
+            if (periodTotal === null) {
+                return {
+                    ok: false,
+                    reason: `${sideName}_INVALID_PERIODS`
+                };
+            }
+
+            if (periodTotal !== Number(team.final)) {
+                return {
+                    ok: false,
+                    reason: `${sideName}_PERIOD_SUM_MISMATCH`,
+                    periodTotal,
+                    final: team.final
+                };
+            }
+        }
+
+        return { ok: true };
+    }
+
+    function boxscoreTeamRows(boxscore) {
+        const byQuarter = Array.isArray(boxscore?.ByQuarter)
+            ? boxscore.ByQuarter
+            : [];
+        const stats = Array.isArray(boxscore?.Stats)
+            ? boxscore.Stats
+            : [];
+
+        return byQuarter.map(row => {
+            const teamName = clean(row?.Team);
+            const statsRow = stats.find(item =>
+                normalizeOfficialTeamName(item?.Team) ===
+                normalizeOfficialTeamName(teamName)
+            );
+
+            const playerTeamCode = clean(
+                statsRow?.PlayersStats?.find?.(player => clean(player?.Team))?.Team
+            );
+
+            const pointsValue =
+                statsRow?.totr?.Points ??
+                statsRow?.total?.Points ??
+                statsRow?.Total?.Points ??
+                null;
+
+            return {
+                team: teamName,
+                code: playerTeamCode,
+                q1: toNumber(row?.Quarter1, 0),
+                q2: toNumber(row?.Quarter2, 0),
+                q3: toNumber(row?.Quarter3, 0),
+                q4: toNumber(row?.Quarter4, 0),
+                final:
+                    pointsValue !== null && pointsValue !== undefined
+                        ? Number(pointsValue)
+                        : null
+            };
+        });
+    }
+
+    function findBoxscoreRow(rows, teamName, teamCode) {
+        const wantedCode = upper(teamCode);
+
+        if (wantedCode) {
+            const byCode = rows.find(row => upper(row.code) === wantedCode);
+            if (byCode) return byCode;
+        }
+
+        const wanted = normalizeOfficialTeamName(teamName);
+        return rows.find(row =>
+            normalizeOfficialTeamName(row.team) === wanted
+        ) || null;
+    }
+
+    async function validateFinalWithBoxscore(game) {
+        const boxscore = await fetchBoxscore(game.seasonCode, game.gameCode);
+
+        if (boxscore?.Live === true) {
+            return {
+                ok: false,
+                reason: "BOXSCORE_STILL_LIVE"
+            };
+        }
+
+        const rows = boxscoreTeamRows(boxscore);
+        const away = findBoxscoreRow(rows, game.away.name, game.away.code);
+        const home = findBoxscoreRow(rows, game.home.name, game.home.code);
+
+        if (!away || !home) {
+            return {
+                ok: false,
+                reason: "BOXSCORE_TEAM_NOT_FOUND",
+                rows
+            };
+        }
+
+        for (const [sideName, feedTeam, boxTeam] of [
+            ["AWAY", game.away, away],
+            ["HOME", game.home, home]
+        ]) {
+            for (const quarter of ["q1", "q2", "q3", "q4"]) {
+                if (!sameNumeric(feedTeam[quarter], boxTeam[quarter])) {
+                    return {
+                        ok: false,
+                        reason: `${sideName}_${quarter.toUpperCase()}_BOXSCORE_MISMATCH`,
+                        feed: feedTeam[quarter],
+                        boxscore: boxTeam[quarter]
+                    };
+                }
+            }
+
+            if (
+                boxTeam.final === null ||
+                !sameNumeric(feedTeam.final, boxTeam.final)
+            ) {
+                return {
+                    ok: false,
+                    reason: `${sideName}_FINAL_BOXSCORE_MISMATCH`,
+                    feed: feedTeam.final,
+                    boxscore: boxTeam.final
+                };
+            }
+        }
+
+        return {
+            ok: true,
+            boxscore,
+            rows
+        };
+    }
+
+    // ============================================================
+    // PLAN DE ESCRITURA ROVER
+    // T1 = AWAY / T2 = HOME
+    // NO TOCA ESTADO
+    // ============================================================
+
+    function buildRoverScorePlan(game) {
+        const eventId = clean(game.roverEventId);
+
+        return {
+            eventId,
+            editedId: `${eventId}-Edited`,
+            scoreFields: [
+                { id: `${eventId}T1Q1Basq`, label: "T1/AWAY Q1", value: game.away.q1 },
+                { id: `${eventId}T1Q2Basq`, label: "T1/AWAY Q2", value: game.away.q2 },
+                { id: `${eventId}T1Q3Basq`, label: "T1/AWAY Q3", value: game.away.q3 },
+                { id: `${eventId}T1Q4Basq`, label: "T1/AWAY Q4", value: game.away.q4 },
+                { id: `${eventId}T1OTBasq`, label: "T1/AWAY OT", value: game.away.ot },
+                { id: `${eventId}T1TOTBasq`, label: "T1/AWAY F", value: game.away.final },
+
+                { id: `${eventId}T2Q1Basq`, label: "T2/HOME Q1", value: game.home.q1 },
+                { id: `${eventId}T2Q2Basq`, label: "T2/HOME Q2", value: game.home.q2 },
+                { id: `${eventId}T2Q3Basq`, label: "T2/HOME Q3", value: game.home.q3 },
+                { id: `${eventId}T2Q4Basq`, label: "T2/HOME Q4", value: game.home.q4 },
+                { id: `${eventId}T2OTBasq`, label: "T2/HOME OT", value: game.home.ot },
+                { id: `${eventId}T2TOTBasq`, label: "T2/HOME F", value: game.home.final }
+            ]
+        };
+    }
+
+    function verifyRoverScoreControls(plan) {
+        const container = document.querySelector("#resEditContainer");
+
+        if (!container) {
+            return { ok: false, reason: "NO_EDITOR_CONTAINER" };
+        }
+
+        const currentId = clean(
+            container.querySelector('input[name="evento[]"]')?.value
+        );
+
+        if (currentId !== plan.eventId) {
+            return {
+                ok: false,
+                reason: "EVENT_CHANGED",
+                expected: plan.eventId,
+                current: currentId
+            };
+        }
+
+        const missing = plan.scoreFields
+            .filter(item => !document.getElementById(item.id))
+            .map(item => item.id);
+
+        return missing.length
+            ? { ok: false, reason: "MISSING_SCORE_CONTROLS", missing }
+            : { ok: true, container };
+    }
+
+    function statusNotice(game, validatedFinal = false) {
+        if (game.status === "result") {
+            return {
+                className: "is-final",
+                text: `FINAL · ${game.away.final}-${game.home.final}${validatedFinal ? " · VALIDADO ✓" : ""}`,
+                title: `${game.away.name} ${game.away.final} - ${game.home.final} ${game.home.name}`
+            };
+        }
+
+        if (game.status === "live") {
+            const period = game.quarter ? `Q${game.quarter}` : "LIVE";
+            const clock = game.remainingTime ? ` · ${game.remainingTime}` : "";
+
+            return {
+                className: "is-live",
+                text: `${period}${clock} · ${game.away.final}-${game.home.final} · CARGADO ✓`,
+                title: `${game.away.name} ${game.away.final} - ${game.home.final} ${game.home.name}`
+            };
+        }
+
+        return {
+            className: "is-pre",
+            text: `${upper(game.status || "CONFIRMED")} · ${game.away.final}-${game.home.final} · CARGADO ✓`,
+            title: `${game.away.name} @ ${game.home.name}`
+        };
+    }
+
+    function storeResultNotice(roverEventId, notice) {
+        uiState.lastNoticeByEvent[String(roverEventId || "")] = {
+            className: clean(notice?.className),
+            text: clean(notice?.text),
+            title: clean(notice?.title)
+        };
+    }
+
+    function getStoredResultNotice(roverEventId) {
+        return uiState.lastNoticeByEvent[String(roverEventId || "")] || null;
+    }
+
+    function clearStoredResultNotice(roverEventId) {
+        delete uiState.lastNoticeByEvent[String(roverEventId || "")];
+    }
+
+    async function readLinkedGameFresh() {
+        const rover = getCurrentRoverEvent();
+
+        if (!rover?.valid) {
+            throw new Error("Selecciona primero un evento Rover IBB.");
+        }
+
+        const link = getManualLink(rover.roverEventId);
+
+        if (!link) {
+            throw new Error("Este evento Rover no está vinculado.");
+        }
+
+        const apiGame = await fetchGameFresh(link);
+        const game = normalizeLinkedGame(rover, apiGame, link);
+        const identity = validateLinkIdentity(game, link);
+
+        if (!identity.ok) {
+            console.error(`${TAG} identidad del vínculo no válida`, identity);
+            throw new Error(`VÍNCULO NO VÁLIDO: ${identity.reason}`);
+        }
+
+        console.log("");
+        console.log("=== EUROLEAGUE / VÍNCULO MANUAL ===");
+        console.table([{
+            ROVER_EVENT_ID: rover.roverEventId,
+            EUROLEAGUE_ID: game.identifier || `${game.seasonCode}_${game.gameCode}`,
+            ROVER: roverTeamLine(rover),
+            EUROLEAGUE: `${game.away.name} @ ${game.home.name}`,
+            ESTADO_API: game.status,
+            PERIODO: game.quarter,
+            RELOJ: game.remainingTime,
+            FECHA_API: game.apiDate
+        }]);
+
+        console.log("");
+        console.log("=== SCORE EUROLEAGUE ===");
+        console.table([
+            {
+                SIDE: "AWAY",
+                TEAM: game.away.name,
+                Q1: game.away.q1,
+                Q2: game.away.q2,
+                Q3: game.away.q3,
+                Q4: game.away.q4,
+                OT: game.away.ot,
+                F: game.away.final
+            },
+            {
+                SIDE: "HOME",
+                TEAM: game.home.name,
+                Q1: game.home.q1,
+                Q2: game.home.q2,
+                Q3: game.home.q3,
+                Q4: game.home.q4,
+                OT: game.home.ot,
+                F: game.home.final
+            }
+        ]);
+
+        return game;
+    }
+
+    async function updateLinkedResult() {
+        const startedAt = performance.now();
+
+        console.log("==============================================");
+        console.log(`EUROLEAGUE IBB SCORE UPDATE v${VERSION}`);
+        console.log("==============================================");
+
+        const game = await readLinkedGameFresh();
+        const consistency = validateCurrentScore(game);

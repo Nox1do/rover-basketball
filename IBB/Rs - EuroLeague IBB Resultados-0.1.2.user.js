@@ -659,7 +659,7 @@
         );
     }
 
-    function getRoverEventById    function getRoverEventById(roverEventId) {
+    function getRoverEventById(roverEventId) {
         const id = clean(roverEventId);
 
         if (!id) {
@@ -2814,7 +2814,7 @@
     function boot() {
         contextGate.signature = currentFilterSignature();
         contextGate.staleFingerprint = tableFingerprint();
-        contextGate.staleTableNode = getEventsTable();
+        contextGate.staleTableNode = document.querySelector("#tablaEventos");
 
         installStyles();
         installGlobalListeners();

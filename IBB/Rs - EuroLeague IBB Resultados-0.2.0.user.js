@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         Rs - EuroLeague IBB Resultados
+// @name         Rs - EuroLeague IBB Resultados [CFL Core]
 // @namespace    https://roversport.net/
 // @version      0.2.0
-// @description  IBB EuroLeague: misma arquitectura estable del CFL; vinculación manual y actualización manual Q1-Q4/OT/F.
+// @description  EuroLeague / IBB: vinculación manual tipo CFL y actualización manual de Q1-Q4/OT/F desde la fuente oficial de EuroLeague.
 // @author       noeg
 // @match        https://www.roversport.net/adm/es/*
 // @match        https://roversport.net/adm/es/*
@@ -21,36 +21,39 @@
 
     const VERSION = "0.2.0";
     const TAG = "[EuroLeague IBB]";
+    console.log("[EuroLeague IBB] BOOTSTRAP CFL CORE v0.2.0", location.href);
 
-    const UI_ID = "rs-el-ibb-ui";
-    const STYLE_ID = "rs-el-ibb-style";
-    const LINK_PREFIX = "rs_euroleague_ibb_link_v2_";
+    const UI_ID = "rs-euroleague-ibb-ui";
+    const STYLE_ID = "rs-euroleague-ibb-style";
+    const LINK_PREFIX = "rs_euroleague_ibb_link_v1_";
+    const TIME_ZONE = "America/Santo_Domingo";
 
-    const FS_HEADERS = {
-        "Accept": "*/*",
-        "Accept-Language": "en-US,en;q=0.9",
-        "Referer": "https://www.flashscore.com/",
-        "x-fsign": "SW9D1eZo"
+    const FEED_BASE =
+        "https://feeds.incrowdsports.com/provider/euroleague-feeds/v2/competitions/E";
+    const LIVE_BASE = "https://live.euroleague.net/api";
+
+    const CACHE = {
+        seasons: null,
+        seasonsSavedAt: 0,
+        roundsBySeason: new Map(),
+        roundGames: new Map()
     };
 
-    const FS_FEED_HOSTS = [
-        "https://local-global.flashscore.ninja/2/x/feed/",
-        "https://www.flashscore.com/x/feed/",
-        "https://global.flashscore.ninja/2/x/feed/"
-    ];
+    const CACHE_TTL = {
+        seasons: 6 * 60 * 60 * 1000,
+        rounds: 5 * 60 * 1000,
+        games: 10 * 1000
+    };
 
     const uiState = {
         renderSeq: 0,
         renderTimer: 0,
-        pendingSafetyTimer: 0,
-        manualCandidates: new Map(),
+        pollTimer: 0,
         observedContainer: null,
         containerObserver: null,
-        pollTimer: 0,
+        pageObserver: null,
         active: false,
         lastEditorId: "",
-
-        // UI estilo Soccer.
         listExpanded: false,
         collapseTimer: 0,
         selectedEventId: "",
@@ -58,34 +61,14 @@
         candidatesDate: "",
         loadingCandidates: false,
         lastLoadError: "",
-
-        /*
-         * El editor Rover puede re-renderizarse después de escribir scores.
-         * Guardamos aquí el último estado mostrado para reconstruirlo en la
-         * barra sin obligar a pulsar ↻ una segunda vez.
-         */
+        restoringFilterFocus: false,
+        manualCandidates: new Map(),
         lastNoticeByEvent: Object.create(null)
     };
 
-    const dayCache = new Map();
-    const DAY_CACHE_TTL_MS = 15 * 1000;
-
     /*
-     * v1.0.11 - transporte rápido.
-     * feedInFlight evita solicitudes duplicadas al mismo feed.
-     * preferredFeedHost recuerda el último host EuroLeague saludable.
-     */
-    const feedInFlight = new Map();
-    let preferredFeedHost = FS_FEED_HOSTS[0];
-
-    /*
-     * Rover NO recarga #tablaEventos al cambiar CATEGORY / LEAGUE / DATE.
-     * Los selects pueden decir CFL mientras la tabla todavía contiene CFB.
-     *
-     * Regla v1.0.6:
-     * - cambiar un filtro => dirty=true y ocultar UI CFL.
-     * - pulsar Search => esperar una transición REAL de #tablaEventos.
-     * - solo después de esa transición se permite renderizar CFL.
+     * Rover no actualiza #tablaEventos al cambiar filtros hasta pulsar Search.
+     * El gate evita mostrar/vincular EuroLeague encima de una tabla vieja.
      */
     const contextGate = {
         dirty: false,
@@ -106,6 +89,63 @@
             .trim();
 
     const upper = value => clean(value).toUpperCase();
+
+    function isVisibleElement(element) {
+        if (!(element instanceof Element)) return false;
+
+        try {
+            const style = getComputedStyle(element);
+            if (style.display === "none" || style.visibility === "hidden") {
+                return false;
+            }
+
+            return element.getClientRects().length > 0;
+        } catch (_) {
+            return true;
+        }
+    }
+
+    function pickBestElement(selector) {
+        const nodes = [...document.querySelectorAll(selector)];
+        if (!nodes.length) return null;
+
+        const visible = nodes.filter(isVisibleElement);
+        return visible.at(-1) || nodes.at(-1) || null;
+    }
+
+    function getEventsTable() {
+        const tables = [...document.querySelectorAll("#tablaEventos")];
+        if (!tables.length) return null;
+
+        const visible = tables.filter(isVisibleElement);
+        return visible.at(-1) || tables.at(-1) || null;
+    }
+
+    function getEditorContainer() {
+        const containers = [...document.querySelectorAll("#resEditContainer")];
+        if (!containers.length) return null;
+
+        const withEvent = containers.filter(container =>
+            container.querySelector('input[name="evento[]"]')
+        );
+        const visibleWithEvent = withEvent.filter(isVisibleElement);
+
+        return (
+            visibleWithEvent.at(-1) ||
+            withEvent.at(-1) ||
+            containers.filter(isVisibleElement).at(-1) ||
+            containers.at(-1) ||
+            null
+        );
+    }
+
+    const cssEscape = value => {
+        if (globalThis.CSS?.escape) {
+            return CSS.escape(String(value ?? ""));
+        }
+
+        return String(value ?? "").replace(/[^a-zA-Z0-9_-]/g, ch => `\\${ch}`);
+    };
 
     function expose(name, value) {
         try {
@@ -132,24 +172,35 @@
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 
-    function numericOrBlank(value) {
+    function toNumber(value, fallback = 0) {
         if (value === null || value === undefined || value === "") {
-            return "";
+            return fallback;
         }
 
         const number = Number(value);
-        return Number.isFinite(number) ? number : "";
+        return Number.isFinite(number) ? number : fallback;
     }
 
-    function sumScoreParts(values) {
+    function sameNumeric(a, b) {
+        return Number(a) === Number(b) && Number.isFinite(Number(a));
+    }
+
+    function normalizeOfficialTeamName(value) {
+        return clean(value)
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .toUpperCase()
+            .replace(/[^A-Z0-9]+/g, " ")
+            .replace(/\s+/g, " ")
+            .trim();
+    }
+
+    function sum(values) {
         let total = 0;
 
         for (const value of values) {
-            if (value === "" || value === null || value === undefined) {
-                continue;
-            }
-
             const number = Number(value);
+
             if (!Number.isFinite(number)) {
                 return null;
             }
@@ -205,17 +256,18 @@
         };
     }
 
-    function clearRoverFieldValue(element) {
-        return setRoverFieldValue(element, "0");
-    }
-
     // ============================================================
-    // GUARD: SOLO BASKETBALL > IBB
+    // CONTEXTO ROVER: SOLO BASKETBALL > IBB
     // ============================================================
 
     function findSelectByLabel(labelText) {
         const wanted = upper(labelText);
 
+        /*
+         * IDs/estructura primero. IMPORTANTE: nunca identificar LEAGUE por
+         * la opción actualmente seleccionada. Si hacemos eso, al pasar de
+         * IBB -> IBB dejamos de reconocer el control y no marcamos dirty.
+         */
         if (wanted === "CATEGORY") {
             const category = document.querySelector(
                 'select#categoria, select[name="categoria"], select[name="category"]'
@@ -269,11 +321,20 @@
         }
 
         if (wanted === "LEAGUE") {
-            return selects.find(select =>
-                [...select.options].some(option =>
-                    upper(option.textContent) === "IBB"
-                )
-            ) || null;
+            /*
+             * El selector de liga contiene opciones como IBB. Buscar en
+             * TODAS sus opciones funciona aunque la seleccionada sea otra.
+             */
+            return selects.find(select => {
+                const optionTexts = [...select.options].map(option =>
+                    upper(option.textContent)
+                );
+
+                return (
+                    optionTexts.includes("IBB") ||
+                    optionTexts.includes("IBB")
+                );
+            }) || null;
         }
 
         return null;
@@ -292,6 +353,41 @@
         };
     }
 
+    function normalizeDateInput(value) {
+        const raw = clean(value);
+
+        if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) {
+            return raw;
+        }
+
+        let match = raw.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+
+        if (match) {
+            const [, mm, dd, yyyy] = match;
+            return `${yyyy}-${String(mm).padStart(2, "0")}-${String(dd).padStart(2, "0")}`;
+        }
+
+        match = raw.match(/^(\d{1,2})-(\d{1,2})-(\d{4})$/);
+
+        if (match) {
+            const [, mm, dd, yyyy] = match;
+            return `${yyyy}-${String(mm).padStart(2, "0")}-${String(dd).padStart(2, "0")}`;
+        }
+
+        return "";
+    }
+
+    function getIsoDate() {
+        for (const el of document.querySelectorAll('input[name="fecha"], input[id="fecha"]')) {
+            const normalized = normalizeDateInput(el.value);
+            if (normalized) {
+                return normalized;
+            }
+        }
+
+        return "";
+    }
+
     function getContext() {
         return {
             category: getSelected(findSelectByLabel("CATEGORY")),
@@ -300,6 +396,100 @@
             tableExists: !!document.querySelector("#tablaEventos"),
             editorExists: !!document.querySelector("#resEditContainer")
         };
+    }
+
+    function getBasketballEditorContext() {
+        const container = document.querySelector("#resEditContainer");
+        const basquetRes = container?.querySelector("#basquetRes");
+
+        if (!container || !basquetRes) {
+            return { valid: false, reason: "NO_BASKETBALL_EDITOR" };
+        }
+
+        const roverEventId = clean(
+            basquetRes.querySelector('input[name="evento[]"]')?.value
+        );
+
+        if (!roverEventId) {
+            return { valid: false, reason: "NO_EDITOR_EVENT" };
+        }
+
+        const requiredIds = [
+            `${roverEventId}T1Q1Basq`,
+            `${roverEventId}T1Q2Basq`,
+            `${roverEventId}T1Q3Basq`,
+            `${roverEventId}T1Q4Basq`,
+            `${roverEventId}T1OTBasq`,
+            `${roverEventId}T1TOTBasq`,
+            `${roverEventId}T2Q1Basq`,
+            `${roverEventId}T2Q2Basq`,
+            `${roverEventId}T2Q3Basq`,
+            `${roverEventId}T2Q4Basq`,
+            `${roverEventId}T2OTBasq`,
+            `${roverEventId}T2TOTBasq`
+        ];
+
+        const missing = requiredIds.filter(id => !document.getElementById(id));
+
+        if (missing.length) {
+            return {
+                valid: false,
+                reason: "MISSING_BASKETBALL_FIELDS",
+                roverEventId,
+                missing
+            };
+        }
+
+        const hiddenDate = normalizeDateInput(
+            basquetRes.querySelector('input[name="fecha"]')?.value
+        );
+
+        const teamNameFromField = fieldId => {
+            const input = document.getElementById(fieldId);
+            const row = input?.closest("tr");
+            const cell = row?.querySelector("td");
+
+            if (!cell) return "";
+
+            const clone = cell.cloneNode(true);
+            clone.querySelectorAll("img, input, button, select").forEach(node => node.remove());
+
+            return clean(clone.textContent);
+        };
+
+        return {
+            valid: true,
+            reason: "",
+            roverEventId,
+            date: hiddenDate || getIsoDate(),
+            hiddenDate,
+            away: {
+                roverCode: "",
+                roverName: teamNameFromField(`${roverEventId}T1Q1Basq`)
+            },
+            home: {
+                roverCode: "",
+                roverName: teamNameFromField(`${roverEventId}T2Q1Basq`)
+            },
+            container,
+            basquetRes
+        };
+    }
+
+    function isEuroLeagueSelection() {
+        const ctx = getContext();
+
+        const categoryOK =
+            ctx.category.value === "2" ||
+            ctx.category.text === "BASKETBALL";
+
+        const leagueText = `${ctx.league.value} ${ctx.league.text}`;
+
+        const leagueOK =
+            /\bIBB\b/.test(leagueText) ||
+            ctx.league.value === "66";
+
+        return categoryOK && leagueOK;
     }
 
     function currentFilterSignature() {
@@ -313,23 +503,6 @@
             league.text,
             getIsoDate()
         ].join("|");
-    }
-
-    function isCflSelection() {
-        const ctx = getContext();
-
-        const categoryText = `${ctx.category.value} ${ctx.category.text}`;
-        const leagueText = `${ctx.league.value} ${ctx.league.text}`;
-
-        const categoryOK =
-            ctx.category.value === "2" ||
-            /\bBASKETBALL\b/.test(categoryText);
-
-        const leagueOK =
-            ctx.league.value === "66" ||
-            /\bIBB\b/.test(leagueText);
-
-        return categoryOK && leagueOK;
     }
 
     function tableFingerprint() {
@@ -373,6 +546,10 @@
         contextGate.staleTableNode =
             document.querySelector("#tablaEventos");
 
+        /*
+         * En cuanto los filtros cambian, cualquier barra actual deja de ser
+         * confiable porque #tablaEventos todavía representa la búsqueda vieja.
+         */
         removeUi();
     }
 
@@ -385,7 +562,7 @@
             'button, input[type="button"], input[type="submit"], a'
         );
 
-        if (!control || control.closest(`#${CSS.escape(UI_ID)}`)) {
+        if (!control || control.closest(`#${cssEscape(UI_ID)}`)) {
             return false;
         }
 
@@ -437,7 +614,7 @@
                     `${contextGate.signature}`
                 );
 
-                if (isCflSelection()) {
+                if (isEuroLeagueSelection()) {
                     observeEditorContainer();
                     scheduleRender(0);
                 } else {
@@ -465,6 +642,11 @@
         contextGate.searchRequested = true;
         contextGate.dirty = true;
         contextGate.signature = currentFilterSignature();
+
+        /*
+         * Capturamos exactamente la tabla vieja ANTES de que Rover ejecute
+         * su AJAX de Search.
+         */
         contextGate.staleFingerprint = tableFingerprint();
         contextGate.staleTableNode =
             document.querySelector("#tablaEventos");
@@ -476,62 +658,8 @@
         );
     }
 
-    function isCflView() {
-        return Boolean(
-            isCflSelection() &&
-            !contextGate.dirty &&
-            document.querySelector("#tablaEventos")
-        );
-    }
-
-    // ============================================================
-    // FECHA ROVER
-    // ============================================================
-
-    function normalizeDateInput(value) {
-        const raw = clean(value);
-
-        if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) {
-            return raw;
-        }
-
-        let match = raw.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
-
-        if (match) {
-            const [, mm, dd, yyyy] = match;
-            return `${yyyy}-${String(mm).padStart(2, "0")}-${String(dd).padStart(2, "0")}`;
-        }
-
-        match = raw.match(/^(\d{1,2})-(\d{1,2})-(\d{4})$/);
-
-        if (match) {
-            const [, mm, dd, yyyy] = match;
-            return `${yyyy}-${String(mm).padStart(2, "0")}-${String(dd).padStart(2, "0")}`;
-        }
-
-        return "";
-    }
-
-    function getIsoDate() {
-        for (const el of document.querySelectorAll('input[name="fecha"], input[id="fecha"]')) {
-            const normalized = normalizeDateInput(el.value);
-            if (normalized) {
-                return normalized;
-            }
-        }
-
-        return "";
-    }
-
-    function dateFromRow(row) {
-        const globalIso = getIsoDate();
-
-        if (globalIso) {
-            return globalIso;
-        }
-
+    function rowDateFromContent(row) {
         const content = clean(row?.getAttribute("data-content"));
-
         let match = content.match(/\b(\d{1,2})\/(\d{1,2})\/(\d{4})\b/);
 
         if (match) {
@@ -540,27 +668,72 @@
         }
 
         match = content.match(/\b(\d{4})-(\d{2})-(\d{2})\b/);
+        return match ? match[0] : "";
+    }
 
-        if (match) {
-            return match[0];
+    function rowIsIbb(row) {
+        const title = upper(row?.getAttribute("title"));
+        return title.includes("BASKETBALL") && /\bIBB\b/.test(title);
+    }
+
+    function getEditorEventId() {
+        return clean(
+            document.querySelector(
+                '#resEditContainer input[name="evento[]"]'
+            )?.value
+        );
+    }
+
+    function tableMatchesCurrentIbbContext() {
+        const editor = getBasketballEditorContext();
+
+        if (!editor.valid) {
+            return false;
         }
 
-        return "";
+        const row = findRoverRowById(editor.roverEventId);
+
+        if (row && !rowIsIbb(row)) {
+            return false;
+        }
+
+        const selectedDate = getIsoDate();
+        const editorDate = editor.hiddenDate || editor.date;
+        const rowDate = rowDateFromContent(row);
+
+        if (selectedDate && editorDate && selectedDate !== editorDate) {
+            return false;
+        }
+
+        if (selectedDate && rowDate && selectedDate !== rowDate) {
+            return false;
+        }
+
+        return true;
+    }
+
+    function isEuroLeagueView() {
+        return Boolean(
+            isEuroLeagueSelection() &&
+            !contextGate.dirty &&
+            document.querySelector("#tablaEventos")
+        );
     }
 
     // ============================================================
     // EVENTOS ROVER
     // ============================================================
 
+    function dateFromRow(row) {
+        return rowDateFromContent(row) || getIsoDate();
+    }
+
     function parseTeam(text) {
         const raw = clean(text);
         const match = raw.match(/^(\d+)\s+(.+)$/);
 
         if (!match) {
-            return {
-                roverCode: "",
-                roverName: raw
-            };
+            return { roverCode: "", roverName: raw };
         }
 
         return {
@@ -573,72 +746,34 @@
         if (!row) return null;
 
         const cells = [...row.querySelectorAll("td")];
-
-        if (cells.length < 3) {
-            return null;
-        }
+        if (cells.length < 3) return null;
 
         const ref = clean(cells[0].innerText).replace(/\D/g, "");
-
-        if (!ref) {
-            return null;
-        }
-
-        const away = parseTeam(cells[1].innerText);
-        const home = parseTeam(cells[2].innerText);
+        if (!ref) return null;
 
         return {
             roverEventId: ref,
             date: dateFromRow(row),
-            away,
-            home,
+            away: parseTeam(cells[1].innerText),
+            home: parseTeam(cells[2].innerText),
             row
         };
     }
 
-    function getCurrentRoverEvent() {
-        if (!isCflView()) {
-            return { valid: false, reason: "not_cfl" };
-        }
+    function findRoverRowById(roverEventId) {
+        const id = clean(roverEventId);
+        if (!id) return null;
 
-        const container = document.querySelector("#resEditContainer");
-        const editorId = clean(
-            container?.querySelector('input[name="evento[]"]')?.value
+        const table = document.querySelector("#tablaEventos");
+        if (!table) return null;
+
+        return (
+            table.querySelector(`tr[tkt="${cssEscape(id)}"]`) ||
+            [...table.querySelectorAll("tr")].find(tr =>
+                clean(tr.querySelector("td")?.innerText).replace(/\D/g, "") === id
+            ) ||
+            null
         );
-
-        if (!editorId) {
-            return { valid: false, reason: "no_editor_event" };
-        }
-
-        const row =
-            document.querySelector(`#tablaEventos tr[tkt="${CSS.escape(editorId)}"]`) ||
-            [...document.querySelectorAll("#tablaEventos tr")].find(tr =>
-                clean(tr.querySelector("td")?.innerText).replace(/\D/g, "") === editorId
-            );
-
-        if (!row) {
-            return {
-                valid: false,
-                reason: "row_not_found",
-                roverEventId: editorId
-            };
-        }
-
-        const parsed = parseRoverRow(row);
-
-        if (!parsed) {
-            return {
-                valid: false,
-                reason: "invalid_row",
-                roverEventId: editorId
-            };
-        }
-
-        return {
-            valid: parsed.roverEventId === editorId,
-            reason: parsed.roverEventId === editorId ? "" : "identity_mismatch",
-            ...parsed
-        };
     }
 
     function getRoverEventById(roverEventId) {
@@ -653,7 +788,7 @@
 
         const row =
             document.querySelector(
-                `#tablaEventos tr[tkt="${CSS.escape(id)}"]`
+                `#tablaEventos tr[tkt="${cssEscape(id)}"]`
             ) ||
             [...document.querySelectorAll("#tablaEventos tr")].find(tr =>
                 clean(tr.querySelector("td")?.innerText)
@@ -688,7 +823,52 @@
         };
     }
 
-    function teamLine(rover) {
+    function getCurrentRoverEvent() {
+        if (!isEuroLeagueView()) {
+            return { valid: false, reason: "not_ibb" };
+        }
+
+        const container = document.querySelector("#resEditContainer");
+        const editorId = clean(
+            container?.querySelector('input[name="evento[]"]')?.value
+        );
+
+        if (!editorId) {
+            return { valid: false, reason: "no_editor_event" };
+        }
+
+        const row =
+            document.querySelector(`#tablaEventos tr[tkt="${cssEscape(editorId)}"]`) ||
+            [...document.querySelectorAll("#tablaEventos tr")].find(tr =>
+                clean(tr.querySelector("td")?.innerText).replace(/\D/g, "") === editorId
+            );
+
+        if (!row) {
+            return {
+                valid: false,
+                reason: "row_not_found",
+                roverEventId: editorId
+            };
+        }
+
+        const parsed = parseRoverRow(row);
+
+        if (!parsed) {
+            return {
+                valid: false,
+                reason: "invalid_row",
+                roverEventId: editorId
+            };
+        }
+
+        return {
+            valid: parsed.roverEventId === editorId,
+            reason: parsed.roverEventId === editorId ? "" : "identity_mismatch",
+            ...parsed
+        };
+    }
+
+    function roverTeamLine(rover) {
         return `${clean(rover?.away?.roverName)} @ ${clean(rover?.home?.roverName)}`;
     }
 
@@ -700,9 +880,15 @@
         return `${LINK_PREFIX}${String(roverEventId || "")}`;
     }
 
-    function getManualLink(roverEventId) {
-        const id = String(roverEventId || "");
+    function candidateKey(event) {
+        return clean(
+            event?.identifier ||
+            `${event?.seasonCode || event?.season?.code || ""}_${event?.code ?? ""}`
+        );
+    }
 
+    function getManualLink(roverEventId) {
+        const id = clean(roverEventId);
         if (!id) return null;
 
         try {
@@ -711,7 +897,7 @@
 
             const value = JSON.parse(raw);
 
-            if (!value?.euroleagueEventId || !value?.seasonCode || !value?.gameCode) {
+            if (!value?.seasonCode || !Number.isFinite(Number(value?.gameCode))) {
                 return null;
             }
 
@@ -723,28 +909,29 @@
     }
 
     function saveManualLink(roverEventId, event) {
-        const id = String(roverEventId || "");
-        const euroleagueEventId = clean(event?.eventId);
+        const id = clean(roverEventId);
+        const gameCode = Number(event?.code);
+        const seasonCode = clean(event?.seasonCode || event?.season?.code);
 
-        if (!id || !/^E\d{4}_\d+$/.test(euroleagueEventId)) {
-            throw new Error("EuroLeague Event ID inválido.");
+        if (!id || !seasonCode || !Number.isInteger(gameCode) || gameCode <= 0) {
+            throw new Error("Juego EuroLeague inválido.");
         }
 
-        const roverDate =
-            clean(getCurrentRoverEvent()?.date) ||
-            clean(event?.date || "");
+        const rover = getRoverEventById(id);
 
         const payload = {
             mode: "manual",
             roverEventId: id,
-            euroleagueEventId,
-            seasonCode: clean(event?.seasonCode),
-            gameCode: Number(event?.gameCode),
-            date: roverDate,
-            homeName: clean(event?.home || ""),
-            awayName: clean(event?.away || ""),
-            tournament: "EuroLeague",
-            timestamp: Number(event?.timestamp || 0) || 0,
+            euroleagueEventId: candidateKey(event),
+            seasonCode,
+            gameCode,
+            phaseTypeCode: clean(event?.phaseTypeCode || event?.phaseType?.code),
+            roundNumber: Number(event?.roundNumber ?? event?.round?.round) || null,
+            date: clean(rover?.date || event?.roverDate),
+            apiDate: clean(event?.date),
+            awayName: clean(event?.away?.name || event?.awayName),
+            homeName: clean(event?.home?.name || event?.homeName),
+            status: clean(event?.status),
             updatedAt: new Date().toISOString()
         };
 
@@ -753,10 +940,8 @@
     }
 
     function removeManualLink(roverEventId) {
-        const id = String(roverEventId || "");
-        if (!id) return;
-
-        localStorage.removeItem(linkKey(id));
+        const id = clean(roverEventId);
+        if (id) localStorage.removeItem(linkKey(id));
     }
 
     function clearAllLinks() {
@@ -771,459 +956,602 @@
             }
         }
 
-        console.log(`${TAG} vínculos IBB eliminados: ${removed}`);
+        console.log(`${TAG} vínculos eliminados: ${removed}`);
         return removed;
     }
 
     // ============================================================
-    // EUROLEAGUE HTTP / CALENDARIO
+    // HTTP EUROLeague
     // ============================================================
-
-    const EL_BASE =
-        "https://feeds.incrowdsports.com/provider/euroleague-feeds/v2/competitions/E";
-    const EL_LIVE_BASE = "https://live.euroleague.net/api";
-    const EL_TZ = "America/Santo_Domingo";
-
-    const euroCache = {
-        seasons: null,
-        seasonsAt: 0,
-        rounds: new Map(),
-        day: new Map()
-    };
 
     function gmGetText(url, timeout = 12000) {
         return new Promise((resolve, reject) => {
             const request = {
                 method: "GET",
                 url,
-                headers: { Accept: "application/json, text/plain, */*" },
+                headers: {
+                    Accept: "application/json, text/plain, */*"
+                },
                 timeout,
                 onload: response => {
                     if (response.status >= 200 && response.status < 300) {
                         resolve(String(response.responseText || ""));
-                    } else {
-                        reject(new Error(`HTTP ${response.status} en ${url}`));
+                        return;
                     }
+
+                    reject(
+                        new Error(`HTTP ${response.status} en ${url}`)
+                    );
                 },
-                ontimeout: () => reject(new Error(`Timeout en ${url}`)),
-                onerror: () => reject(new Error(`Error de red en ${url}`))
+                ontimeout: () => reject(new Error(`Timeout consultando ${url}`)),
+                onerror: () => reject(new Error(`Error de red consultando ${url}`))
             };
 
-            if (typeof GM_xmlhttpRequest === "function") {
-                GM_xmlhttpRequest(request);
+            try {
+                if (typeof GM_xmlhttpRequest === "function") {
+                    GM_xmlhttpRequest(request);
+                    return;
+                }
+
+                if (typeof GM !== "undefined" && typeof GM.xmlHttpRequest === "function") {
+                    GM.xmlHttpRequest(request);
+                    return;
+                }
+            } catch (error) {
+                reject(error);
                 return;
             }
 
-            if (typeof GM !== "undefined" && typeof GM.xmlHttpRequest === "function") {
-                GM.xmlHttpRequest(request);
-                return;
-            }
-
-            reject(new Error("GM_xmlhttpRequest no disponible."));
+            reject(new Error("GM_xmlhttpRequest no está disponible."));
         });
     }
 
-    async function gmGetJson(url) {
-        const raw = await gmGetText(url);
-        return JSON.parse(raw);
+    async function gmGetJson(url, timeout = 12000) {
+        const text = await gmGetText(url, timeout);
+
+        try {
+            return JSON.parse(text);
+        } catch (error) {
+            throw new Error(`JSON inválido desde ${url}: ${error.message}`);
+        }
     }
 
-    function unwrapEuro(payload, label) {
-        if (payload?.data !== undefined) return payload.data;
-        throw new Error(`${label}: respuesta EuroLeague inesperada.`);
+    function unwrapFeedPayload(payload, label) {
+        if (payload?.status === "success" && payload?.data !== undefined) {
+            return payload.data;
+        }
+
+        if (payload?.data !== undefined) {
+            return payload.data;
+        }
+
+        throw new Error(`${label}: respuesta inesperada.`);
     }
 
     function dateOnly(value) {
-        const match = clean(value).match(/^(\d{4}-\d{2}-\d{2})/);
+        const text = clean(value);
+        const match = text.match(/^(\d{4}-\d{2}-\d{2})/);
         return match ? match[1] : "";
     }
 
-    function apiDateToRoverDate(iso) {
+    function apiDateToRoverDate(isoDate) {
+        if (!isoDate) return "";
+
         try {
             const parts = new Intl.DateTimeFormat("en-CA", {
-                timeZone: EL_TZ,
+                timeZone: TIME_ZONE,
                 year: "numeric",
                 month: "2-digit",
                 day: "2-digit"
-            }).formatToParts(new Date(iso));
+            }).formatToParts(new Date(isoDate));
 
-            const map = Object.fromEntries(parts.map(part => [part.type, part.value]));
+            const map = Object.fromEntries(
+                parts.map(part => [part.type, part.value])
+            );
+
             return `${map.year}-${map.month}-${map.day}`;
         } catch (_) {
             return "";
         }
     }
 
-    async function fetchEuroSeasons() {
-        if (
-            euroCache.seasons &&
-            Date.now() - euroCache.seasonsAt < 6 * 60 * 60 * 1000
-        ) {
-            return euroCache.seasons;
+    function formatApiTime(isoDate) {
+        if (!isoDate) return "";
+
+        try {
+            return new Intl.DateTimeFormat("en-US", {
+                timeZone: TIME_ZONE,
+                hour: "numeric",
+                minute: "2-digit",
+                hour12: true
+            }).format(new Date(isoDate));
+        } catch (_) {
+            return "";
         }
-
-        const data = unwrapEuro(
-            await gmGetJson(`${EL_BASE}/seasons`),
-            "SEASONS"
-        );
-
-        euroCache.seasons = Array.isArray(data) ? data : [];
-        euroCache.seasonsAt = Date.now();
-
-        return euroCache.seasons;
     }
 
-    async function resolveEuroSeason(roverDate) {
-        const seasons = await fetchEuroSeasons();
+    async function fetchSeasons({ force = false } = {}) {
+        if (
+            !force &&
+            CACHE.seasons &&
+            Date.now() - CACHE.seasonsSavedAt < CACHE_TTL.seasons
+        ) {
+            return CACHE.seasons;
+        }
 
-        const season = seasons.find(item => {
-            const start = dateOnly(item?.startDate);
-            const end = dateOnly(item?.endDate);
+        const payload = await gmGetJson(`${FEED_BASE}/seasons`);
+        const data = unwrapFeedPayload(payload, "SEASONS");
+        const seasons = Array.isArray(data) ? data : [];
 
-            return start && end && roverDate >= start && roverDate <= end;
-        });
+        CACHE.seasons = seasons;
+        CACHE.seasonsSavedAt = Date.now();
+
+        return seasons;
+    }
+
+    function seasonContainsDate(season, roverDate) {
+        const start = dateOnly(season?.startDate);
+        const end = dateOnly(season?.endDate);
+
+        return Boolean(
+            start && end && roverDate >= start && roverDate <= end
+        );
+    }
+
+    async function resolveSeason(roverDate, { force = false } = {}) {
+        const seasons = await fetchSeasons({ force });
+        const season = seasons.find(item => seasonContainsDate(item, roverDate));
 
         if (!season?.code) {
-            throw new Error(`No existe temporada EuroLeague para ${roverDate}.`);
+            throw new Error(`No se encontró temporada EuroLeague para ${roverDate}.`);
         }
 
         return season;
     }
 
-    async function fetchEuroRounds(seasonCode) {
-        const cached = euroCache.rounds.get(seasonCode);
+    async function fetchRounds(seasonCode, { force = false } = {}) {
+        const key = clean(seasonCode);
+        const cached = CACHE.roundsBySeason.get(key);
 
-        if (cached && Date.now() - cached.at < 5 * 60 * 1000) {
+        if (
+            !force &&
+            cached &&
+            Date.now() - cached.savedAt < CACHE_TTL.rounds
+        ) {
             return cached.value;
         }
 
-        const data = unwrapEuro(
-            await gmGetJson(
-                `${EL_BASE}/seasons/${encodeURIComponent(seasonCode)}/rounds`
-            ),
-            "ROUNDS"
+        const payload = await gmGetJson(
+            `${FEED_BASE}/seasons/${encodeURIComponent(key)}/rounds`
         );
+        const data = unwrapFeedPayload(payload, "ROUNDS");
+        const rounds = Array.isArray(data) ? data : [];
 
-        const value = Array.isArray(data) ? data : [];
-        euroCache.rounds.set(seasonCode, { at: Date.now(), value });
+        CACHE.roundsBySeason.set(key, {
+            savedAt: Date.now(),
+            value: rounds
+        });
 
-        return value;
+        return rounds;
     }
 
-    function euroRoundContainsDate(round, roverDate) {
+    function roundContainsDate(round, roverDate) {
         const min = dateOnly(round?.minGameStartDate);
         const max = dateOnly(round?.maxGameStartDate);
 
         return Boolean(min && max && roverDate >= min && roverDate <= max);
     }
 
-    async function fetchEuroRoundGames(seasonCode, round) {
-        const phaseTypeCode = clean(round?.phaseTypeCode);
-        const roundNumber = Number(round?.round);
+    async function fetchRoundGames(
+        seasonCode,
+        phaseTypeCode,
+        roundNumber,
+        { force = false } = {}
+    ) {
+        const key = `${seasonCode}|${phaseTypeCode}|${roundNumber}`;
+        const cached = CACHE.roundGames.get(key);
+
+        if (
+            !force &&
+            cached &&
+            Date.now() - cached.savedAt < CACHE_TTL.games
+        ) {
+            return cached.value;
+        }
 
         const url =
-            `${EL_BASE}/seasons/${encodeURIComponent(seasonCode)}/games` +
+            `${FEED_BASE}/seasons/${encodeURIComponent(seasonCode)}/games` +
             `?teamCode=&phaseTypeCode=${encodeURIComponent(phaseTypeCode)}` +
             `&roundNumber=${encodeURIComponent(roundNumber)}`;
 
-        const data = unwrapEuro(await gmGetJson(url), "GAMES");
-        return Array.isArray(data) ? data : [];
+        const payload = await gmGetJson(url);
+        const data = unwrapFeedPayload(payload, "GAMES");
+        const games = Array.isArray(data) ? data : [];
+
+        CACHE.roundGames.set(key, {
+            savedAt: Date.now(),
+            value: games
+        });
+
+        return games;
     }
 
-    function sumOt(quarters) {
-        return ["ot1", "ot2", "ot3", "ot4", "ot5"].reduce(
-            (total, key) => total + (Number(quarters?.[key]) || 0),
-            0
-        );
-    }
-
-    function toCflShape(game, roverDate) {
-        const seasonCode = clean(game?.season?.code);
-        const gameCode = Number(game?.code);
-        const identifier = clean(
-            game?.identifier || `${seasonCode}_${gameCode}`
-        );
-
+    function normalizeCandidate(rawGame, roundMeta, roverDate) {
         return {
-            eventId: identifier,
-            seasonCode,
-            gameCode,
-            away: clean(game?.away?.name),
-            home: clean(game?.home?.name),
-            timestamp: Math.floor(new Date(game?.date).getTime() / 1000),
-            tournament: "EuroLeague",
-            feedDate: roverDate,
-            date: roverDate,
-            sourceUrl:
-                `${EL_BASE}/seasons/${encodeURIComponent(seasonCode)}/games/${gameCode}`,
-            status: clean(game?.status),
-            quarter: clean(game?.quarter),
-            remainingTime: clean(game?.remainingTime),
-            q1Away: Number(game?.away?.quarters?.q1) || 0,
-            q2Away: Number(game?.away?.quarters?.q2) || 0,
-            q3Away: Number(game?.away?.quarters?.q3) || 0,
-            q4Away: Number(game?.away?.quarters?.q4) || 0,
-            otAway: sumOt(game?.away?.quarters),
-            awayTotal: Number(game?.away?.score) || 0,
-            q1Home: Number(game?.home?.quarters?.q1) || 0,
-            q2Home: Number(game?.home?.quarters?.q2) || 0,
-            q3Home: Number(game?.home?.quarters?.q3) || 0,
-            q4Home: Number(game?.home?.quarters?.q4) || 0,
-            otHome: sumOt(game?.home?.quarters),
-            homeTotal: Number(game?.home?.score) || 0,
-            raw: game
+            ...rawGame,
+            seasonCode: clean(rawGame?.season?.code || roundMeta?.seasonCode),
+            phaseTypeCode: clean(
+                rawGame?.phaseType?.code || roundMeta?.phaseTypeCode
+            ),
+            roundNumber: Number(
+                rawGame?.round?.round ?? roundMeta?.round
+            ) || null,
+            roverDate,
+            identifier: clean(
+                rawGame?.identifier ||
+                `${rawGame?.season?.code || roundMeta?.seasonCode}_${rawGame?.code ?? ""}`
+            )
         };
     }
 
-    async function fetchEuroLeagueDay(roverDate, { useCache = true } = {}) {
-        const cache = euroCache.day.get(roverDate);
-
-        if (useCache && cache && Date.now() - cache.at < 10000) {
-            return cache.value;
+    async function fetchEuroLeagueDay(roverDate, { force = false } = {}) {
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(roverDate)) {
+            throw new Error("Fecha Rover inválida.");
         }
 
-        const season = await resolveEuroSeason(roverDate);
-        const rounds = await fetchEuroRounds(season.code);
-        const selectedRounds = rounds.filter(round =>
-            euroRoundContainsDate(round, roverDate)
+        const season = await resolveSeason(roverDate, { force });
+        const rounds = await fetchRounds(season.code, { force });
+        const matchingRounds = rounds.filter(round =>
+            roundContainsDate(round, roverDate)
         );
+
+        if (!matchingRounds.length) {
+            return {
+                season,
+                rounds: [],
+                games: []
+            };
+        }
 
         const settled = await Promise.allSettled(
-            selectedRounds.map(round =>
-                fetchEuroRoundGames(season.code, round)
-            )
+            matchingRounds.map(async round => {
+                const phaseTypeCode = clean(round.phaseTypeCode);
+                const roundNumber = Number(round.round);
+
+                if (!phaseTypeCode || !Number.isInteger(roundNumber)) {
+                    throw new Error(
+                        `Ronda inválida: ${round?.name || round?.round || "?"}`
+                    );
+                }
+
+                const games = await fetchRoundGames(
+                    season.code,
+                    phaseTypeCode,
+                    roundNumber,
+                    { force }
+                );
+
+                return { round, games };
+            })
         );
 
-        const events = [];
+        const byId = new Map();
+        const errors = [];
 
         for (const item of settled) {
-            if (item.status !== "fulfilled") continue;
+            if (item.status === "rejected") {
+                errors.push(item.reason?.message || String(item.reason));
+                continue;
+            }
 
-            for (const game of item.value) {
-                if (apiDateToRoverDate(game?.date) !== roverDate) continue;
-                events.push(toCflShape(game, roverDate));
+            for (const rawGame of item.value.games) {
+                if (apiDateToRoverDate(rawGame?.date) !== roverDate) {
+                    continue;
+                }
+
+                const game = normalizeCandidate(
+                    rawGame,
+                    item.value.round,
+                    roverDate
+                );
+
+                const id = candidateKey(game);
+                if (id) byId.set(id, game);
             }
         }
 
-        const unique = [...new Map(
-            events.map(event => [event.eventId, event])
-        ).values()].sort((a, b) => a.timestamp - b.timestamp);
+        if (!byId.size && errors.length === settled.length) {
+            throw new Error(errors.join(" | "));
+        }
 
-        const value = {
-            cflEvents: unique,
-            allEvents: unique,
-            excludedByDate: [],
-            feedResults: [],
-            roverDate
-        };
-
-        euroCache.day.set(roverDate, {
-            at: Date.now(),
-            value
-        });
+        const games = [...byId.values()].sort((a, b) =>
+            new Date(a.date).getTime() - new Date(b.date).getTime()
+        );
 
         console.log("");
         console.log("=== EUROLEAGUE / JUEGOS DEL DÍA ===");
         console.table(
-            unique.map(event => ({
-                ID: event.eventId,
-                AWAY: event.away,
-                HOME: event.home,
-                FECHA: event.feedDate,
-                ESTADO: event.status
+            games.map(game => ({
+                ID: candidateKey(game),
+                FECHA: roverDate,
+                HORA_RD: formatApiTime(game.date),
+                AWAY: game.away?.name,
+                HOME: game.home?.name,
+                ESTADO_API: game.status,
+                RONDA: game.roundNumber,
+                FASE: game.phaseTypeCode
             }))
         );
 
-        return value;
+        return {
+            season,
+            rounds: matchingRounds,
+            games
+        };
     }
 
-    async function fetchLinkedEuroEvent(rover, link) {
+    async function fetchGameFresh(link) {
+        const seasonCode = clean(link?.seasonCode);
+        const gameCode = Number(link?.gameCode);
+
+        if (!seasonCode || !Number.isInteger(gameCode) || gameCode <= 0) {
+            throw new Error("Vínculo EuroLeague inválido.");
+        }
+
         const url =
-            `${EL_BASE}/seasons/${encodeURIComponent(link.seasonCode)}` +
-            `/games/${encodeURIComponent(link.gameCode)}`;
+            `${FEED_BASE}/seasons/${encodeURIComponent(seasonCode)}` +
+            `/games/${encodeURIComponent(gameCode)}`;
 
-        const game = unwrapEuro(await gmGetJson(url), "GAME");
+        const payload = await gmGetJson(url);
+        const game = unwrapFeedPayload(payload, "GAME");
 
-        if (
-            clean(game?.identifier) !== clean(link.euroleagueEventId) ||
-            Number(game?.code) !== Number(link.gameCode)
-        ) {
-            throw new Error("EuroLeague devolvió un juego diferente al vinculado.");
+        if (!game || Number(game.code) !== gameCode) {
+            throw new Error("El endpoint devolvió un partido diferente al vinculado.");
         }
 
-        if (apiDateToRoverDate(game?.date) !== rover.date) {
-            throw new Error("La fecha del juego vinculado ya no coincide con Rover.");
-        }
-
-        return toCflShape(game, rover.date);
+        return game;
     }
 
-    async function fetchEuroBoxscore(link) {
-        return gmGetJson(
-            `${EL_LIVE_BASE}/Boxscore?gamecode=${encodeURIComponent(link.gameCode)}` +
-            `&seasoncode=${encodeURIComponent(link.seasonCode)}`
+    async function fetchBoxscore(seasonCode, gameCode) {
+        const url =
+            `${LIVE_BASE}/Boxscore?gamecode=${encodeURIComponent(gameCode)}` +
+            `&seasoncode=${encodeURIComponent(seasonCode)}`;
+
+        return gmGetJson(url);
+    }
+
+    // ============================================================
+    // SCORE / VALIDACIÓN
+    // ============================================================
+
+    function sumOvertimes(quarters) {
+        return ["ot1", "ot2", "ot3", "ot4", "ot5"].reduce(
+            (total, key) => total + toNumber(quarters?.[key], 0),
+            0
         );
     }
 
-    // ============================================================
-    // NORMALIZACIÓN DE ESTADO / RESULTADOS
-    // ============================================================
-
-    function normalizeStatus(event) {
-        const raw = clean(event?.status).toLowerCase();
-
-        let normalized = "UNKNOWN";
-
-        if (raw === "result") normalized = "FINAL";
-        else if (raw === "live") normalized = "LIVE";
-        else if (raw === "confirmed") normalized = "NOT_STARTED";
-        else if (raw.includes("postpon")) normalized = "POSTPONED";
-        else if (raw.includes("cancel")) normalized = "CANCELED";
+    function normalizeSide(side) {
+        const quarters = side?.quarters || {};
 
         return {
-            normalized,
-            stageId: raw,
-            stageTypeId: "",
-            label: raw || "unknown"
+            name: clean(side?.name),
+            code: clean(side?.code),
+            q1: toNumber(quarters.q1, 0),
+            q2: toNumber(quarters.q2, 0),
+            q3: toNumber(quarters.q3, 0),
+            q4: toNumber(quarters.q4, 0),
+            ot: sumOvertimes(quarters),
+            final: toNumber(side?.score, 0),
+            rawQuarters: quarters
         };
     }
 
-    function normalizeLinkedGame(rover, event, link) {
-        const status = normalizeStatus(event);
-
+    function normalizeLinkedGame(rover, apiGame, link) {
         return {
             roverEventId: rover.roverEventId,
             roverDate: rover.date,
-            flashscoreEventId: event.eventId,
-            linkMode: "MANUAL",
-            linkSource: "EUROLEAGUE",
-            sourceUrl: event.sourceUrl || "",
-            event: {
-                date: event.feedDate || rover.date,
-                timestamp: event.timestamp,
-                tournament: "EuroLeague",
-                name: `${event.away} @ ${event.home}`
-            },
-            status,
-            away: {
-                name: event.away,
-                q1: event.q1Away,
-                q2: event.q2Away,
-                q3: event.q3Away,
-                q4: event.q4Away,
-                ot: event.otAway,
-                final: event.awayTotal
-            },
-            home: {
-                name: event.home,
-                q1: event.q1Home,
-                q2: event.q2Home,
-                q3: event.q3Home,
-                q4: event.q4Home,
-                ot: event.otHome,
-                final: event.homeTotal
-            },
-            manualLink: link
+            seasonCode: clean(apiGame?.season?.code || link?.seasonCode),
+            gameCode: Number(apiGame?.code),
+            identifier: clean(apiGame?.identifier),
+            apiDate: clean(apiGame?.date),
+            status: clean(apiGame?.status).toLowerCase(),
+            minute: clean(apiGame?.minute),
+            remainingTime: clean(apiGame?.remainingTime),
+            quarter: clean(apiGame?.quarter),
+            round: Number(apiGame?.round?.round) || link?.roundNumber || null,
+            phaseTypeCode: clean(apiGame?.phaseType?.code || link?.phaseTypeCode),
+            away: normalizeSide(apiGame?.away),
+            home: normalizeSide(apiGame?.home),
+            manualLink: link,
+            raw: apiGame
         };
     }
 
-    function validateTeamScore(team, side) {
-        const values = [
-            team?.q1,
-            team?.q2,
-            team?.q3,
-            team?.q4,
-            team?.ot,
-            team?.final
-        ];
+    function validateLinkIdentity(game, link) {
+        if (Number(game.gameCode) !== Number(link.gameCode)) {
+            return { ok: false, reason: "GAME_CODE_CHANGED" };
+        }
 
-        if (values.some(value => !Number.isFinite(Number(value)))) {
+        if (clean(game.seasonCode) !== clean(link.seasonCode)) {
+            return { ok: false, reason: "SEASON_CHANGED" };
+        }
+
+        const linkedAway = normalizeOfficialTeamName(link.awayName);
+        const linkedHome = normalizeOfficialTeamName(link.homeName);
+        const freshAway = normalizeOfficialTeamName(game.away.name);
+        const freshHome = normalizeOfficialTeamName(game.home.name);
+
+        if (
+            linkedAway &&
+            linkedHome &&
+            (linkedAway !== freshAway || linkedHome !== freshHome)
+        ) {
             return {
                 ok: false,
-                reason: `${side}_INVALID_SCORE`
+                reason: "API_TEAM_IDENTITY_CHANGED",
+                linkedAway: link.awayName,
+                linkedHome: link.homeName,
+                freshAway: game.away.name,
+                freshHome: game.home.name
             };
         }
 
-        const periods =
-            Number(team.q1) +
-            Number(team.q2) +
-            Number(team.q3) +
-            Number(team.q4) +
-            Number(team.ot);
-
-        if (periods !== Number(team.final)) {
+        if (apiDateToRoverDate(game.apiDate) !== game.roverDate) {
             return {
                 ok: false,
-                reason: `${side}_PERIOD_SUM_MISMATCH`,
-                periods,
-                final: team.final
+                reason: "API_DATE_CHANGED",
+                roverDate: game.roverDate,
+                apiDate: game.apiDate,
+                apiRoverDate: apiDateToRoverDate(game.apiDate)
             };
         }
 
         return { ok: true };
     }
 
-    function validateGameScore(game) {
-        const away = validateTeamScore(game.away, "AWAY");
-        if (!away.ok) return away;
-
-        const home = validateTeamScore(game.home, "HOME");
-        if (!home.ok) return home;
-
-        return { ok: true };
-    }
-
-    async function validateFinalBoxscore(game) {
-        if (game.status.normalized !== "FINAL") {
-            return { ok: true, skipped: true };
-        }
-
-        const box = await fetchEuroBoxscore(game.manualLink);
-
-        if (box?.Live === true) {
-            return { ok: false, reason: "BOXSCORE_STILL_LIVE" };
-        }
-
-        const rows = Array.isArray(box?.ByQuarter) ? box.ByQuarter : [];
-
-        const normalizeName = value =>
-            clean(value)
-                .normalize("NFD")
-                .replace(/[\u0300-\u036f]/g, "")
-                .toUpperCase()
-                .replace(/[^A-Z0-9]+/g, " ")
-                .trim();
-
-        const find = name =>
-            rows.find(row => normalizeName(row?.Team) === normalizeName(name));
-
-        const away = find(game.away.name);
-        const home = find(game.home.name);
-
-        if (!away || !home) {
-            return { ok: false, reason: "BOXSCORE_TEAM_NOT_FOUND" };
-        }
-
-        for (const [side, gameTeam, row] of [
-            ["AWAY", game.away, away],
-            ["HOME", game.home, home]
+    function validateCurrentScore(game) {
+        for (const [sideName, team] of [
+            ["AWAY", game.away],
+            ["HOME", game.home]
         ]) {
-            for (const [key, boxKey] of [
-                ["q1", "Quarter1"],
-                ["q2", "Quarter2"],
-                ["q3", "Quarter3"],
-                ["q4", "Quarter4"]
-            ]) {
-                if (Number(gameTeam[key]) !== Number(row?.[boxKey])) {
-                    return {
-                        ok: false,
-                        reason: `${side}_${key.toUpperCase()}_BOXSCORE_MISMATCH`
-                    };
-                }
+            const periodTotal = sum([
+                team.q1,
+                team.q2,
+                team.q3,
+                team.q4,
+                team.ot
+            ]);
+
+            if (periodTotal === null) {
+                return {
+                    ok: false,
+                    reason: `${sideName}_INVALID_PERIODS`
+                };
+            }
+
+            if (periodTotal !== Number(team.final)) {
+                return {
+                    ok: false,
+                    reason: `${sideName}_PERIOD_SUM_MISMATCH`,
+                    periodTotal,
+                    final: team.final
+                };
             }
         }
 
         return { ok: true };
+    }
+
+    function boxscoreTeamRows(boxscore) {
+        const byQuarter = Array.isArray(boxscore?.ByQuarter)
+            ? boxscore.ByQuarter
+            : [];
+        const stats = Array.isArray(boxscore?.Stats)
+            ? boxscore.Stats
+            : [];
+
+        return byQuarter.map(row => {
+            const teamName = clean(row?.Team);
+            const statsRow = stats.find(item =>
+                normalizeOfficialTeamName(item?.Team) ===
+                normalizeOfficialTeamName(teamName)
+            );
+
+            const playerTeamCode = clean(
+                statsRow?.PlayersStats?.find?.(player => clean(player?.Team))?.Team
+            );
+
+            const pointsValue =
+                statsRow?.totr?.Points ??
+                statsRow?.total?.Points ??
+                statsRow?.Total?.Points ??
+                null;
+
+            return {
+                team: teamName,
+                code: playerTeamCode,
+                q1: toNumber(row?.Quarter1, 0),
+                q2: toNumber(row?.Quarter2, 0),
+                q3: toNumber(row?.Quarter3, 0),
+                q4: toNumber(row?.Quarter4, 0),
+                final:
+                    pointsValue !== null && pointsValue !== undefined
+                        ? Number(pointsValue)
+                        : null
+            };
+        });
+    }
+
+    function findBoxscoreRow(rows, teamName, teamCode) {
+        const wantedCode = upper(teamCode);
+
+        if (wantedCode) {
+            const byCode = rows.find(row => upper(row.code) === wantedCode);
+            if (byCode) return byCode;
+        }
+
+        const wanted = normalizeOfficialTeamName(teamName);
+        return rows.find(row =>
+            normalizeOfficialTeamName(row.team) === wanted
+        ) || null;
+    }
+
+    async function validateFinalWithBoxscore(game) {
+        const boxscore = await fetchBoxscore(game.seasonCode, game.gameCode);
+
+        if (boxscore?.Live === true) {
+            return {
+                ok: false,
+                reason: "BOXSCORE_STILL_LIVE"
+            };
+        }
+
+        const rows = boxscoreTeamRows(boxscore);
+        const away = findBoxscoreRow(rows, game.away.name, game.away.code);
+        const home = findBoxscoreRow(rows, game.home.name, game.home.code);
+
+        if (!away || !home) {
+            return {
+                ok: false,
+                reason: "BOXSCORE_TEAM_NOT_FOUND",
+                rows
+            };
+        }
+
+        for (const [sideName, feedTeam, boxTeam] of [
+            ["AWAY", game.away, away],
+            ["HOME", game.home, home]
+        ]) {
+            for (const quarter of ["q1", "q2", "q3", "q4"]) {
+                if (!sameNumeric(feedTeam[quarter], boxTeam[quarter])) {
+                    return {
+                        ok: false,
+                        reason: `${sideName}_${quarter.toUpperCase()}_BOXSCORE_MISMATCH`,
+                        feed: feedTeam[quarter],
+                        boxscore: boxTeam[quarter]
+                    };
+                }
+            }
+
+            if (
+                boxTeam.final === null ||
+                !sameNumeric(feedTeam.final, boxTeam.final)
+            ) {
+                return {
+                    ok: false,
+                    reason: `${sideName}_FINAL_BOXSCORE_MISMATCH`,
+                    feed: feedTeam.final,
+                    boxscore: boxTeam.final
+                };
+            }
+        }
+
+        return {
+            ok: true,
+            boxscore,
+            rows
+        };
     }
 
     // ============================================================
@@ -1232,8 +1560,8 @@
     // NO TOCA ESTADO
     // ============================================================
 
-    function buildRoverResultPlan(game) {
-        const eventId = clean(game?.roverEventId);
+    function buildRoverScorePlan(game) {
+        const eventId = clean(game.roverEventId);
 
         return {
             eventId,
@@ -1243,21 +1571,21 @@
                 { id: `${eventId}T1Q2Basq`, label: "T1/AWAY Q2", value: game.away.q2 },
                 { id: `${eventId}T1Q3Basq`, label: "T1/AWAY Q3", value: game.away.q3 },
                 { id: `${eventId}T1Q4Basq`, label: "T1/AWAY Q4", value: game.away.q4 },
-                { id: `${eventId}T1OTBasq`, label: "T1/AWAY OT", value: game.away.ot || 0 },
+                { id: `${eventId}T1OTBasq`, label: "T1/AWAY OT", value: game.away.ot },
                 { id: `${eventId}T1TOTBasq`, label: "T1/AWAY F", value: game.away.final },
 
                 { id: `${eventId}T2Q1Basq`, label: "T2/HOME Q1", value: game.home.q1 },
                 { id: `${eventId}T2Q2Basq`, label: "T2/HOME Q2", value: game.home.q2 },
                 { id: `${eventId}T2Q3Basq`, label: "T2/HOME Q3", value: game.home.q3 },
                 { id: `${eventId}T2Q4Basq`, label: "T2/HOME Q4", value: game.home.q4 },
-                { id: `${eventId}T2OTBasq`, label: "T2/HOME OT", value: game.home.ot || 0 },
+                { id: `${eventId}T2OTBasq`, label: "T2/HOME OT", value: game.home.ot },
                 { id: `${eventId}T2TOTBasq`, label: "T2/HOME F", value: game.home.final }
             ]
         };
     }
 
-    function verifyRoverResultControls(plan) {
-        const container = document.querySelector("#resEditContainer");
+    function verifyRoverScoreControls(plan) {
+        const container = getEditorContainer();
 
         if (!container) {
             return { ok: false, reason: "NO_EDITOR_CONTAINER" };
@@ -1281,44 +1609,90 @@
             .map(item => item.id);
 
         return missing.length
-            ? { ok: false, reason: "MISSING_CONTROLS", missing }
+            ? { ok: false, reason: "MISSING_SCORE_CONTROLS", missing }
             : { ok: true, container };
     }
 
-    // ============================================================
-    // LECTURA Y ACTUALIZACIÓN
-    // ============================================================
+    function statusNotice(game, validatedFinal = false) {
+        if (game.status === "result") {
+            return {
+                className: "is-final",
+                text: `FINAL · ${game.away.final}-${game.home.final}${validatedFinal ? " · VALIDADO ✓" : ""}`,
+                title: `${game.away.name} ${game.away.final} - ${game.home.final} ${game.home.name}`
+            };
+        }
+
+        if (game.status === "live") {
+            const period = game.quarter ? `Q${game.quarter}` : "LIVE";
+            const clock = game.remainingTime ? ` · ${game.remainingTime}` : "";
+
+            return {
+                className: "is-live",
+                text: `${period}${clock} · ${game.away.final}-${game.home.final} · CARGADO ✓`,
+                title: `${game.away.name} ${game.away.final} - ${game.home.final} ${game.home.name}`
+            };
+        }
+
+        return {
+            className: "is-pre",
+            text: `${upper(game.status || "CONFIRMED")} · ${game.away.final}-${game.home.final} · CARGADO ✓`,
+            title: `${game.away.name} @ ${game.home.name}`
+        };
+    }
+
+    function storeResultNotice(roverEventId, notice) {
+        uiState.lastNoticeByEvent[String(roverEventId || "")] = {
+            className: clean(notice?.className),
+            text: clean(notice?.text),
+            title: clean(notice?.title)
+        };
+    }
+
+    function getStoredResultNotice(roverEventId) {
+        return uiState.lastNoticeByEvent[String(roverEventId || "")] || null;
+    }
+
+    function clearStoredResultNotice(roverEventId) {
+        delete uiState.lastNoticeByEvent[String(roverEventId || "")];
+    }
 
     async function readLinkedGameFresh() {
         const rover = getCurrentRoverEvent();
 
         if (!rover?.valid) {
-            console.warn(`${TAG} no hay evento IBB Rover activo.`);
-            return null;
+            throw new Error("Selecciona primero un evento Rover IBB.");
         }
 
         const link = getManualLink(rover.roverEventId);
 
         if (!link) {
-            console.warn(`${TAG} Rover #${rover.roverEventId} no está vinculado.`);
-            return null;
+            throw new Error("Este evento Rover no está vinculado.");
         }
 
-        const event = await fetchLinkedEuroEvent(rover, link);
-        const game = normalizeLinkedGame(rover, event, link);
+        const apiGame = await fetchGameFresh(link);
+        const game = normalizeLinkedGame(rover, apiGame, link);
+        const identity = validateLinkIdentity(game, link);
+
+        if (!identity.ok) {
+            console.error(`${TAG} identidad del vínculo no válida`, identity);
+            throw new Error(`VÍNCULO NO VÁLIDO: ${identity.reason}`);
+        }
 
         console.log("");
-        console.log("=== EUROLEAGUE IBB / VÍNCULO ===");
+        console.log("=== EUROLEAGUE / VÍNCULO MANUAL ===");
         console.table([{
             ROVER_EVENT_ID: rover.roverEventId,
-            EUROLEAGUE_EVENT_ID: link.euroleagueEventId,
-            ROVER: teamLine(rover),
+            EUROLEAGUE_ID: game.identifier || `${game.seasonCode}_${game.gameCode}`,
+            ROVER: roverTeamLine(rover),
             EUROLEAGUE: `${game.away.name} @ ${game.home.name}`,
-            ESTADO_API: game.status.normalized
+            ESTADO_API: game.status,
+            PERIODO: game.quarter,
+            RELOJ: game.remainingTime,
+            FECHA_API: game.apiDate
         }]);
 
         console.log("");
-        console.log("=== PARCIALES EUROLEAGUE ===");
+        console.log("=== SCORE EUROLEAGUE ===");
         console.table([
             {
                 SIDE: "AWAY",
@@ -1349,55 +1723,59 @@
         const startedAt = performance.now();
 
         console.log("==============================================");
-        console.log(`EUROLEAGUE IBB RESULT UPDATE v${VERSION}`);
+        console.log(`EUROLEAGUE IBB SCORE UPDATE v${VERSION}`);
         console.log("==============================================");
 
         const game = await readLinkedGameFresh();
+        const consistency = validateCurrentScore(game);
 
-        if (!game) {
-            setResultNoticeError("SIN DATOS / SIN VÍNCULO");
-            return { ok: false, reason: "NO_GAME_DATA" };
-        }
-
-        const validation = validateGameScore(game);
-
-        if (!validation.ok) {
-            setResultNoticeError("DATOS EUROLEAGUE EN TRANSICIÓN");
-            console.error(`${TAG} ⛔ no se modificó Rover:`, validation);
+        if (!consistency.ok) {
+            console.error(`${TAG} ⛔ score inconsistente`, consistency);
+            setResultNoticeError("DATOS API EN TRANSICIÓN · REINTENTA");
 
             return {
                 ok: false,
                 applied: false,
-                reason: validation.reason,
-                validation,
-                game
+                reason: consistency.reason,
+                game,
+                consistency
             };
         }
 
-        const finalValidation = await validateFinalBoxscore(game);
+        let finalValidation = null;
 
-        if (!finalValidation.ok) {
-            setResultNoticeError("FINAL NO VALIDADO");
-            console.error(`${TAG} ⛔ Boxscore no validó el final:`, finalValidation);
+        if (game.status === "result") {
+            finalValidation = await validateFinalWithBoxscore(game);
 
-            return {
-                ok: false,
-                applied: false,
-                reason: finalValidation.reason,
-                finalValidation,
-                game
-            };
+            if (!finalValidation.ok) {
+                console.error(
+                    `${TAG} ⛔ final no validado con Boxscore`,
+                    finalValidation
+                );
+                setResultNoticeError(
+                    `FINAL NO VALIDADO · ${finalValidation.reason}`
+                );
+
+                return {
+                    ok: false,
+                    applied: false,
+                    reason: finalValidation.reason,
+                    game,
+                    finalValidation
+                };
+            }
         }
 
-        const plan = buildRoverResultPlan(game);
-        const verification = verifyRoverResultControls(plan);
+        const plan = buildRoverScorePlan(game);
+        const verification = verifyRoverScoreControls(plan);
 
         if (!verification.ok) {
+            console.error(`${TAG} ⛔ controles Rover inválidos`, verification);
             setResultNoticeError("NO SE PUDO LLENAR ROVER");
-            console.error(`${TAG} ⛔ controles Rover no válidos:`, verification);
 
             return {
                 ok: false,
+                applied: false,
                 reason: verification.reason,
                 verification,
                 game
@@ -1425,29 +1803,19 @@
 
         if (anyChanged) {
             const edited = document.getElementById(plan.editedId);
-
-            if (edited) {
-                setRoverFieldValue(edited, "1");
-            }
+            if (edited) setRoverFieldValue(edited, "1");
         }
 
-        const final = game.status.normalized === "FINAL";
-
-        const notice = {
-            className: final ? "is-final" : "is-live",
-            text:
-                `${final ? "FINAL" : game.status.label.toUpperCase()} · ` +
-                `${game.away.final}-${game.home.final} · CARGADO ✓`,
-            title:
-                `${game.away.name} ${game.away.final} - ` +
-                `${game.home.final} ${game.home.name}`
-        };
+        const notice = statusNotice(
+            game,
+            Boolean(finalValidation?.ok)
+        );
 
         storeResultNotice(game.roverEventId, notice);
         setResultNotice(getUiRoot(), notice);
 
         console.log("");
-        console.log("=== RESULTADO APLICADO A ROVER ===");
+        console.log("=== SCORE APLICADO A ROVER ===");
         console.table(changes);
         console.log(
             `${TAG} ESTADO intacto. NO se pulsó Guardar Resultados ni Procesar Tickets.`
@@ -1460,6 +1828,7 @@
             plan,
             changes,
             changed: anyChanged,
+            finalValidation,
             elapsedMs: Math.round(performance.now() - startedAt)
         };
     }
@@ -1469,24 +1838,10 @@
     // ============================================================
 
     function installStyles() {
-        if (document.getElementById(STYLE_ID)) {
-            return;
-        }
+        if (document.getElementById(STYLE_ID)) return;
 
         const style = document.createElement("style");
         style.id = STYLE_ID;
-
-        /*
-         * Copia deliberadamente la geometría/colores del panel Soccer
-         * suministrado por el usuario:
-         * - título azul
-         * - input gris de 29 px
-         * - dropdown absoluto blanco
-         * - selección verde tenue
-         * - Vincular verde
-         * - ↻ morado
-         * - × naranja
-         */
         style.textContent = `
             #${UI_ID} {
                 width: 100%;
@@ -1496,11 +1851,9 @@
                 font-family: Arial, Helvetica, sans-serif;
             }
 
-            #${UI_ID} * {
-                box-sizing: border-box;
-            }
+            #${UI_ID} * { box-sizing: border-box; }
 
-            #${UI_ID} .rs-fs-panel {
+            #${UI_ID} .rs-el-panel {
                 display: grid;
                 grid-template-columns: 32px minmax(0, 1fr);
                 align-items: start;
@@ -1508,31 +1861,27 @@
                 width: 100%;
             }
 
-            #${UI_ID} .rs-fs-title {
+            #${UI_ID} .rs-el-title {
                 width: 26px;
                 height: 29px;
                 display: flex;
                 align-items: center;
                 justify-content: flex-start;
-                padding: 0;
-                margin: 0 0 0 6px;
-                background: transparent;
-                position: relative;
-                z-index: 2;
+                margin-left: 6px;
+                color: #1f6fe5;
                 font-size: 12px;
                 font-weight: 700;
-                color: #1f6fe5;
                 line-height: 29px;
                 white-space: nowrap;
                 user-select: none;
             }
 
-            #${UI_ID} .rs-fs-main {
+            #${UI_ID} .rs-el-main {
                 min-width: 0;
                 position: relative;
             }
 
-            #${UI_ID} .rs-fs-search-row {
+            #${UI_ID} .rs-el-search-row {
                 display: grid;
                 grid-template-columns: minmax(220px, 1fr) auto;
                 gap: 4px;
@@ -1540,13 +1889,13 @@
                 width: 100%;
             }
 
-            #${UI_ID} .rs-fs-searchbox {
+            #${UI_ID} .rs-el-searchbox {
                 position: relative;
                 min-width: 0;
                 width: 100%;
             }
 
-            #${UI_ID} .rs-fs-filter {
+            #${UI_ID} .rs-el-filter {
                 display: block;
                 width: 100%;
                 height: 29px;
@@ -1558,19 +1907,9 @@
                 font-size: 12px;
                 line-height: 27px;
                 outline: none;
-                box-shadow: inset 0 1px 0 rgba(255,255,255,.45);
             }
 
-            #${UI_ID} .rs-fs-filter::placeholder {
-                color: #9c9c9c;
-            }
-
-            #${UI_ID} .rs-fs-filter:focus {
-                background: #ededed;
-                border-color: #8c8c8c;
-            }
-
-            #${UI_ID} .rs-fs-list {
+            #${UI_ID} .rs-el-list {
                 display: none;
                 position: absolute;
                 top: calc(100% + 1px);
@@ -1583,37 +1922,39 @@
                 z-index: 9999;
             }
 
-            #${UI_ID} .rs-fs-row {
+            #${UI_ID} .rs-el-row {
                 display: block;
-                padding: 10px 9px;
+                padding: 9px;
                 border-top: 1px solid #dcdcdc;
                 background: #fff;
                 color: #333;
                 font-size: 12px;
-                line-height: 1.2;
+                line-height: 1.25;
                 cursor: pointer;
                 user-select: none;
             }
 
-            #${UI_ID} .rs-fs-row:first-child {
-                border-top: 0;
-            }
+            #${UI_ID} .rs-el-row:first-child { border-top: 0; }
+            #${UI_ID} .rs-el-row:hover { background: #f3f3f3; }
 
-            #${UI_ID} .rs-fs-row:hover {
-                background: #f3f3f3;
-            }
-
-            #${UI_ID} .rs-fs-row.is-selected {
+            #${UI_ID} .rs-el-row.is-selected {
                 background: #ebfaf4;
-                box-shadow: inset 3px 0 0 #00c191;            }
+                box-shadow: inset 3px 0 0 #00c191;
+            }
 
-            #${UI_ID} .rs-fs-line {
+            #${UI_ID} .rs-el-line {
                 white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;
             }
 
-            #${UI_ID} .rs-fs-btn {
+            #${UI_ID} .rs-el-meta {
+                margin-top: 2px;
+                color: #777;
+                font-size: 10px;
+            }
+
+            #${UI_ID} .rs-el-btn {
                 border: 1px solid transparent;
                 border-radius: 0;
                 cursor: pointer;
@@ -1623,12 +1964,12 @@
                 user-select: none;
             }
 
-            #${UI_ID} .rs-fs-btn:disabled {
+            #${UI_ID} .rs-el-btn:disabled {
                 opacity: .55;
                 cursor: not-allowed;
             }
 
-            #${UI_ID} .rs-fs-btn-link-main {
+            #${UI_ID} .rs-el-btn-link {
                 min-width: 82px;
                 height: 29px;
                 padding: 0 10px;
@@ -1637,12 +1978,7 @@
                 color: #fff;
             }
 
-            #${UI_ID} .rs-fs-btn-link-main:hover:not(:disabled) {
-                background: #00b086;
-                border-color: #00b086;
-            }
-
-            #${UI_ID} .rs-fs-linked-inline {
+            #${UI_ID} .rs-el-linked-inline {
                 display: grid;
                 grid-template-columns: minmax(0, 1fr) 34px 22px;
                 gap: 4px;
@@ -1650,7 +1986,7 @@
                 width: 100%;
             }
 
-            #${UI_ID} .rs-fs-pill {
+            #${UI_ID} .rs-el-pill {
                 min-width: 0;
                 height: 29px;
                 display: flex;
@@ -1664,7 +2000,7 @@
                 overflow: hidden;
             }
 
-            #${UI_ID} .rs-fs-pill-main {
+            #${UI_ID} .rs-el-pill-main {
                 min-width: 0;
                 flex: 1 1 auto;
                 white-space: nowrap;
@@ -1672,31 +2008,20 @@
                 text-overflow: ellipsis;
             }
 
-            #${UI_ID} .rs-fs-result-notice {
+            #${UI_ID} .rs-el-notice {
                 flex: 0 0 auto;
                 white-space: nowrap;
-                color: #c62828;
                 font-size: 11px;
                 font-weight: 600;
-            }
-
-            #${UI_ID} .rs-fs-result-notice.is-live {
-                color: #c62828;
-            }
-
-            #${UI_ID} .rs-fs-result-notice.is-final {
-                color: #1c5e27;
-            }
-
-            #${UI_ID} .rs-fs-result-notice.is-error {
-                color: #c62828;
-            }
-
-            #${UI_ID} .rs-fs-result-notice.is-pre {
                 color: #607d8b;
             }
 
-            #${UI_ID} .rs-fs-btn-refresh {
+            #${UI_ID} .rs-el-notice.is-live { color: #c62828; }
+            #${UI_ID} .rs-el-notice.is-final { color: #1c5e27; }
+            #${UI_ID} .rs-el-notice.is-error { color: #c62828; }
+            #${UI_ID} .rs-el-notice.is-pre { color: #607d8b; }
+
+            #${UI_ID} .rs-el-btn-refresh {
                 width: 34px;
                 height: 29px;
                 padding: 0;
@@ -1706,12 +2031,7 @@
                 font-size: 15px;
             }
 
-            #${UI_ID} .rs-fs-btn-refresh:hover:not(:disabled) {
-                background: #9a7cdb;
-                border-color: #9a7cdb;
-            }
-
-            #${UI_ID} .rs-fs-btn-unlink {
+            #${UI_ID} .rs-el-btn-unlink {
                 width: 22px;
                 height: 22px;
                 padding: 0;
@@ -1721,12 +2041,7 @@
                 font-size: 14px;
             }
 
-            #${UI_ID} .rs-fs-btn-unlink:hover:not(:disabled) {
-                background: #f18663;
-                border-color: #f18663;
-            }
-
-            #${UI_ID} .rs-fs-summary {
+            #${UI_ID} .rs-el-summary {
                 grid-column: 1 / -1;
                 display: none;
                 padding: 4px 6px;
@@ -1737,38 +2052,20 @@
                 text-align: center;
             }
 
-            #${UI_ID} .rs-fs-summary.is-visible {
-                display: block;
-            }
+            #${UI_ID} .rs-el-summary.is-visible { display: block; }
 
-            #${UI_ID} .rs-fs-summary.is-warning {
+            #${UI_ID} .rs-el-summary.is-warning {
                 display: block;
                 background: #fff3cd;
                 border: 1px solid #f2c66d;
                 color: #8a5a00;
             }
 
-            #${UI_ID} .rs-fs-empty {
+            #${UI_ID} .rs-el-empty {
                 padding: 8px 9px;
                 background: #fff;
                 color: #777;
                 font-size: 11px;
-            }
-
-            @media (max-width: 780px) {
-                #${UI_ID} .rs-fs-panel {
-                    grid-template-columns: 34px minmax(0, 1fr);
-                    gap: 6px;
-                }
-
-                #${UI_ID} .rs-fs-title {
-                    width: 28px;
-                    margin-left: 6px;
-                }
-
-                #${UI_ID} .rs-fs-btn-link-main {
-                    min-width: 72px;
-                }
             }
         `;
 
@@ -1788,9 +2085,6 @@
         uiState.candidatesDate = "";
         uiState.lastLoadError = "";
 
-        clearTimeout(uiState.pendingSafetyTimer);
-        uiState.pendingSafetyTimer = 0;
-
         clearTimeout(uiState.collapseTimer);
         uiState.collapseTimer = 0;
     }
@@ -1804,7 +2098,7 @@
 
         if (id) {
             const estado = container.querySelector(
-                `#${CSS.escape(`${id}-Estado`)}`
+                `#${cssEscape(`${id}-Estado`)}`
             );
 
             const table = estado?.closest("table");
@@ -1852,6 +2146,11 @@
         return root;
     }
 
+    function rebuildUiRootForEvent(roverEventId) {
+        getUiRoot()?.remove();
+        return ensureUiRoot(roverEventId);
+    }
+
     function setUiBusy(root, busy) {
         if (!root) return;
 
@@ -1860,25 +2159,209 @@
         }
 
         const input = root.querySelector('[data-role="filter"]');
-        if (input) {
-            input.disabled = Boolean(busy);
-        }
+        if (input) input.disabled = Boolean(busy);
     }
 
-    /*
-     * v1.0.12
-     * La selección manual debe funcionar incluso si Rover todavía no ha
-     * reconstruido #resEditContainer. No consultamos el editor activo para
-     * seleccionar una fila: el panel ya conoce su Rover Event ID.
-     */
+    function getFilteredCandidates() {
+        const query = upper(uiState.filterValue);
+        const events = [...uiState.manualCandidates.values()];
+
+        if (!query) return events;
+
+        return events.filter(event => {
+            const haystack = upper([
+                event.away?.name,
+                event.home?.name,
+                event.identifier,
+                event.status,
+                event.roundNumber,
+                formatApiTime(event.date)
+            ].join(" "));
+
+            return haystack.includes(query);
+        });
+    }
+
+    function manualCandidateLabel(event) {
+        const time = formatApiTime(event.date);
+        const round = event.roundNumber ? `Round ${event.roundNumber}` : "";
+        const status = upper(event.status);
+
+        return [
+            `${event.away?.name} @ ${event.home?.name}`,
+            time,
+            round,
+            status,
+            event.identifier
+        ].filter(Boolean).join(" — ");
+    }
+
+    function renderLinked(root, rover, link) {
+        const storedNotice = getStoredResultNotice(rover.roverEventId);
+        const noticeClass = storedNotice?.className
+            ? ` ${escapeHtml(storedNotice.className)}`
+            : "";
+        const noticeText = storedNotice?.text
+            ? escapeHtml(storedNotice.text)
+            : "";
+        const noticeTitle = storedNotice?.title
+            ? ` title="${escapeHtml(storedNotice.title)}"`
+            : "";
+        const line = `${link.awayName} @ ${link.homeName}`;
+
+        root.innerHTML = `
+            <div class="rs-el-panel">
+                <div class="rs-el-title">IBB</div>
+                <div class="rs-el-main">
+                    <div class="rs-el-linked-inline">
+                        <div class="rs-el-pill" title="${escapeHtml(line)}">
+                            <span class="rs-el-pill-main">${escapeHtml(line)}</span>
+                            <span class="rs-el-notice${noticeClass}"
+                                  data-role="result-notice"${noticeTitle}>${noticeText}</span>
+                        </div>
+                        <button type="button"
+                                class="rs-el-btn rs-el-btn-refresh"
+                                data-el-action="update-result"
+                                title="Actualizar Q1-Q4/OT/F desde EuroLeague">↻</button>
+                        <button type="button"
+                                class="rs-el-btn rs-el-btn-unlink"
+                                data-el-action="unlink"
+                                title="Desvincular">×</button>
+                    </div>
+                </div>
+                <div class="rs-el-summary" data-role="summary"></div>
+            </div>
+        `;
+    }
+
+    function renderUnlinked(root) {
+        const restoreFocus = Boolean(
+            document.activeElement?.matches?.(
+                `#${cssEscape(UI_ID)} [data-role="filter"]`
+            )
+        );
+        const filtered = getFilteredCandidates();
+
+        if (
+            uiState.selectedEventId &&
+            !filtered.some(event => candidateKey(event) === uiState.selectedEventId)
+        ) {
+            uiState.selectedEventId = "";
+        }
+
+        const listHtml = uiState.loadingCandidates
+            ? `<div class="rs-el-empty">Buscando juegos EuroLeague...</div>`
+            : uiState.lastLoadError
+                ? `<div class="rs-el-empty">${escapeHtml(uiState.lastLoadError)}</div>`
+                : filtered.length
+                    ? filtered.map(event => {
+                        const id = candidateKey(event);
+                        const selectedClass =
+                            id === uiState.selectedEventId ? " is-selected" : "";
+                        const line = `${event.away?.name} @ ${event.home?.name}`;
+                        const meta = [
+                            formatApiTime(event.date),
+                            event.roundNumber ? `Round ${event.roundNumber}` : "",
+                            upper(event.status)
+                        ].filter(Boolean).join(" · ");
+
+                        return `
+                            <div class="rs-el-row${selectedClass}"
+                                 data-el-action="pick-candidate"
+                                 data-event-id="${escapeHtml(id)}"
+                                 title="${escapeHtml(manualCandidateLabel(event))}">
+                                <div class="rs-el-line">${escapeHtml(line)}</div>
+                                <div class="rs-el-meta">${escapeHtml(meta)}</div>
+                            </div>
+                        `;
+                    }).join("")
+                    : `<div class="rs-el-empty">No hay juegos EuroLeague para esta fecha.</div>`;
+
+        root.innerHTML = `
+            <div class="rs-el-panel">
+                <div class="rs-el-title">IBB</div>
+                <div class="rs-el-main">
+                    <div class="rs-el-search-row">
+                        <div class="rs-el-searchbox">
+                            <input type="text"
+                                   class="rs-el-filter"
+                                   data-role="filter"
+                                   value="${escapeHtml(uiState.filterValue)}"
+                                   placeholder="Buscar partido..."
+                                   autocomplete="off">
+                            <div class="rs-el-list"
+                                 data-role="list"
+                                 style="display:${uiState.listExpanded ? "block" : "none"};">
+                                ${uiState.listExpanded ? listHtml : ""}
+                            </div>
+                        </div>
+                        <button type="button"
+                                class="rs-el-btn rs-el-btn-link"
+                                data-el-action="manual-save"
+                                data-event-id="${escapeHtml(uiState.selectedEventId)}"
+                                ${uiState.selectedEventId ? "" : "disabled"}>Vincular</button>
+                    </div>
+                </div>
+                <div class="rs-el-summary" data-role="summary"></div>
+            </div>
+        `;
+
+        requestAnimationFrame(() => {
+            if (!restoreFocus) return;
+            const input = root.querySelector('[data-role="filter"]');
+
+            if (input) {
+                uiState.restoringFilterFocus = true;
+                try {
+                    input.focus({ preventScroll: true });
+                    input.setSelectionRange(input.value.length, input.value.length);
+                } catch (_) {}
+
+                queueMicrotask(() => {
+                    uiState.restoringFilterFocus = false;
+                });
+            }
+        });
+    }
+
+    function setSummary(message, { warning = false } = {}) {
+        const summary = getUiRoot()?.querySelector('[data-role="summary"]');
+        if (!summary) return;
+
+        const text = clean(message);
+        summary.textContent = text;
+        summary.classList.toggle("is-visible", Boolean(text));
+        summary.classList.toggle("is-warning", Boolean(text) && warning);
+    }
+
+    function setResultNotice(root, notice) {
+        const target = root?.querySelector('[data-role="result-notice"]');
+        if (!target) return;
+
+        target.className = `rs-el-notice ${clean(notice?.className)}`.trim();
+        target.textContent = clean(notice?.text);
+        target.title = clean(notice?.title);
+    }
+
+    function setResultNoticeError(message) {
+        const rover = getCurrentRoverEvent();
+        const notice = {
+            className: "is-error",
+            text: clean(message || "ERROR"),
+            title: clean(message || "ERROR")
+        };
+
+        if (rover?.valid) {
+            storeResultNotice(rover.roverEventId, notice);
+        }
+
+        setResultNotice(getUiRoot(), notice);
+    }
+
     function selectCandidateInPlace(root, eventId) {
         const id = clean(eventId);
 
-        if (
-            !root ||
-            !id ||
-            !uiState.manualCandidates.has(id)
-        ) {
+        if (!root || !id || !uiState.manualCandidates.has(id)) {
             return false;
         }
 
@@ -1886,7 +2369,7 @@
         uiState.listExpanded = true;
 
         for (const row of root.querySelectorAll(
-            '[data-fs-action="pick-candidate"]'
+            '[data-el-action="pick-candidate"]'
         )) {
             row.classList.toggle(
                 "is-selected",
@@ -1894,61 +2377,15 @@
             );
         }
 
-        const linkButton = root.querySelector(
-            '[data-fs-action="manual-save"]'
-        );
+        const button = root.querySelector('[data-el-action="manual-save"]');
 
-        if (linkButton) {
-            linkButton.disabled = false;
-            linkButton.dataset.eventId = id;
+        if (button) {
+            button.disabled = false;
+            button.dataset.eventId = id;
         }
 
         setSummary("");
         return true;
-    }
-
-    function rebuildUiRootForEvent(roverEventId) {
-        const id = clean(roverEventId);
-        const previous = getUiRoot();
-
-        /*
-         * Solo quitamos nuestro nodo. No tocamos el editor/tabla de Rover.
-         * Esto reproduce la parte útil de la "reconstrucción" que antes se
-         * conseguía manualmente haciendo click en el panel derecho.
-         */
-        previous?.remove();
-
-        const root = ensureUiRoot(id);
-
-        if (root) {
-            root.dataset.roverEventId = id;
-        }
-
-        return root;
-    }
-
-    function getFilteredCandidates() {
-        const query = upper(uiState.filterValue);
-
-        const events = [...uiState.manualCandidates.values()];
-
-        if (!query) {
-            return events;
-        }
-
-        return events.filter(event => {
-            const haystack = upper(
-                [
-                    event.away,
-                    event.home,
-                    manualCandidateLabel(event),
-                    event.eventId,
-                    event.tournament
-                ].join(" ")
-            );
-
-            return haystack.includes(query);
-        });
     }
 
     function scheduleListCollapse() {
@@ -1956,9 +2393,7 @@
 
         uiState.collapseTimer = setTimeout(() => {
             uiState.listExpanded = false;
-            renderCurrent({ preserveSearchState: true }).catch(error =>
-                console.error(`${TAG} collapse render error`, error)
-            );
+            void renderCurrent({ preserveSearchState: true });
         }, 140);
     }
 
@@ -1967,438 +2402,21 @@
         uiState.collapseTimer = 0;
     }
 
-    async function expandList(rover, { forceLoad = false } = {}) {
-        cancelListCollapse();
-        uiState.listExpanded = true;
-
-        const needsLoad =
-            forceLoad ||
-            uiState.candidatesDate !== rover.date ||
-            !uiState.manualCandidates.size;
-
-        if (needsLoad && !uiState.loadingCandidates) {
-            await loadManualCandidates(getUiRoot(), rover, {
-                force: forceLoad
-            });
-            return;
-        }
-
-        await renderCurrent({ preserveSearchState: true });
-    }
-
-    function linkedMainLine(link) {
-        const away = clean(link?.awayName);
-        const home = clean(link?.homeName);
-        const id = clean(link?.euroleagueEventId);
-
-        let eventText =
-            away && home
-                ? `${away} @ ${home}`
-                : `EuroLeague #${id}`;
-
-        const time = link?.timestamp
-            ? formatEventTime(link.timestamp)
-            : "";
-
-        const date = clean(link?.date);
-
-        const suffix = [time, date].filter(Boolean).join(" ");
-
-        if (suffix) {
-            eventText += ` (${suffix})`;
-        }
-
-        return eventText;
-    }
-
-    function getStoredResultNotice(roverEventId) {
-        return uiState.lastNoticeByEvent[
-            String(roverEventId || "")
-        ] || null;
-    }
-
-    function storeResultNotice(roverEventId, notice) {
-        const id = String(roverEventId || "");
-
-        if (!id) {
-            return;
-        }
-
-        if (!notice?.text) {
-            delete uiState.lastNoticeByEvent[id];
-            return;
-        }
-
-        uiState.lastNoticeByEvent[id] = {
-            className: clean(notice.className || ""),
-            text: clean(notice.text || ""),
-            title: clean(notice.title || "")
-        };
-    }
-
-    function clearStoredResultNotice(roverEventId) {
-        delete uiState.lastNoticeByEvent[
-            String(roverEventId || "")
-        ];
-    }
-
-    function renderLinked(root, rover, link) {
-        const mainLine = linkedMainLine(link);
-        const storedNotice = getStoredResultNotice(
-            rover.roverEventId
-        );
-
-        const noticeClass = storedNotice?.className
-            ? ` ${escapeHtml(storedNotice.className)}`
-            : "";
-
-        const noticeTitle = storedNotice?.title
-            ? ` title="${escapeHtml(storedNotice.title)}"`
-            : "";
-
-        const noticeText = storedNotice?.text
-            ? escapeHtml(storedNotice.text)
-            : "";
-
-        root.innerHTML = `
-            <div class="rs-fs-panel">
-                <div class="rs-fs-title">IBB</div>
-
-                <div class="rs-fs-main">
-                    <div class="rs-fs-linked-inline">
-                        <div class="rs-fs-pill"
-                             title="${escapeHtml(mainLine)}">
-                            <span class="rs-fs-pill-main">
-                                ${escapeHtml(mainLine)}
-                            </span>
-                            <span class="rs-fs-result-notice${noticeClass}"
-                                  data-role="result-notice"${noticeTitle}>${noticeText}</span>
-                        </div>
-
-                        <button type="button"
-                                class="rs-fs-btn rs-fs-btn-refresh"
-                                data-fs-action="update-result"
-                                title="Actualizar resultado desde EuroLeague">
-                            ↻
-                        </button>
-
-                        <button type="button"
-                                class="rs-fs-btn rs-fs-btn-unlink"
-                                data-fs-action="unlink"
-                                title="Desvincular">
-                            ×
-                        </button>
-                    </div>
-                </div>
-
-                <div class="rs-fs-summary"
-                     data-role="summary"></div>
-            </div>
-        `;
-    }
-
-    function renderUnlinked(root, rover) {
-        /*
-         * renderCurrent reemplaza el HTML del panel. Conservamos el foco del
-         * buscador para que escribir no lo pierda en cada tecla.
-         */
-        const restoreFilterFocus = Boolean(
-            document.activeElement?.matches?.(
-                `#${CSS.escape(UI_ID)} [data-role="filter"]`
-            )
-        );
-
-        const filtered = getFilteredCandidates();
-
-        if (
-            uiState.selectedEventId &&
-            !filtered.some(event => event.eventId === uiState.selectedEventId)
-        ) {
-            uiState.selectedEventId = "";
-        }
-
-        const listHtml = uiState.loadingCandidates
-            ? `<div class="rs-fs-empty">Buscando juegos EuroLeague...</div>`
-            : uiState.lastLoadError
-                ? `<div class="rs-fs-empty">${escapeHtml(uiState.lastLoadError)}</div>`
-                : filtered.length
-                    ? filtered.map(event => {
-                        const selectedClass =
-                            event.eventId === uiState.selectedEventId
-                                ? " is-selected"
-                                : "";
-
-                        const line = `${event.away} @ ${event.home}`;
-
-                        return `
-                            <div class="rs-fs-row${selectedClass}"
-                                 data-fs-action="pick-candidate"
-                                 data-event-id="${escapeHtml(event.eventId)}"
-                                 title="${escapeHtml(manualCandidateLabel(event))}">
-                                <div class="rs-fs-line">
-                                    ${escapeHtml(line)}
-                                </div>
-                            </div>
-                        `;
-                    }).join("")
-                    : `<div class="rs-fs-empty">No hay juegos EuroLeague para mostrar.</div>`;
-
-        root.innerHTML = `
-            <div class="rs-fs-panel">
-                <div class="rs-fs-title">IBB</div>
-
-                <div class="rs-fs-main">
-                    <div class="rs-fs-search-row"
-                         data-role="search">
-                        <div class="rs-fs-searchbox">
-                            <input type="text"
-                                   class="rs-fs-filter"
-                                   data-role="filter"
-                                   value="${escapeHtml(uiState.filterValue)}"
-                                   placeholder="Buscar partido..."
-                                   autocomplete="off">
-
-                            <div class="rs-fs-list"
-                                 data-role="list"
-                                 style="display:${uiState.listExpanded ? "block" : "none"};">
-                                ${uiState.listExpanded ? listHtml : ""}
-                            </div>
-                        </div>
-
-                        <button type="button"
-                                class="rs-fs-btn rs-fs-btn-link-main"
-                                data-fs-action="manual-save"
-                                data-event-id="${escapeHtml(uiState.selectedEventId)}"
-                                ${uiState.selectedEventId ? "" : "disabled"}>
-                            Vincular
-                        </button>
-                    </div>
-                </div>
-
-                <div class="rs-fs-summary"
-                     data-role="summary"></div>
-            </div>
-        `;
-
-        requestAnimationFrame(() => {
-            if (!restoreFilterFocus) {
-                return;
-            }
-
-            const input = root.querySelector('[data-role="filter"]');
-
-            if (input) {
-                try {
-                    input.focus({ preventScroll: true });
-                    input.setSelectionRange(
-                        input.value.length,
-                        input.value.length
-                    );
-                } catch (_) {}
-            }
-        });
-    }
-
-    function setSummary(message, {
-        warning = false
-    } = {}) {
-        const summary = getUiRoot()?.querySelector('[data-role="summary"]');
-
-        if (!summary) {
-            return;
-        }
-
-        const text = clean(message);
-
-        summary.textContent = text;
-        summary.classList.toggle("is-visible", Boolean(text));
-        summary.classList.toggle(
-            "is-warning",
-            Boolean(text) && warning
-        );
-    }
-
-    function setResultNotice(root, notice) {
-        const element = root?.querySelector('[data-role="result-notice"]');
-
-        if (!element) return;
-
-        element.className = "rs-fs-result-notice";
-
-        if (!notice?.text) {
-            element.textContent = "";
-            element.removeAttribute("title");
-            return;
-        }
-
-        if (notice.className) {
-            element.classList.add(notice.className);
-        }
-
-        element.textContent = notice.text;
-
-        if (notice.title) {
-            element.title = notice.title;
-        }
-    }
-
-    function setResultNoticeError(message) {
-        const root = getUiRoot();
-
-        if (root?.querySelector('[data-role="result-notice"]')) {
-            setResultNotice(root, {
-                className: "is-error",
-                text: clean(message || "ERROR EUROLEAGUE")
-            });
-            return;
-        }
-
-        setSummary(message || "ERROR EUROLEAGUE", {
-            warning: true
-        });
-    }
-
-    function buildGameProgressNotice(game) {
-        const status = game?.status?.normalized;
-
-        if (status === "FINAL") {
-            return {
-                className: "is-final",
-                text: `FINAL - ${game.away.final}-${game.home.final}`,
-                title: `${game.away.name} @ ${game.home.name}`
-            };
-        }
-
-        if (status === "HALFTIME") {
-            return {
-                className: "is-live",
-                text:
-                    `HALFTIME - ${firstHalfTotal(game.away)}-${firstHalfTotal(game.home)}`,
-                title: `${game.away.name} @ ${game.home.name}`
-            };
-        }
-
-        if (status === "LIVE") {
-            return {
-                className: "is-live",
-                text:
-                    `LIVE - ${game.away.final}-${game.home.final}`,
-                title: `${game.away.name} @ ${game.home.name}`
-            };
-        }
-
-        if (status === "NOT_STARTED") {
-            return {
-                className: "is-pre",
-                text: "No iniciado",
-                title: `${game.away.name} @ ${game.home.name}`
-            };
-        }
-
-        if (["POSTPONED", "CANCELED", "INTERRUPTED"].includes(status)) {
-            return {
-                className: "is-error",
-                text: game.status.label.toUpperCase(),
-                title: `${game.away.name} @ ${game.home.name}`
-            };
-        }
-
-        return {
-            className: "is-pre",
-            text: game.status.label,
-            title: `${game.away.name} @ ${game.home.name}`
-        };
-    }
-
-    function setResultNoticeForGame(game) {
-        const roverEventId = String(
-            game?.roverEventId || ""
-        );
-
-        const notice = buildGameProgressNotice(game);
-
-        /*
-         * Primero persistimos el texto. Si Rover reconstruye el editor justo
-         * después, renderLinked() podrá restaurarlo inmediatamente.
-         */
-        storeResultNotice(roverEventId, notice);
-
-        const root = getUiRoot();
-
-        if (
-            !root ||
-            root.dataset.roverEventId !== roverEventId
-        ) {
-            return;
-        }
-
-        setResultNotice(root, notice);
-    }
-
-    function formatEventTime(timestamp) {
-        if (!Number.isFinite(Number(timestamp)) || Number(timestamp) <= 0) {
-            return "";
-        }
-
-        try {
-            return new Intl.DateTimeFormat("en-US", {
-                timeZone: "America/Santo_Domingo",
-                hour: "numeric",
-                minute: "2-digit",
-                hour12: true
-            }).format(new Date(Number(timestamp) * 1000));
-        } catch (_) {
-            return "";
-        }
-    }
-
-    function manualCandidateLabel(event) {
-        const time = formatEventTime(event.timestamp);
-
-        return (
-            `${event.away} @ ${event.home}` +
-            `${time ? ` — ${time}` : ""}` +
-            ` — FS #${event.eventId}`
-        );
-    }
-
-    async function loadManualCandidates(root, rover, {
-        force = false
-    } = {}) {
-        if (uiState.loadingCandidates) {
-            return;
-        }
+    async function loadManualCandidates(root, rover, { force = false } = {}) {
+        if (uiState.loadingCandidates) return;
 
         uiState.loadingCandidates = true;
         uiState.lastLoadError = "";
-
-        await renderCurrent({
-            preserveSearchState: true
-        });
+        await renderCurrent({ preserveSearchState: true });
 
         try {
-            const day = await fetchEuroLeagueDay(
-                rover.date,
-                { useCache: !force }
-            );
-
-            /*
-             * v1.0.12
-             * Antes se exigía que getCurrentRoverEvent() coincidiera con el
-             * panel. Tras desvincular, Rover puede dejar el editor central en
-             * un estado intermedio hasta volver a seleccionar la fila derecha.
-             * Para buscar/vincular eso no es necesario: basta con que el panel
-             * siga perteneciendo a un evento Rover que existe en #tablaEventos.
-             */
+            const day = await fetchEuroLeagueDay(rover.date, { force });
             const liveRoot = getUiRoot();
-            const panelRover = getRoverEventById(
-                rover.roverEventId
-            );
+            const panelRover = getRoverEventById(rover.roverEventId);
 
             if (
                 !liveRoot ||
-                clean(liveRoot.dataset.roverEventId) !==
-                    clean(rover.roverEventId) ||
+                clean(liveRoot.dataset.roverEventId) !== clean(rover.roverEventId) ||
                 !panelRover?.valid
             ) {
                 return;
@@ -2406,11 +2424,8 @@
 
             uiState.manualCandidates.clear();
 
-            for (const event of day.cflEvents) {
-                uiState.manualCandidates.set(
-                    String(event.eventId),
-                    event
-                );
+            for (const event of day.games) {
+                uiState.manualCandidates.set(candidateKey(event), event);
             }
 
             uiState.candidatesDate = rover.date;
@@ -2422,24 +2437,36 @@
                 uiState.selectedEventId = "";
             }
         } catch (error) {
-            console.error(`${TAG} error cargando juegos CFL:`, error);
-            uiState.lastLoadError =
-                error?.message || "No se pudieron cargar los juegos CFL.";
+            console.error(`${TAG} error cargando juegos`, error);
+            uiState.lastLoadError = error?.message || "No se pudieron cargar los juegos.";
         } finally {
             uiState.loadingCandidates = false;
-
-            await renderCurrent({
-                preserveSearchState: true
-            });
+            await renderCurrent({ preserveSearchState: true });
         }
     }
 
-    async function renderCurrent({
-        preserveSearchState = false
-    } = {}) {
+    async function expandList(rover, { forceLoad = false } = {}) {
+        cancelListCollapse();
+        uiState.listExpanded = true;
+
+        const needsLoad =
+            forceLoad ||
+            uiState.candidatesDate !== rover.date ||
+            !uiState.manualCandidates.size;
+
+        if (needsLoad) {
+            await loadManualCandidates(getUiRoot(), rover, {
+                force: forceLoad
+            });
+        } else {
+            await renderCurrent({ preserveSearchState: true });
+        }
+    }
+
+    async function renderCurrent({ preserveSearchState = false } = {}) {
         const seq = ++uiState.renderSeq;
 
-        if (!isCflView()) {
+        if (!isEuroLeagueView()) {
             removeUi();
             return null;
         }
@@ -2467,169 +2494,80 @@
             uiState.lastLoadError = "";
         }
 
-        if (seq !== uiState.renderSeq) {
-            return null;
-        }
-
         const root = ensureUiRoot(rover.roverEventId);
-
-        if (!root) {
-            return null;
-        }
+        if (!root || seq !== uiState.renderSeq) return null;
 
         const link = getManualLink(rover.roverEventId);
 
         if (link) {
-            uiState.listExpanded = false;
             renderLinked(root, rover, link);
-        } else {
-            renderUnlinked(root, rover);
+            return rover;
         }
 
-        return {
-            mode: link ? "manual" : "unlinked",
-            rover,
-            link
-        };
+        renderUnlinked(root);
+        return rover;
     }
 
     function scheduleRender(delay = 80) {
         clearTimeout(uiState.renderTimer);
 
         uiState.renderTimer = setTimeout(() => {
-            renderCurrent().catch(error =>
+            void renderCurrent().catch(error =>
                 console.error(`${TAG} render error`, error)
             );
         }, delay);
     }
 
     async function onUiClick(event) {
-        const button = event.target.closest("[data-fs-action]");
+        const target = event.target;
+        if (!(target instanceof Element)) return;
 
-        if (!button) return;
+        const actionNode = target.closest(
+            `#${cssEscape(UI_ID)} [data-el-action]`
+        );
+        if (!actionNode) return;
 
         event.preventDefault();
         event.stopPropagation();
 
-        const action = button.dataset.fsAction;
+        const action = actionNode.dataset.elAction;
         const root = getUiRoot();
-
-        if (!root) {
-            return;
-        }
-
-        /*
-         * v1.0.10
-         * En días con varios eventos Rover, el editor puede reconstruirse o
-         * cambiar de evento entre "seleccionar candidato" y "Vincular".
-         * El panel fue creado para un Rover Event ID concreto, así que ese ID
-         * es la referencia autoritativa para las acciones de vinculación.
-         */
-        const panelRoverEventId = clean(
-            root.dataset.roverEventId
-        );
-
+        const panelRoverEventId = clean(root?.dataset.roverEventId);
         const currentRover = getCurrentRoverEvent();
-        const panelRover = getRoverEventById(
-            panelRoverEventId
-        );
 
-        console.log(`${TAG} UI action: ${action}`, {
-            panelRoverEventId,
-            currentRoverEventId:
-                currentRover?.roverEventId || "",
-            currentValid: Boolean(currentRover?.valid),
-            panelValid: Boolean(panelRover?.valid)
-        });
-
-        if (!panelRoverEventId) {
-            return;
-        }
-
-        /*
-         * Para seleccionar/vincular/desvincular usamos el evento del panel.
-         * Para escribir resultados seguimos exigiendo que el editor activo
-         * corresponda exactamente a ese mismo evento.
-         */
-        const rover =
-            panelRover?.valid
-                ? panelRover
-                : currentRover;
+        if (!root || !panelRoverEventId) return;
 
         if (action === "pick-candidate") {
-            const eventId = clean(button.dataset.eventId);
-
-            if (!selectCandidateInPlace(root, eventId)) {
-                setSummary("El juego seleccionado ya no está disponible.", {
-                    warning: true
-                });
-            }
-
+            selectCandidateInPlace(root, actionNode.dataset.eventId);
             return;
         }
 
         if (action === "manual-save") {
-            /*
-             * Toma el ID desde tres fuentes, en este orden:
-             * 1) estado interno,
-             * 2) botón Vincular,
-             * 3) fila visualmente seleccionada.
-             * Esto evita depender de un único estado si Rover tocó el DOM.
-             */
-            const selectedRow = root.querySelector(
-                '[data-fs-action="pick-candidate"].is-selected'
-            );
-
             const fsId = clean(
-                uiState.selectedEventId ||
-                button.dataset.eventId ||
-                selectedRow?.dataset?.eventId
+                actionNode.dataset.eventId || uiState.selectedEventId
             );
-
-            if (!fsId) {
-                setSummary("Primero selecciona un juego de la lista.", {
-                    warning: true
-                });
-                return;
-            }
-
             const candidate = uiState.manualCandidates.get(fsId);
 
             if (!candidate) {
-                setSummary(
-                    "El juego seleccionado ya no está disponible. Recarga la lista.",
-                    { warning: true }
-                );
+                setSummary("Selecciona un juego EuroLeague.", { warning: true });
                 return;
             }
 
-            /*
-             * Guardar SIEMPRE contra el Rover Event ID al que pertenece el
-             * panel, no contra un editor activo que pudo cambiar por AJAX.
-             */
-            saveManualLink(
-                panelRoverEventId,
-                candidate
-            );
+            const rover = getRoverEventById(panelRoverEventId);
+            if (!rover?.valid) {
+                setSummary("El evento Rover ya no está disponible.", { warning: true });
+                return;
+            }
 
-            console.log(
-                `${TAG} ✅ vínculo guardado`,
-                {
-                    roverEventId: panelRoverEventId,
-                    flashscoreEventId: fsId,
-                    game: `${candidate.away} @ ${candidate.home}`
-                }
-            );
-
+            saveManualLink(panelRoverEventId, candidate);
+            clearStoredResultNotice(panelRoverEventId);
             uiState.listExpanded = false;
             uiState.selectedEventId = "";
             uiState.filterValue = "";
             setSummary("");
 
-            await renderCurrent({
-                preserveSearchState: true
-            });
-
+            console.log(`${TAG} 🔗 Rover #${panelRoverEventId} vinculado manualmente a ${candidateKey(candidate)}`);
+            await renderCurrent({ preserveSearchState: true });
             return;
         }
 
@@ -2642,39 +2580,21 @@
             uiState.filterValue = "";
             uiState.lastLoadError = "";
 
-            const roverForPanel = getRoverEventById(
-                panelRoverEventId
-            );
+            const rover = getRoverEventById(panelRoverEventId);
+            const freshRoot = rebuildUiRootForEvent(panelRoverEventId);
 
-            /*
-             * No dependemos de que Rover vuelva a crear #resEditContainer.
-             * Recreamos solamente nuestra barra y la dejamos lista para
-             * seleccionar otro juego inmediatamente.
-             */
-            const freshRoot = rebuildUiRootForEvent(
-                panelRoverEventId
-            );
-
-            if (freshRoot && roverForPanel?.valid) {
-                renderUnlinked(
-                    freshRoot,
-                    roverForPanel
-                );
+            if (freshRoot && rover?.valid) {
+                renderUnlinked(freshRoot);
 
                 const needsCandidates =
-                    uiState.candidatesDate !== roverForPanel.date ||
+                    uiState.candidatesDate !== rover.date ||
                     !uiState.manualCandidates.size;
 
                 if (needsCandidates) {
-                    await loadManualCandidates(
-                        freshRoot,
-                        roverForPanel
-                    );
+                    await loadManualCandidates(freshRoot, rover);
                 }
             } else {
-                await renderCurrent({
-                    preserveSearchState: true
-                });
+                await renderCurrent({ preserveSearchState: true });
             }
 
             return;
@@ -2686,37 +2606,30 @@
                 currentRover.roverEventId !== panelRoverEventId
             ) {
                 setSummary(
-                    "Selecciona nuevamente este evento Rover antes de actualizar el resultado.",
+                    "Selecciona nuevamente este evento Rover antes de actualizar.",
                     { warning: true }
                 );
                 return;
             }
 
-            const link = getManualLink(
-                panelRoverEventId
-            );
-
+            const link = getManualLink(panelRoverEventId);
             if (!link) {
-                setSummary("No hay un juego vinculado.", {
-                    warning: true
-                });
+                setSummary("No hay un juego vinculado.", { warning: true });
                 return;
             }
 
             setUiBusy(root, true);
-
             setResultNotice(root, {
                 className: "is-pre",
-                text: "Actualizando..."
+                text: "Actualizando...",
+                title: "Consultando EuroLeague"
             });
 
             try {
                 await updateLinkedResult();
             } catch (error) {
                 console.error(`${TAG} update error`, error);
-                setResultNoticeError(
-                    error.message || "ERROR EUROLEAGUE"
-                );
+                setResultNoticeError(error?.message || "ERROR EUROLEAGUE");
             } finally {
                 setUiBusy(root, false);
             }
@@ -2726,7 +2639,6 @@
     function onUiChange(event) {
         const root = getUiRoot();
         const rover = getCurrentRoverEvent();
-
         if (!root || !rover?.valid) return;
 
         if (event.target.matches('[data-role="filter"]')) {
@@ -2735,19 +2647,14 @@
 
             const filtered = getFilteredCandidates();
 
-            if (                uiState.selectedEventId &&
-                !filtered.some(
-                    event => event.eventId === uiState.selectedEventId
-                )
+            if (
+                uiState.selectedEventId &&
+                !filtered.some(event => candidateKey(event) === uiState.selectedEventId)
             ) {
                 uiState.selectedEventId = "";
             }
 
-            renderCurrent({
-                preserveSearchState: true
-            }).catch(error =>
-                console.error(`${TAG} filter render error`, error)
-            );
+            void renderCurrent({ preserveSearchState: true });
         }
     }
 
@@ -2776,7 +2683,7 @@
         uiState.containerObserver = new MutationObserver(mutations => {
             /*
              * IMPORTANTE:
-             * La barra CFL vive dentro de #resEditContainer. Sus propios
+             * La barra IBB vive dentro de #resEditContainer. Sus propios
              * renderizados también generan childList mutations. Si reaccionamos
              * a ellas, renderCurrent() destruye inmediatamente el panel manual,
              * notices y demás controles.
@@ -2794,7 +2701,7 @@
                     target &&
                     (
                         target.id === UI_ID ||
-                        target.closest?.(`#${CSS.escape(UI_ID)}`)
+                        target.closest?.(`#${cssEscape(UI_ID)}`)
                     )
                 );
             });
@@ -2803,7 +2710,7 @@
                 return;
             }
 
-            if (!isCflView()) {
+            if (!isEuroLeagueView()) {
                 removeUi();
                 return;
             }
@@ -2866,7 +2773,7 @@
                 }
 
                 const row = target.closest(
-                    `#${CSS.escape(UI_ID)} [data-fs-action="pick-candidate"]`
+                    `#${cssEscape(UI_ID)} [data-el-action="pick-candidate"]`
                 );
 
                 if (!row) {
@@ -2905,7 +2812,7 @@
                 }
 
                 const uiAction = target.closest(
-                    `#${CSS.escape(UI_ID)} [data-fs-action]`
+                    `#${cssEscape(UI_ID)} [data-el-action]`
                 );
 
                 if (uiAction) {
@@ -2921,7 +2828,7 @@
                 /*
                  * El Search principal confirma que Rover debe cargar de verdad
                  * los filtros actualmente seleccionados. Se captura ANTES de
-                 * comprobar isCflView(), porque durante el gate dirty=true.
+                 * comprobar isEuroLeagueView(), porque durante el gate dirty=true.
                  */
                 if (isMainSearchButton(target)) {
                     beginSearchRefreshWatch();
@@ -2929,7 +2836,7 @@
                     return;
                 }
 
-                if (!isCflView()) {
+                if (!isEuroLeagueView()) {
                     return;
                 }
 
@@ -2953,7 +2860,7 @@
                 if (
                     target instanceof Element &&
                     target.matches(
-                        `#${CSS.escape(UI_ID)} [data-role="filter"]`
+                        `#${cssEscape(UI_ID)} [data-role="filter"]`
                     )
                 ) {
                     onUiChange(event);
@@ -2970,7 +2877,7 @@
                 if (
                     !(target instanceof Element) ||
                     !target.matches(
-                        `#${CSS.escape(UI_ID)} [data-role="filter"]`
+                        `#${cssEscape(UI_ID)} [data-role="filter"]`
                     )
                 ) {
                     return;
@@ -2998,7 +2905,7 @@
 
                 if (
                     target.matches(
-                        `#${CSS.escape(UI_ID)} [data-role="filter"]`
+                        `#${cssEscape(UI_ID)} [data-role="filter"]`
                     )
                 ) {
                     const rover = getCurrentRoverEvent();
@@ -3013,7 +2920,7 @@
                     }
                 }
 
-                if (target.closest(`#${CSS.escape(UI_ID)}`)) {
+                if (target.closest(`#${cssEscape(UI_ID)}`)) {
                     cancelListCollapse();
                 }
             },
@@ -3029,7 +2936,7 @@
                     return;
                 }
 
-                const root = target.closest(`#${CSS.escape(UI_ID)}`);
+                const root = target.closest(`#${cssEscape(UI_ID)}`);
 
                 if (!root) {
                     return;
@@ -3091,7 +2998,7 @@
                 return;
             }
 
-            const active = isCflView();
+            const active = isEuroLeagueView();
 
             if (!active) {
                 if (uiState.active) {
@@ -3124,11 +3031,9 @@
         }, 700);
     }
 
+
+
     function boot() {
-        /*
-         * Al instalarse en una página ya cargada tomamos el estado actual
-         * como baseline. A partir del primer cambio de filtro entra el gate.
-         */
         contextGate.signature = currentFilterSignature();
         contextGate.staleFingerprint = tableFingerprint();
         contextGate.staleTableNode =
@@ -3142,14 +3047,18 @@
 
         expose("__RS_EUROLEAGUE_IBB", {
             VERSION,
-            isCflSelection,
-            isCflView,
+            isEuroLeagueSelection,
+            isEuroLeagueView,
             contextGate,
             currentFilterSignature,
             tableFingerprint,
             getCurrentRoverEvent,
             getRoverEventById,
-            fetchFlashscoreDay,
+            fetchSeasons,
+            fetchRounds,
+            fetchEuroLeagueDay,
+            fetchGameFresh,
+            fetchBoxscore,
             getManualLink,
             saveManualLink,
             getStoredResultNotice,
@@ -3162,8 +3071,9 @@
         });
 
         console.log(
-            `${TAG} v${VERSION} instalado. ` +
-            `Base CFL v1.0.12: vinculación manual + ↻ EuroLeague, sin tocar ESTADO.`
+            `${TAG} BOOT v${VERSION} [CFL Core] · ` +
+            `CATEGORY=${getSelected(findSelectByLabel("CATEGORY")).text || "?"} · ` +
+            `LEAGUE=${getSelected(findSelectByLabel("LEAGUE")).text || "?"}`
         );
     }
 

@@ -1448,3 +1448,353 @@
 
         const game = await readLinkedGameFresh();
         const consistency = validateCurrentScore(game);
+
+        if (!consistency.ok) {
+            console.error(`${TAG} ⛔ score inconsistente`, consistency);
+            setResultNoticeError("DATOS API EN TRANSICIÓN · REINTENTA");
+
+            return {
+                ok: false,
+                applied: false,
+                reason: consistency.reason,
+                game,
+                consistency
+            };
+        }
+
+        let finalValidation = null;
+
+        if (game.status === "result") {
+            finalValidation = await validateFinalWithBoxscore(game);
+
+            if (!finalValidation.ok) {
+                console.error(
+                    `${TAG} ⛔ final no validado con Boxscore`,
+                    finalValidation
+                );
+                setResultNoticeError(
+                    `FINAL NO VALIDADO · ${finalValidation.reason}`
+                );
+
+                return {
+                    ok: false,
+                    applied: false,
+                    reason: finalValidation.reason,
+                    game,
+                    finalValidation
+                };
+            }
+        }
+
+        const plan = buildRoverScorePlan(game);
+        const verification = verifyRoverScoreControls(plan);
+
+        if (!verification.ok) {
+            console.error(`${TAG} ⛔ controles Rover inválidos`, verification);
+            setResultNoticeError("NO SE PUDO LLENAR ROVER");
+
+            return {
+                ok: false,
+                applied: false,
+                reason: verification.reason,
+                verification,
+                game
+            };
+        }
+
+        const changes = [];
+
+        for (const item of plan.scoreFields) {
+            const result = setRoverFieldValue(
+                document.getElementById(item.id),
+                item.value
+            );
+
+            changes.push({
+                CAMPO: item.id,
+                DATO: item.label,
+                ANTES: result.previous,
+                EUROLEAGUE: item.value,
+                CAMBIO: result.changed ? "SI" : "NO"
+            });
+        }
+
+        const anyChanged = changes.some(item => item.CAMBIO === "SI");
+
+        if (anyChanged) {
+            const edited = document.getElementById(plan.editedId);
+            if (edited) setRoverFieldValue(edited, "1");
+        }
+
+        const notice = statusNotice(
+            game,
+            Boolean(finalValidation?.ok)
+        );
+
+        storeResultNotice(game.roverEventId, notice);
+        setResultNotice(getUiRoot(), notice);
+
+        console.log("");
+        console.log("=== SCORE APLICADO A ROVER ===");
+        console.table(changes);
+        console.log(
+            `${TAG} ESTADO intacto. NO se pulsó Guardar Resultados ni Procesar Tickets.`
+        );
+
+        return {
+            ok: true,
+            applied: true,
+            game,
+            plan,
+            changes,
+            changed: anyChanged,
+            finalValidation,
+            elapsedMs: Math.round(performance.now() - startedAt)
+        };
+    }
+
+    // ============================================================
+    // UI
+    // ============================================================
+
+    function installStyles() {
+        if (document.getElementById(STYLE_ID)) return;
+
+        const style = document.createElement("style");
+        style.id = STYLE_ID;
+        style.textContent = `
+            #${UI_ID} {
+                width: 100%;
+                margin: 0 0 10px 0;
+                position: relative;
+                z-index: 9;
+                font-family: Arial, Helvetica, sans-serif;
+            }
+
+            #${UI_ID} * { box-sizing: border-box; }
+
+            #${UI_ID} .rs-el-panel {
+                display: grid;
+                grid-template-columns: 32px minmax(0, 1fr);
+                align-items: start;
+                gap: 6px;
+                width: 100%;
+            }
+
+            #${UI_ID} .rs-el-title {
+                width: 26px;
+                height: 29px;
+                display: flex;
+                align-items: center;
+                justify-content: flex-start;
+                margin-left: 6px;
+                color: #1f6fe5;
+                font-size: 12px;
+                font-weight: 700;
+                line-height: 29px;
+                white-space: nowrap;
+                user-select: none;
+            }
+
+            #${UI_ID} .rs-el-main {
+                min-width: 0;
+                position: relative;
+            }
+
+            #${UI_ID} .rs-el-search-row {
+                display: grid;
+                grid-template-columns: minmax(220px, 1fr) auto;
+                gap: 4px;
+                align-items: start;
+                width: 100%;
+            }
+
+            #${UI_ID} .rs-el-searchbox {
+                position: relative;
+                min-width: 0;
+                width: 100%;
+            }
+
+            #${UI_ID} .rs-el-filter {
+                display: block;
+                width: 100%;
+                height: 29px;
+                border: 1px solid #9f9f9f;
+                border-radius: 0;
+                background: #e8e8e8;
+                color: #333;
+                padding: 0 8px;
+                font-size: 12px;
+                line-height: 27px;
+                outline: none;
+            }
+
+            #${UI_ID} .rs-el-list {
+                display: none;
+                position: absolute;
+                top: calc(100% + 1px);
+                left: 0;
+                width: 100%;
+                max-height: 360px;
+                overflow-y: auto;
+                background: #fff;
+                border: 1px solid #d1d1d1;
+                z-index: 9999;
+            }
+
+            #${UI_ID} .rs-el-row {
+                display: block;
+                padding: 9px;
+                border-top: 1px solid #dcdcdc;
+                background: #fff;
+                color: #333;
+                font-size: 12px;
+                line-height: 1.25;
+                cursor: pointer;
+                user-select: none;
+            }
+
+            #${UI_ID} .rs-el-row:first-child { border-top: 0; }
+            #${UI_ID} .rs-el-row:hover { background: #f3f3f3; }
+
+            #${UI_ID} .rs-el-row.is-selected {
+                background: #ebfaf4;
+                box-shadow: inset 3px 0 0 #00c191;
+            }
+
+            #${UI_ID} .rs-el-line {
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            #${UI_ID} .rs-el-meta {
+                margin-top: 2px;
+                color: #777;
+                font-size: 10px;
+            }
+
+            #${UI_ID} .rs-el-btn {
+                border: 1px solid transparent;
+                border-radius: 0;
+                cursor: pointer;
+                font-size: 12px;
+                font-weight: 600;
+                line-height: 1;
+                user-select: none;
+            }
+
+            #${UI_ID} .rs-el-btn:disabled {
+                opacity: .55;
+                cursor: not-allowed;
+            }
+
+            #${UI_ID} .rs-el-btn-link {
+                min-width: 82px;
+                height: 29px;
+                padding: 0 10px;
+                background: #00c191;
+                border-color: #00c191;
+                color: #fff;
+            }
+
+            #${UI_ID} .rs-el-linked-inline {
+                display: grid;
+                grid-template-columns: minmax(0, 1fr) 34px 22px;
+                gap: 4px;
+                align-items: center;
+                width: 100%;
+            }
+
+            #${UI_ID} .rs-el-pill {
+                min-width: 0;
+                height: 29px;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 0 10px;
+                border: 1px solid #57b36a;
+                background: #f1f6f1;
+                color: #1c5e27;
+                font-size: 12px;
+                overflow: hidden;
+            }
+
+            #${UI_ID} .rs-el-pill-main {
+                min-width: 0;
+                flex: 1 1 auto;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            #${UI_ID} .rs-el-notice {
+                flex: 0 0 auto;
+                white-space: nowrap;
+                font-size: 11px;
+                font-weight: 600;
+                color: #607d8b;
+            }
+
+            #${UI_ID} .rs-el-notice.is-live { color: #c62828; }
+            #${UI_ID} .rs-el-notice.is-final { color: #1c5e27; }
+            #${UI_ID} .rs-el-notice.is-error { color: #c62828; }
+            #${UI_ID} .rs-el-notice.is-pre { color: #607d8b; }
+
+            #${UI_ID} .rs-el-btn-refresh {
+                width: 34px;
+                height: 29px;
+                padding: 0;
+                background: #a88de4;
+                border-color: #a88de4;
+                color: #fff;
+                font-size: 15px;
+            }
+
+            #${UI_ID} .rs-el-btn-unlink {
+                width: 22px;
+                height: 22px;
+                padding: 0;
+                background: #f79a7a;
+                border-color: #f79a7a;
+                color: #fff;
+                font-size: 14px;
+            }
+
+            #${UI_ID} .rs-el-summary {
+                grid-column: 1 / -1;
+                display: none;
+                padding: 4px 6px;
+                border: 1px solid #edc6ca;
+                background: #fff7f8;
+                color: #9a3942;
+                font-size: 11px;
+                text-align: center;
+            }
+
+            #${UI_ID} .rs-el-summary.is-visible { display: block; }
+
+            #${UI_ID} .rs-el-summary.is-warning {
+                display: block;
+                background: #fff3cd;
+                border: 1px solid #f2c66d;
+                color: #8a5a00;
+            }
+
+            #${UI_ID} .rs-el-empty {
+                padding: 8px 9px;
+                background: #fff;
+                color: #777;
+                font-size: 11px;
+            }
+        `;
+
+        document.head.appendChild(style);
+    }
+
+    function getUiRoot() {
+        return document.getElementById(UI_ID);
+    }
+
+    function removeUi() {
+        getUiRoot()?.remove();

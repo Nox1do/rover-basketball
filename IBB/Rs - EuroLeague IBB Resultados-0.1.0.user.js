@@ -1798,3 +1798,353 @@
 
     function removeUi() {
         getUiRoot()?.remove();
+        uiState.manualCandidates.clear();
+        uiState.listExpanded = false;
+        uiState.selectedEventId = "";
+        uiState.filterValue = "";
+        uiState.candidatesDate = "";
+        uiState.lastLoadError = "";
+
+        clearTimeout(uiState.collapseTimer);
+        uiState.collapseTimer = 0;
+    }
+
+    function findUiAnchor(roverEventId) {
+        const container = document.querySelector("#resEditContainer");
+        if (!container) return null;
+
+        const id = clean(roverEventId);
+
+        if (id) {
+            const estado = container.querySelector(
+                `#${cssEscape(`${id}-Estado`)}`
+            );
+            const estadoTable = estado?.closest("table");
+            if (estadoTable) return estadoTable;
+
+            const eventTable = [...container.querySelectorAll("table")].find(
+                table => clean(table.innerText).includes(`#${id}`)
+            );
+            if (eventTable) return eventTable;
+        }
+
+        return container.querySelector("#basquetRes table, table") || null;
+    }
+
+    function ensureUiRoot(roverEventId) {
+        const container = document.querySelector("#resEditContainer");
+        if (!container) return null;
+
+        let root = getUiRoot();
+
+        if (!root || !container.contains(root)) {
+            root = document.createElement("div");
+            root.id = UI_ID;
+        }
+
+        root.dataset.roverEventId = clean(roverEventId);
+        const anchor = findUiAnchor(roverEventId);
+
+        if (anchor?.parentNode) {
+            if (root.parentNode !== anchor.parentNode || root.nextSibling !== anchor) {
+                anchor.parentNode.insertBefore(root, anchor);
+            }
+        } else if (!root.isConnected) {
+            container.prepend(root);
+        }
+
+        return root;
+    }
+
+    function rebuildUiRootForEvent(roverEventId) {
+        getUiRoot()?.remove();
+        return ensureUiRoot(roverEventId);
+    }
+
+    function setUiBusy(root, busy) {
+        if (!root) return;
+
+        for (const button of root.querySelectorAll("button")) {
+            button.disabled = Boolean(busy);
+        }
+
+        const input = root.querySelector('[data-role="filter"]');
+        if (input) input.disabled = Boolean(busy);
+    }
+
+    function getFilteredCandidates() {
+        const query = upper(uiState.filterValue);
+        const events = [...uiState.manualCandidates.values()];
+
+        if (!query) return events;
+
+        return events.filter(event => {
+            const haystack = upper([
+                event.away?.name,
+                event.home?.name,
+                event.identifier,
+                event.status,
+                event.roundNumber,
+                formatApiTime(event.date)
+            ].join(" "));
+
+            return haystack.includes(query);
+        });
+    }
+
+    function manualCandidateLabel(event) {
+        const time = formatApiTime(event.date);
+        const round = event.roundNumber ? `Round ${event.roundNumber}` : "";
+        const status = upper(event.status);
+
+        return [
+            `${event.away?.name} @ ${event.home?.name}`,
+            time,
+            round,
+            status,
+            event.identifier
+        ].filter(Boolean).join(" — ");
+    }
+
+    function renderLinked(root, rover, link) {
+        const storedNotice = getStoredResultNotice(rover.roverEventId);
+        const noticeClass = storedNotice?.className
+            ? ` ${escapeHtml(storedNotice.className)}`
+            : "";
+        const noticeText = storedNotice?.text
+            ? escapeHtml(storedNotice.text)
+            : "";
+        const noticeTitle = storedNotice?.title
+            ? ` title="${escapeHtml(storedNotice.title)}"`
+            : "";
+        const line = `${link.awayName} @ ${link.homeName}`;
+
+        root.innerHTML = `
+            <div class="rs-el-panel">
+                <div class="rs-el-title">EL</div>
+                <div class="rs-el-main">
+                    <div class="rs-el-linked-inline">
+                        <div class="rs-el-pill" title="${escapeHtml(line)}">
+                            <span class="rs-el-pill-main">${escapeHtml(line)}</span>
+                            <span class="rs-el-notice${noticeClass}"
+                                  data-role="result-notice"${noticeTitle}>${noticeText}</span>
+                        </div>
+                        <button type="button"
+                                class="rs-el-btn rs-el-btn-refresh"
+                                data-el-action="update-result"
+                                title="Actualizar Q1-Q4/OT/F desde EuroLeague">↻</button>
+                        <button type="button"
+                                class="rs-el-btn rs-el-btn-unlink"
+                                data-el-action="unlink"
+                                title="Desvincular">×</button>
+                    </div>
+                </div>
+                <div class="rs-el-summary" data-role="summary"></div>
+            </div>
+        `;
+    }
+
+    function renderUnlinked(root) {
+        const restoreFocus = Boolean(
+            document.activeElement?.matches?.(
+                `#${cssEscape(UI_ID)} [data-role="filter"]`
+            )
+        );
+        const filtered = getFilteredCandidates();
+
+        if (
+            uiState.selectedEventId &&
+            !filtered.some(event => candidateKey(event) === uiState.selectedEventId)
+        ) {
+            uiState.selectedEventId = "";
+        }
+
+        const listHtml = uiState.loadingCandidates
+            ? `<div class="rs-el-empty">Buscando juegos EuroLeague...</div>`
+            : uiState.lastLoadError
+                ? `<div class="rs-el-empty">${escapeHtml(uiState.lastLoadError)}</div>`
+                : filtered.length
+                    ? filtered.map(event => {
+                        const id = candidateKey(event);
+                        const selectedClass =
+                            id === uiState.selectedEventId ? " is-selected" : "";
+                        const line = `${event.away?.name} @ ${event.home?.name}`;
+                        const meta = [
+                            formatApiTime(event.date),
+                            event.roundNumber ? `Round ${event.roundNumber}` : "",
+                            upper(event.status)
+                        ].filter(Boolean).join(" · ");
+
+                        return `
+                            <div class="rs-el-row${selectedClass}"
+                                 data-el-action="pick-candidate"
+                                 data-event-id="${escapeHtml(id)}"
+                                 title="${escapeHtml(manualCandidateLabel(event))}">
+                                <div class="rs-el-line">${escapeHtml(line)}</div>
+                                <div class="rs-el-meta">${escapeHtml(meta)}</div>
+                            </div>
+                        `;
+                    }).join("")
+                    : `<div class="rs-el-empty">No hay juegos EuroLeague para esta fecha.</div>`;
+
+        root.innerHTML = `
+            <div class="rs-el-panel">
+                <div class="rs-el-title">EL</div>
+                <div class="rs-el-main">
+                    <div class="rs-el-search-row">
+                        <div class="rs-el-searchbox">
+                            <input type="text"
+                                   class="rs-el-filter"
+                                   data-role="filter"
+                                   value="${escapeHtml(uiState.filterValue)}"
+                                   placeholder="Buscar partido..."
+                                   autocomplete="off">
+                            <div class="rs-el-list"
+                                 data-role="list"
+                                 style="display:${uiState.listExpanded ? "block" : "none"};">
+                                ${uiState.listExpanded ? listHtml : ""}
+                            </div>
+                        </div>
+                        <button type="button"
+                                class="rs-el-btn rs-el-btn-link"
+                                data-el-action="manual-save"
+                                data-event-id="${escapeHtml(uiState.selectedEventId)}"
+                                ${uiState.selectedEventId ? "" : "disabled"}>Vincular</button>
+                    </div>
+                </div>
+                <div class="rs-el-summary" data-role="summary"></div>
+            </div>
+        `;
+
+        requestAnimationFrame(() => {
+            if (!restoreFocus) return;
+            const input = root.querySelector('[data-role="filter"]');
+
+            if (input) {
+                try {
+                    input.focus({ preventScroll: true });
+                    input.setSelectionRange(input.value.length, input.value.length);
+                } catch (_) {}
+            }
+        });
+    }
+
+    function setSummary(message, { warning = false } = {}) {
+        const summary = getUiRoot()?.querySelector('[data-role="summary"]');
+        if (!summary) return;
+
+        const text = clean(message);
+        summary.textContent = text;
+        summary.classList.toggle("is-visible", Boolean(text));
+        summary.classList.toggle("is-warning", Boolean(text) && warning);
+    }
+
+    function setResultNotice(root, notice) {
+        const target = root?.querySelector('[data-role="result-notice"]');
+        if (!target) return;
+
+        target.className = `rs-el-notice ${clean(notice?.className)}`.trim();
+        target.textContent = clean(notice?.text);
+        target.title = clean(notice?.title);
+    }
+
+    function setResultNoticeError(message) {
+        const rover = getCurrentRoverEvent();
+        const notice = {
+            className: "is-error",
+            text: clean(message || "ERROR"),
+            title: clean(message || "ERROR")
+        };
+
+        if (rover?.valid) {
+            storeResultNotice(rover.roverEventId, notice);
+        }
+
+        setResultNotice(getUiRoot(), notice);
+    }
+
+    function selectCandidateInPlace(root, eventId) {
+        const id = clean(eventId);
+
+        if (!root || !id || !uiState.manualCandidates.has(id)) {
+            return false;
+        }
+
+        uiState.selectedEventId = id;
+        uiState.listExpanded = true;
+
+        for (const row of root.querySelectorAll(
+            '[data-el-action="pick-candidate"]'
+        )) {
+            row.classList.toggle(
+                "is-selected",
+                clean(row.dataset.eventId) === id
+            );
+        }
+
+        const button = root.querySelector('[data-el-action="manual-save"]');
+
+        if (button) {
+            button.disabled = false;
+            button.dataset.eventId = id;
+        }
+
+        setSummary("");
+        return true;
+    }
+
+    function scheduleListCollapse() {
+        clearTimeout(uiState.collapseTimer);
+
+        uiState.collapseTimer = setTimeout(() => {
+            uiState.listExpanded = false;
+            void renderCurrent({ preserveSearchState: true });
+        }, 140);
+    }
+
+    function cancelListCollapse() {
+        clearTimeout(uiState.collapseTimer);
+        uiState.collapseTimer = 0;
+    }
+
+    async function loadManualCandidates(root, rover, { force = false } = {}) {
+        if (uiState.loadingCandidates) return;
+
+        uiState.loadingCandidates = true;
+        uiState.lastLoadError = "";
+        await renderCurrent({ preserveSearchState: true });
+
+        try {
+            const day = await fetchEuroLeagueDay(rover.date, { force });
+            const liveRoot = getUiRoot();
+            const panelRover = getRoverEventById(rover.roverEventId);
+
+            if (
+                !liveRoot ||
+                clean(liveRoot.dataset.roverEventId) !== clean(rover.roverEventId) ||
+                !panelRover?.valid
+            ) {
+                return;
+            }
+
+            uiState.manualCandidates.clear();
+
+            for (const event of day.games) {
+                uiState.manualCandidates.set(candidateKey(event), event);
+            }
+
+            uiState.candidatesDate = rover.date;
+
+            if (
+                uiState.selectedEventId &&
+                !uiState.manualCandidates.has(uiState.selectedEventId)
+            ) {
+                uiState.selectedEventId = "";
+            }
+        } catch (error) {
+            console.error(`${TAG} error cargando juegos`, error);
+            uiState.lastLoadError = error?.message || "No se pudieron cargar los juegos.";
+        } finally {
+            uiState.loadingCandidates = false;
+            await renderCurrent({ preserveSearchState: true });
+        }

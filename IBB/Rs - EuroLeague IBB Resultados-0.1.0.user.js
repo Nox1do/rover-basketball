@@ -2498,3 +2498,194 @@
             true
         );
 
+        document.addEventListener(
+            "input",
+            event => {
+                const target = event.target;
+
+                if (
+                    target instanceof Element &&
+                    target.matches(
+                        `#${cssEscape(UI_ID)} [data-role="filter"]`
+                    )
+                ) {
+                    onUiChange(event);
+                }
+            },
+            true
+        );
+
+        document.addEventListener(
+            "focusin",
+            event => {
+                const target = event.target;
+
+                if (
+                    !(target instanceof Element) ||
+                    !target.matches(
+                        `#${cssEscape(UI_ID)} [data-role="filter"]`
+                    )
+                ) {
+                    return;
+                }
+
+                const rover = getCurrentRoverEvent();
+
+                if (rover?.valid && !getManualLink(rover.roverEventId)) {
+                    void expandList(rover).catch(error =>
+                        console.error(`${TAG} expand error`, error)
+                    );
+                }
+            },
+            true
+        );
+
+        document.addEventListener(
+            "mouseover",
+            event => {
+                const target = event.target;
+                if (!(target instanceof Element)) return;
+
+                if (
+                    target.matches(
+                        `#${cssEscape(UI_ID)} [data-role="filter"]`
+                    )
+                ) {
+                    const rover = getCurrentRoverEvent();
+
+                    if (rover?.valid && !getManualLink(rover.roverEventId)) {
+                        void expandList(rover).catch(error =>
+                            console.error(`${TAG} hover expand error`, error)
+                        );
+                    }
+                }
+
+                if (target.closest(`#${cssEscape(UI_ID)}`)) {
+                    cancelListCollapse();
+                }
+            },
+            true
+        );
+
+        document.addEventListener(
+            "mouseout",
+            event => {
+                const target = event.target;
+                if (!(target instanceof Element)) return;
+
+                const root = target.closest(`#${cssEscape(UI_ID)}`);
+                if (!root) return;
+
+                const next = event.relatedTarget;
+
+                if (!(next instanceof Node) || !root.contains(next)) {
+                    const rover = getCurrentRoverEvent();
+
+                    if (rover?.valid && !getManualLink(rover.roverEventId)) {
+                        scheduleListCollapse();
+                    }
+                }
+            },
+            true
+        );
+
+        document.addEventListener(
+            "change",
+            event => {
+                const target = event.target;
+                if (!(target instanceof Element)) return;
+
+                if (isFilterControl(target)) {
+                    markFiltersDirty();
+                }
+            },
+            true
+        );
+    }
+
+    function startPoll() {
+        clearInterval(uiState.pollTimer);
+
+        uiState.pollTimer = setInterval(() => {
+            if (contextGate.dirty) {
+                if (getUiRoot()) removeUi();
+                uiState.active = false;
+                return;
+            }
+
+            const active = isEuroLeagueView();
+
+            if (!active) {
+                if (uiState.active) {
+                    uiState.active = false;
+                    removeUi();
+                }
+                return;
+            }
+
+            uiState.active = true;
+            observeEditorContainer();
+
+            const editorId = clean(
+                document.querySelector(
+                    '#resEditContainer input[name="evento[]"]'
+                )?.value
+            );
+
+            if (editorId && editorId !== uiState.lastEditorId) {
+                scheduleRender(40);
+            }
+
+            const root = getUiRoot();
+
+            if (editorId && (!root || root.dataset.roverEventId !== editorId)) {
+                scheduleRender(40);
+            }
+        }, 700);
+    }
+
+    function boot() {
+        contextGate.signature = currentFilterSignature();
+        contextGate.staleFingerprint = tableFingerprint();
+        contextGate.staleTableNode = document.querySelector("#tablaEventos");
+
+        installStyles();
+        installGlobalListeners();
+        observeEditorContainer();
+        startPoll();
+        scheduleRender(120);
+
+        expose("__RS_EUROLEAGUE_IBB", {
+            VERSION,
+            isEuroLeagueSelection,
+            isEuroLeagueView,
+            contextGate,
+            getContext,
+            getCurrentRoverEvent,
+            getRoverEventById,
+            fetchSeasons,
+            fetchRounds,
+            fetchEuroLeagueDay,
+            fetchGameFresh,
+            fetchBoxscore,
+            getManualLink,
+            saveManualLink,
+            removeManualLink,
+            clearAllLinks,
+            readLinkedGameFresh,
+            updateLinkedResult,
+            apiDateToRoverDate,
+            formatApiTime
+        });
+
+        console.log(
+            `${TAG} v${VERSION} instalado. Manual-only: vincular partido + ↻ para Q1-Q4/OT/F. ESTADO no se toca.`
+        );
+    }
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", boot, { once: true });
+    } else {
+        boot();
+    }
+})();

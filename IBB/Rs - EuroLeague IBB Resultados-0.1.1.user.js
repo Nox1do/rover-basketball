@@ -4,10 +4,10 @@
 // @version      0.1.1
 // @description  EuroLeague / IBB: vinculación manual tipo CFL y actualización manual de Q1-Q4/OT/F desde la fuente oficial de EuroLeague.
 // @author       noeg
-// @match        https://www.roversport.net/adm/es/index.php*
-// @match        https://roversport.net/adm/es/index.php*
-// @match        https://www.roversport.lol/adm/es/index.php*
-// @match        https://roversport.lol/adm/es/index.php*
+// @match        https://www.roversport.net/adm/es/*
+// @match        https://roversport.net/adm/es/*
+// @match        https://www.roversport.lol/adm/es/*
+// @match        https://roversport.lol/adm/es/*
 // @grant        GM_xmlhttpRequest
 // @grant        GM.xmlHttpRequest
 // @grant        unsafeWindow

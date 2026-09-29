@@ -398,3 +398,403 @@
             const table = document.querySelector("#tablaEventos");
 
             if (!table) {
+                sawTableDisappear = true;
+                await sleep(50);
+                continue;
+            }
+
+            const fingerprint = tableFingerprint();
+            const refreshed = Boolean(
+                sawTableDisappear ||
+                (staleNode && table !== staleNode) ||
+                fingerprint !== staleFingerprint ||
+                (!staleNode && table)
+            );
+
+            if (refreshed) {
+                contextGate.dirty = false;
+                contextGate.searchRequested = false;
+                contextGate.signature = currentFilterSignature();
+                contextGate.staleFingerprint = fingerprint;
+                contextGate.staleTableNode = table;
+
+                console.log(
+                    `${TAG} ✅ Search aplicado: ${contextGate.signature}`
+                );
+
+                if (isEuroLeagueSelection()) {
+                    observeEditorContainer();
+                    scheduleRender(0);
+                } else {
+                    removeUi();
+                }
+
+                return true;
+            }
+
+            await sleep(50);
+        }
+
+        if (token === contextGate.watchToken) {
+            console.warn(
+                `${TAG} ⏳ Search no produjo una transición detectable de #tablaEventos. ` +
+                `La UI permanece bloqueada para no mezclar ligas/fechas.`
+            );
+        }
+
+        return false;
+    }
+
+    function beginSearchRefreshWatch() {
+        contextGate.searchRequested = true;
+        contextGate.dirty = true;
+        contextGate.signature = currentFilterSignature();
+        contextGate.staleFingerprint = tableFingerprint();
+        contextGate.staleTableNode = document.querySelector("#tablaEventos");
+
+        const token = ++contextGate.watchToken;
+
+        void waitForSearchRefresh(token).catch(error =>
+            console.error(`${TAG} Search gate error`, error)
+        );
+    }
+
+    function isEuroLeagueView() {
+        return Boolean(
+            isEuroLeagueSelection() &&
+            !contextGate.dirty &&
+            document.querySelector("#tablaEventos")
+        );
+    }
+
+    // ============================================================
+    // EVENTOS ROVER
+    // ============================================================
+
+    function dateFromRow(row) {
+        const globalIso = getIsoDate();
+        if (globalIso) return globalIso;
+
+        const content = clean(row?.getAttribute("data-content"));
+        const match = content.match(/\b(\d{1,2})\/(\d{1,2})\/(\d{4})\b/);
+
+        if (match) {
+            const [, dd, mm, yyyy] = match;
+            return `${yyyy}-${String(mm).padStart(2, "0")}-${String(dd).padStart(2, "0")}`;
+        }
+
+        return "";
+    }
+
+    function parseTeam(text) {
+        const raw = clean(text);
+        const match = raw.match(/^(\d+)\s+(.+)$/);
+
+        if (!match) {
+            return { roverCode: "", roverName: raw };
+        }
+
+        return {
+            roverCode: match[1],
+            roverName: clean(match[2])
+        };
+    }
+
+    function parseRoverRow(row) {
+        if (!row) return null;
+
+        const cells = [...row.querySelectorAll("td")];
+        if (cells.length < 3) return null;
+
+        const ref = clean(cells[0].innerText).replace(/\D/g, "");
+        if (!ref) return null;
+
+        return {
+            roverEventId: ref,
+            date: dateFromRow(row),
+            away: parseTeam(cells[1].innerText),
+            home: parseTeam(cells[2].innerText),
+            row
+        };
+    }
+
+    function findRoverRowById(roverEventId) {
+        const id = clean(roverEventId);
+        if (!id) return null;
+
+        return (
+            document.querySelector(
+                `#tablaEventos tr[tkt="${cssEscape(id)}"]`
+            ) ||
+            [...document.querySelectorAll("#tablaEventos tr")].find(tr =>
+                clean(tr.querySelector("td")?.innerText).replace(/\D/g, "") === id
+            ) ||
+            null
+        );
+    }
+
+    function getRoverEventById(roverEventId) {
+        const id = clean(roverEventId);
+
+        if (!id) {
+            return { valid: false, reason: "NO_ROVER_EVENT_ID" };
+        }
+
+        const row = findRoverRowById(id);
+
+        if (!row) {
+            return {
+                valid: false,
+                reason: "ROW_NOT_FOUND",
+                roverEventId: id
+            };
+        }
+
+        const parsed = parseRoverRow(row);
+
+        if (!parsed) {
+            return {
+                valid: false,
+                reason: "INVALID_ROW",
+                roverEventId: id
+            };
+        }
+
+        return {
+            valid: parsed.roverEventId === id,
+            reason: parsed.roverEventId === id ? "" : "IDENTITY_MISMATCH",
+            ...parsed
+        };
+    }
+
+    function getCurrentRoverEvent() {
+        if (!isEuroLeagueView()) {
+            return { valid: false, reason: "NOT_EUROLEAGUE_VIEW" };
+        }
+
+        const container = document.querySelector("#resEditContainer");
+        const editorId = clean(
+            container?.querySelector('input[name="evento[]"]')?.value
+        );
+
+        if (!editorId) {
+            return { valid: false, reason: "NO_EDITOR_EVENT" };
+        }
+
+        const rover = getRoverEventById(editorId);
+
+        if (!rover.valid) return rover;
+
+        return rover;
+    }
+
+    function roverTeamLine(rover) {
+        return `${clean(rover?.away?.roverName)} @ ${clean(rover?.home?.roverName)}`;
+    }
+
+    // ============================================================
+    // VÍNCULO MANUAL PERSISTENTE
+    // ============================================================
+
+    function linkKey(roverEventId) {
+        return `${LINK_PREFIX}${String(roverEventId || "")}`;
+    }
+
+    function candidateKey(event) {
+        return clean(
+            event?.identifier ||
+            `${event?.seasonCode || event?.season?.code || ""}_${event?.code ?? ""}`
+        );
+    }
+
+    function getManualLink(roverEventId) {
+        const id = clean(roverEventId);
+        if (!id) return null;
+
+        try {
+            const raw = localStorage.getItem(linkKey(id));
+            if (!raw) return null;
+
+            const value = JSON.parse(raw);
+
+            if (!value?.seasonCode || !Number.isFinite(Number(value?.gameCode))) {
+                return null;
+            }
+
+            return value;
+        } catch (error) {
+            console.warn(`${TAG} vínculo inválido para Rover #${id}`, error);
+            return null;
+        }
+    }
+
+    function saveManualLink(roverEventId, event) {
+        const id = clean(roverEventId);
+        const gameCode = Number(event?.code);
+        const seasonCode = clean(event?.seasonCode || event?.season?.code);
+
+        if (!id || !seasonCode || !Number.isInteger(gameCode) || gameCode <= 0) {
+            throw new Error("Juego EuroLeague inválido.");
+        }
+
+        const rover = getRoverEventById(id);
+
+        const payload = {
+            mode: "manual",
+            roverEventId: id,
+            euroleagueEventId: candidateKey(event),
+            seasonCode,
+            gameCode,
+            phaseTypeCode: clean(event?.phaseTypeCode || event?.phaseType?.code),
+            roundNumber: Number(event?.roundNumber ?? event?.round?.round) || null,
+            date: clean(rover?.date || event?.roverDate),
+            apiDate: clean(event?.date),
+            awayName: clean(event?.away?.name || event?.awayName),
+            homeName: clean(event?.home?.name || event?.homeName),
+            status: clean(event?.status),
+            updatedAt: new Date().toISOString()
+        };
+
+        localStorage.setItem(linkKey(id), JSON.stringify(payload));
+        return payload;
+    }
+
+    function removeManualLink(roverEventId) {
+        const id = clean(roverEventId);
+        if (id) localStorage.removeItem(linkKey(id));
+    }
+
+    function clearAllLinks() {
+        let removed = 0;
+
+        for (let i = localStorage.length - 1; i >= 0; i -= 1) {
+            const key = localStorage.key(i);
+
+            if (key?.startsWith(LINK_PREFIX)) {
+                localStorage.removeItem(key);
+                removed += 1;
+            }
+        }
+
+        console.log(`${TAG} vínculos eliminados: ${removed}`);
+        return removed;
+    }
+
+    // ============================================================
+    // HTTP EUROLeague
+    // ============================================================
+
+    function gmGetText(url, timeout = 12000) {
+        return new Promise((resolve, reject) => {
+            const request = {
+                method: "GET",
+                url,
+                headers: {
+                    Accept: "application/json, text/plain, */*"
+                },
+                timeout,
+                onload: response => {
+                    if (response.status >= 200 && response.status < 300) {
+                        resolve(String(response.responseText || ""));
+                        return;
+                    }
+
+                    reject(
+                        new Error(`HTTP ${response.status} en ${url}`)
+                    );
+                },
+                ontimeout: () => reject(new Error(`Timeout consultando ${url}`)),
+                onerror: () => reject(new Error(`Error de red consultando ${url}`))
+            };
+
+            try {
+                if (typeof GM_xmlhttpRequest === "function") {
+                    GM_xmlhttpRequest(request);
+                    return;
+                }
+
+                if (typeof GM !== "undefined" && typeof GM.xmlHttpRequest === "function") {
+                    GM.xmlHttpRequest(request);
+                    return;
+                }
+            } catch (error) {
+                reject(error);
+                return;
+            }
+
+            reject(new Error("GM_xmlhttpRequest no está disponible."));
+        });
+    }
+
+    async function gmGetJson(url, timeout = 12000) {
+        const text = await gmGetText(url, timeout);
+
+        try {
+            return JSON.parse(text);
+        } catch (error) {
+            throw new Error(`JSON inválido desde ${url}: ${error.message}`);
+        }
+    }
+
+    function unwrapFeedPayload(payload, label) {
+        if (payload?.status === "success" && payload?.data !== undefined) {
+            return payload.data;
+        }
+
+        if (payload?.data !== undefined) {
+            return payload.data;
+        }
+
+        throw new Error(`${label}: respuesta inesperada.`);
+    }
+
+    function dateOnly(value) {
+        const text = clean(value);
+        const match = text.match(/^(\d{4}-\d{2}-\d{2})/);
+        return match ? match[1] : "";
+    }
+
+    function apiDateToRoverDate(isoDate) {
+        if (!isoDate) return "";
+
+        try {
+            const parts = new Intl.DateTimeFormat("en-CA", {
+                timeZone: TIME_ZONE,
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit"
+            }).formatToParts(new Date(isoDate));
+
+            const map = Object.fromEntries(
+                parts.map(part => [part.type, part.value])
+            );
+
+            return `${map.year}-${map.month}-${map.day}`;
+        } catch (_) {
+            return "";
+        }
+    }
+
+    function formatApiTime(isoDate) {
+        if (!isoDate) return "";
+
+        try {
+            return new Intl.DateTimeFormat("en-US", {
+                timeZone: TIME_ZONE,
+                hour: "numeric",
+                minute: "2-digit",
+                hour12: true
+            }).format(new Date(isoDate));
+        } catch (_) {
+            return "";
+        }
+    }
+
+    async function fetchSeasons({ force = false } = {}) {
+        if (
+            !force &&
+            CACHE.seasons &&
+            Date.now() - CACHE.seasonsSavedAt < CACHE_TTL.seasons
+        ) {
+            return CACHE.seasons;
+        }

@@ -798,3 +798,303 @@
         ) {
             return CACHE.seasons;
         }
+
+        const payload = await gmGetJson(`${FEED_BASE}/seasons`);
+        const data = unwrapFeedPayload(payload, "SEASONS");
+        const seasons = Array.isArray(data) ? data : [];
+
+        CACHE.seasons = seasons;
+        CACHE.seasonsSavedAt = Date.now();
+
+        return seasons;
+    }
+
+    function seasonContainsDate(season, roverDate) {
+        const start = dateOnly(season?.startDate);
+        const end = dateOnly(season?.endDate);
+
+        return Boolean(
+            start && end && roverDate >= start && roverDate <= end
+        );
+    }
+
+    async function resolveSeason(roverDate, { force = false } = {}) {
+        const seasons = await fetchSeasons({ force });
+        const season = seasons.find(item => seasonContainsDate(item, roverDate));
+
+        if (!season?.code) {
+            throw new Error(`No se encontró temporada EuroLeague para ${roverDate}.`);
+        }
+
+        return season;
+    }
+
+    async function fetchRounds(seasonCode, { force = false } = {}) {
+        const key = clean(seasonCode);
+        const cached = CACHE.roundsBySeason.get(key);
+
+        if (
+            !force &&
+            cached &&
+            Date.now() - cached.savedAt < CACHE_TTL.rounds
+        ) {
+            return cached.value;
+        }
+
+        const payload = await gmGetJson(
+            `${FEED_BASE}/seasons/${encodeURIComponent(key)}/rounds`
+        );
+        const data = unwrapFeedPayload(payload, "ROUNDS");
+        const rounds = Array.isArray(data) ? data : [];
+
+        CACHE.roundsBySeason.set(key, {
+            savedAt: Date.now(),
+            value: rounds
+        });
+
+        return rounds;
+    }
+
+    function roundContainsDate(round, roverDate) {
+        const min = dateOnly(round?.minGameStartDate);
+        const max = dateOnly(round?.maxGameStartDate);
+
+        return Boolean(min && max && roverDate >= min && roverDate <= max);
+    }
+
+    async function fetchRoundGames(
+        seasonCode,
+        phaseTypeCode,
+        roundNumber,
+        { force = false } = {}
+    ) {
+        const key = `${seasonCode}|${phaseTypeCode}|${roundNumber}`;
+        const cached = CACHE.roundGames.get(key);
+
+        if (
+            !force &&
+            cached &&
+            Date.now() - cached.savedAt < CACHE_TTL.games
+        ) {
+            return cached.value;
+        }
+
+        const url =
+            `${FEED_BASE}/seasons/${encodeURIComponent(seasonCode)}/games` +
+            `?teamCode=&phaseTypeCode=${encodeURIComponent(phaseTypeCode)}` +
+            `&roundNumber=${encodeURIComponent(roundNumber)}`;
+
+        const payload = await gmGetJson(url);
+        const data = unwrapFeedPayload(payload, "GAMES");
+        const games = Array.isArray(data) ? data : [];
+
+        CACHE.roundGames.set(key, {
+            savedAt: Date.now(),
+            value: games
+        });
+
+        return games;
+    }
+
+    function normalizeCandidate(rawGame, roundMeta, roverDate) {
+        return {
+            ...rawGame,
+            seasonCode: clean(rawGame?.season?.code || roundMeta?.seasonCode),
+            phaseTypeCode: clean(
+                rawGame?.phaseType?.code || roundMeta?.phaseTypeCode
+            ),
+            roundNumber: Number(
+                rawGame?.round?.round ?? roundMeta?.round
+            ) || null,
+            roverDate,
+            identifier: clean(
+                rawGame?.identifier ||
+                `${rawGame?.season?.code || roundMeta?.seasonCode}_${rawGame?.code ?? ""}`
+            )
+        };
+    }
+
+    async function fetchEuroLeagueDay(roverDate, { force = false } = {}) {
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(roverDate)) {
+            throw new Error("Fecha Rover inválida.");
+        }
+
+        const season = await resolveSeason(roverDate, { force });
+        const rounds = await fetchRounds(season.code, { force });
+        const matchingRounds = rounds.filter(round =>
+            roundContainsDate(round, roverDate)
+        );
+
+        if (!matchingRounds.length) {
+            return {
+                season,
+                rounds: [],
+                games: []
+            };
+        }
+
+        const settled = await Promise.allSettled(
+            matchingRounds.map(async round => {
+                const phaseTypeCode = clean(round.phaseTypeCode);
+                const roundNumber = Number(round.round);
+
+                if (!phaseTypeCode || !Number.isInteger(roundNumber)) {
+                    throw new Error(
+                        `Ronda inválida: ${round?.name || round?.round || "?"}`
+                    );
+                }
+
+                const games = await fetchRoundGames(
+                    season.code,
+                    phaseTypeCode,
+                    roundNumber,
+                    { force }
+                );
+
+                return { round, games };
+            })
+        );
+
+        const byId = new Map();
+        const errors = [];
+
+        for (const item of settled) {
+            if (item.status === "rejected") {
+                errors.push(item.reason?.message || String(item.reason));
+                continue;
+            }
+
+            for (const rawGame of item.value.games) {
+                if (apiDateToRoverDate(rawGame?.date) !== roverDate) {
+                    continue;
+                }
+
+                const game = normalizeCandidate(
+                    rawGame,
+                    item.value.round,
+                    roverDate
+                );
+
+                const id = candidateKey(game);
+                if (id) byId.set(id, game);
+            }
+        }
+
+        if (!byId.size && errors.length === settled.length) {
+            throw new Error(errors.join(" | "));
+        }
+
+        const games = [...byId.values()].sort((a, b) =>
+            new Date(a.date).getTime() - new Date(b.date).getTime()
+        );
+
+        console.log("");
+        console.log("=== EUROLEAGUE / JUEGOS DEL DÍA ===");
+        console.table(
+            games.map(game => ({
+                ID: candidateKey(game),
+                FECHA: roverDate,
+                HORA_RD: formatApiTime(game.date),
+                AWAY: game.away?.name,
+                HOME: game.home?.name,
+                ESTADO_API: game.status,
+                RONDA: game.roundNumber,
+                FASE: game.phaseTypeCode
+            }))
+        );
+
+        return {
+            season,
+            rounds: matchingRounds,
+            games
+        };
+    }
+
+    async function fetchGameFresh(link) {
+        const seasonCode = clean(link?.seasonCode);
+        const gameCode = Number(link?.gameCode);
+
+        if (!seasonCode || !Number.isInteger(gameCode) || gameCode <= 0) {
+            throw new Error("Vínculo EuroLeague inválido.");
+        }
+
+        const url =
+            `${FEED_BASE}/seasons/${encodeURIComponent(seasonCode)}` +
+            `/games/${encodeURIComponent(gameCode)}`;
+
+        const payload = await gmGetJson(url);
+        const game = unwrapFeedPayload(payload, "GAME");
+
+        if (!game || Number(game.code) !== gameCode) {
+            throw new Error("El endpoint devolvió un partido diferente al vinculado.");
+        }
+
+        return game;
+    }
+
+    async function fetchBoxscore(seasonCode, gameCode) {
+        const url =
+            `${LIVE_BASE}/Boxscore?gamecode=${encodeURIComponent(gameCode)}` +
+            `&seasoncode=${encodeURIComponent(seasonCode)}`;
+
+        return gmGetJson(url);
+    }
+
+    // ============================================================
+    // SCORE / VALIDACIÓN
+    // ============================================================
+
+    function sumOvertimes(quarters) {
+        return ["ot1", "ot2", "ot3", "ot4", "ot5"].reduce(
+            (total, key) => total + toNumber(quarters?.[key], 0),
+            0
+        );
+    }
+
+    function normalizeSide(side) {
+        const quarters = side?.quarters || {};
+
+        return {
+            name: clean(side?.name),
+            code: clean(side?.code),
+            q1: toNumber(quarters.q1, 0),
+            q2: toNumber(quarters.q2, 0),
+            q3: toNumber(quarters.q3, 0),
+            q4: toNumber(quarters.q4, 0),
+            ot: sumOvertimes(quarters),
+            final: toNumber(side?.score, 0),
+            rawQuarters: quarters
+        };
+    }
+
+    function normalizeLinkedGame(rover, apiGame, link) {
+        return {
+            roverEventId: rover.roverEventId,
+            roverDate: rover.date,
+            seasonCode: clean(apiGame?.season?.code || link?.seasonCode),
+            gameCode: Number(apiGame?.code),
+            identifier: clean(apiGame?.identifier),
+            apiDate: clean(apiGame?.date),
+            status: clean(apiGame?.status).toLowerCase(),
+            minute: clean(apiGame?.minute),
+            remainingTime: clean(apiGame?.remainingTime),
+            quarter: clean(apiGame?.quarter),
+            round: Number(apiGame?.round?.round) || link?.roundNumber || null,
+            phaseTypeCode: clean(apiGame?.phaseType?.code || link?.phaseTypeCode),
+            away: normalizeSide(apiGame?.away),
+            home: normalizeSide(apiGame?.home),
+            manualLink: link,
+            raw: apiGame
+        };
+    }
+
+    function validateLinkIdentity(game, link) {
+        if (Number(game.gameCode) !== Number(link.gameCode)) {
+            return { ok: false, reason: "GAME_CODE_CHANGED" };
+        }
+
+        if (clean(game.seasonCode) !== clean(link.seasonCode)) {
+            return { ok: false, reason: "SEASON_CHANGED" };
+        }
+
+        const linkedAway = normalizeOfficialTeamName(link.awayName);

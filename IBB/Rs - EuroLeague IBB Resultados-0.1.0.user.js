@@ -2148,3 +2148,353 @@
             uiState.loadingCandidates = false;
             await renderCurrent({ preserveSearchState: true });
         }
+    }
+
+    async function expandList(rover, { forceLoad = false } = {}) {
+        cancelListCollapse();
+        uiState.listExpanded = true;
+
+        const needsLoad =
+            forceLoad ||
+            uiState.candidatesDate !== rover.date ||
+            !uiState.manualCandidates.size;
+
+        if (needsLoad) {
+            await loadManualCandidates(getUiRoot(), rover, {
+                force: forceLoad
+            });
+        } else {
+            await renderCurrent({ preserveSearchState: true });
+        }
+    }
+
+    async function renderCurrent({ preserveSearchState = false } = {}) {
+        const seq = ++uiState.renderSeq;
+
+        if (!isEuroLeagueView()) {
+            removeUi();
+            return null;
+        }
+
+        const rover = getCurrentRoverEvent();
+
+        if (!rover?.valid) {
+            removeUi();
+            return rover;
+        }
+
+        const previousEditorId = uiState.lastEditorId;
+        uiState.lastEditorId = rover.roverEventId;
+
+        if (
+            !preserveSearchState &&
+            previousEditorId &&
+            previousEditorId !== rover.roverEventId
+        ) {
+            uiState.listExpanded = false;
+            uiState.selectedEventId = "";
+            uiState.filterValue = "";
+            uiState.candidatesDate = "";
+            uiState.manualCandidates.clear();
+            uiState.lastLoadError = "";
+        }
+
+        const root = ensureUiRoot(rover.roverEventId);
+        if (!root || seq !== uiState.renderSeq) return null;
+
+        const link = getManualLink(rover.roverEventId);
+
+        if (link) {
+            renderLinked(root, rover, link);
+            return rover;
+        }
+
+        renderUnlinked(root);
+        return rover;
+    }
+
+    function scheduleRender(delay = 80) {
+        clearTimeout(uiState.renderTimer);
+
+        uiState.renderTimer = setTimeout(() => {
+            void renderCurrent().catch(error =>
+                console.error(`${TAG} render error`, error)
+            );
+        }, delay);
+    }
+
+    async function onUiClick(event) {
+        const target = event.target;
+        if (!(target instanceof Element)) return;
+
+        const actionNode = target.closest(
+            `#${cssEscape(UI_ID)} [data-el-action]`
+        );
+        if (!actionNode) return;
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        const action = actionNode.dataset.elAction;
+        const root = getUiRoot();
+        const panelRoverEventId = clean(root?.dataset.roverEventId);
+        const currentRover = getCurrentRoverEvent();
+
+        if (!root || !panelRoverEventId) return;
+
+        if (action === "pick-candidate") {
+            selectCandidateInPlace(root, actionNode.dataset.eventId);
+            return;
+        }
+
+        if (action === "manual-save") {
+            const fsId = clean(
+                actionNode.dataset.eventId || uiState.selectedEventId
+            );
+            const candidate = uiState.manualCandidates.get(fsId);
+
+            if (!candidate) {
+                setSummary("Selecciona un juego EuroLeague.", { warning: true });
+                return;
+            }
+
+            const rover = getRoverEventById(panelRoverEventId);
+            if (!rover?.valid) {
+                setSummary("El evento Rover ya no está disponible.", { warning: true });
+                return;
+            }
+
+            saveManualLink(panelRoverEventId, candidate);
+            clearStoredResultNotice(panelRoverEventId);
+            uiState.listExpanded = false;
+            uiState.selectedEventId = "";
+            uiState.filterValue = "";
+            setSummary("");
+
+            console.log(`${TAG} 🔗 Rover #${panelRoverEventId} vinculado manualmente a ${candidateKey(candidate)}`);
+            await renderCurrent({ preserveSearchState: true });
+            return;
+        }
+
+        if (action === "unlink") {
+            removeManualLink(panelRoverEventId);
+            clearStoredResultNotice(panelRoverEventId);
+
+            uiState.listExpanded = true;
+            uiState.selectedEventId = "";
+            uiState.filterValue = "";
+            uiState.lastLoadError = "";
+
+            const rover = getRoverEventById(panelRoverEventId);
+            const freshRoot = rebuildUiRootForEvent(panelRoverEventId);
+
+            if (freshRoot && rover?.valid) {
+                renderUnlinked(freshRoot);
+
+                const needsCandidates =
+                    uiState.candidatesDate !== rover.date ||
+                    !uiState.manualCandidates.size;
+
+                if (needsCandidates) {
+                    await loadManualCandidates(freshRoot, rover);
+                }
+            } else {
+                await renderCurrent({ preserveSearchState: true });
+            }
+
+            return;
+        }
+
+        if (action === "update-result") {
+            if (
+                !currentRover?.valid ||
+                currentRover.roverEventId !== panelRoverEventId
+            ) {
+                setSummary(
+                    "Selecciona nuevamente este evento Rover antes de actualizar.",
+                    { warning: true }
+                );
+                return;
+            }
+
+            const link = getManualLink(panelRoverEventId);
+            if (!link) {
+                setSummary("No hay un juego vinculado.", { warning: true });
+                return;
+            }
+
+            setUiBusy(root, true);
+            setResultNotice(root, {
+                className: "is-pre",
+                text: "Actualizando...",
+                title: "Consultando EuroLeague"
+            });
+
+            try {
+                await updateLinkedResult();
+            } catch (error) {
+                console.error(`${TAG} update error`, error);
+                setResultNoticeError(error?.message || "ERROR EUROLEAGUE");
+            } finally {
+                setUiBusy(root, false);
+            }
+        }
+    }
+
+    function onUiChange(event) {
+        const root = getUiRoot();
+        const rover = getCurrentRoverEvent();
+        if (!root || !rover?.valid) return;
+
+        if (event.target.matches('[data-role="filter"]')) {
+            uiState.filterValue = event.target.value || "";
+            uiState.listExpanded = true;
+
+            const filtered = getFilteredCandidates();
+
+            if (
+                uiState.selectedEventId &&
+                !filtered.some(event => candidateKey(event) === uiState.selectedEventId)
+            ) {
+                uiState.selectedEventId = "";
+            }
+
+            void renderCurrent({ preserveSearchState: true });
+        }
+    }
+
+    // ============================================================
+    // OBSERVERS / BOOT
+    // ============================================================
+
+    function observeEditorContainer() {
+        const container = document.querySelector("#resEditContainer");
+        if (!container) return false;
+
+        if (
+            uiState.observedContainer === container &&
+            uiState.containerObserver
+        ) {
+            return true;
+        }
+
+        uiState.containerObserver?.disconnect();
+        uiState.observedContainer = container;
+
+        uiState.containerObserver = new MutationObserver(mutations => {
+            const onlyOwnUiMutations =
+                mutations.length > 0 &&
+                mutations.every(mutation => {
+                    const target =
+                        mutation.target?.nodeType === Node.ELEMENT_NODE
+                            ? mutation.target
+                            : mutation.target?.parentElement;
+
+                    return Boolean(
+                        target &&
+                        (
+                            target.id === UI_ID ||
+                            target.closest?.(`#${cssEscape(UI_ID)}`)
+                        )
+                    );
+                });
+
+            if (onlyOwnUiMutations) return;
+
+            if (!isEuroLeagueView()) {
+                removeUi();
+                return;
+            }
+
+            const editorId = clean(
+                container.querySelector('input[name="evento[]"]')?.value
+            );
+
+            if (!editorId) return;
+
+            const root = getUiRoot();
+
+            if (
+                editorId !== uiState.lastEditorId ||
+                !root ||
+                root.dataset.roverEventId !== editorId ||
+                !container.contains(root)
+            ) {
+                /*
+                 * No adelantamos lastEditorId aquí. renderCurrent() necesita
+                 * ver el ID anterior para limpiar selección/filtro del evento
+                 * previo y evitar que un candidato quede preseleccionado.
+                 */
+                scheduleRender(0);
+            }
+        });
+
+        uiState.containerObserver.observe(container, {
+            childList: true,
+            subtree: true
+        });
+
+        return true;
+    }
+
+    function installGlobalListeners() {
+        document.addEventListener(
+            "pointerdown",
+            event => {
+                const target = event.target;
+                if (!(target instanceof Element)) return;
+
+                const row = target.closest(
+                    `#${cssEscape(UI_ID)} [data-el-action="pick-candidate"]`
+                );
+
+                if (!row) return;
+
+                const root = getUiRoot();
+                if (!root || !root.contains(row)) return;
+
+                if (selectCandidateInPlace(root, row.dataset.eventId)) {
+                    event.stopImmediatePropagation();
+                }
+            },
+            true
+        );
+
+        document.addEventListener(
+            "click",
+            event => {
+                const target = event.target;
+                if (!(target instanceof Element)) return;
+
+                const uiAction = target.closest(
+                    `#${cssEscape(UI_ID)} [data-el-action]`
+                );
+
+                if (uiAction) {
+                    void onUiClick(event).catch(error => {
+                        console.error(`${TAG} UI click error`, error);
+                        setResultNoticeError(error?.message || "ERROR DE INTERFAZ");
+                    });
+                    return;
+                }
+
+                if (isMainSearchButton(target)) {
+                    beginSearchRefreshWatch();
+                    removeUi();
+                    return;
+                }
+
+                if (!isEuroLeagueView()) return;
+
+                const row = target.closest("#tablaEventos tr");
+
+                if (row) {
+                    setTimeout(() => {
+                        observeEditorContainer();
+                        scheduleRender(80);
+                    }, 50);
+                }
+            },
+            true
+        );
+

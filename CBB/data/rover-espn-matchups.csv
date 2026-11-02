@@ -1,0 +1,120 @@
+match_number,away_rover_id,away_rover_name,away_espn_id,home_rover_id,home_rover_name,home_espn_id
+1,733,Queens University,2511,711,Winthrop,2737
+2,872,Tennessee State,2634,870,Murray State,93
+3,980,Northern Kentucky,94,767,UTEP,2638
+4,928,UTSA Roadrunners,2636,976,San Jose,23
+5,638,UMBC,2378,746,George Mason,2244
+6,919,McNeese State,2377,765,UAB,5
+7,646,Miami (FL),2390,893,Florida,57
+8,933,Oakland,2473,715,Michigan,130
+9,963,Pepperdine,2492,795,Cornell,172
+10,812,Bowling Green,189,747,Georgia State,2247
+11,804,Loyola Maryland,2352,680,Georgetown,46
+12,886,Army,349,642,Duke,150
+13,857,Monmouth,2405,689,St. Johns,2599
+14,854,Central Connecticut,2115,997,Temple,218
+15,709,UNC Asheville,2427,671,Richmond,257
+16,663,Charlotte,2429,839,Indiana St,282
+17,635,Maine,311,685,Providence,2507
+18,981,Lafayette,322,775,Butler,2086
+19,858,Mount St. Marys,116,676,Xavier,2752
+20,784,Youngst St,2754,673,St. Bonaventure,179
+21,822,Western Michigan,2711,752,Old Dominion,295
+22,808,Rider,2520,684,Pittsburgh,221
+23,815,Miami (OH),193,749,James Madison,256
+24,661,USC Upstate,2908,756,East Carolina,151
+25,887,Bucknell,2083,645,Maryland,120
+26,285,New Haven,2441,690,Syracuse,183
+27,819,Eastern Michigan,2199,703,Coast Carolina,324
+28,636,New Hampshire,160,793,Brown Bears,225
+29,770,NJIT Highlanders,2885,664,Dayton,2168
+30,759,Memphis Tigers,235,725,Iowa State,66
+31,702,Charlest So.,2127,688,South Florida,58
+32,813,Buffalo,2084,758,Marshall,276
+33,817,Ball State,2050,915,Georgia Southern,290
+34,944,Jackson State,2296,734,Texas Tech,2641
+35,796,Dartmouth,159,806,Marist,2368
+36,388,Bellarmine,91,898,Vanderbilt,238
+37,910,Western Carolina,2717,648,North Carolina,153
+38,639,Vermont,261,803,Iona,314
+39,885,American University,44,677,Cincinnati,2132
+40,400,Florida Gulf Coast,526,766,UCF,2116
+41,866,Eastern Illinois,2197,713,Indiana,84
+42,908,Elon Phoenix,2210,794,Columbia,171
+43,751,Northeastern,111,633,Boston University,104
+44,662,Stetson,56,641,Clemson,228
+45,807,Niagara,315,692,West Virginia,277
+46,828,Howard,47,800,Yale,43
+47,955,Little Rock,2031,754,VCU,2670
+48,669,Massachusetts,113,954,Troy,2653
+49,856,LIU Brooklyn,112358,951,Florida Atlantic,2226
+50,859,Quinnipiac,2514,716,Michigan State,127
+51,844,Air Force,2005,783,Wright State,2750
+52,176,St. Thomas-Minnesota,2900,707,Presbyterian,2506
+53,382,Mercyhurst,2385,682,Marquette,269
+54,873,Tennessee Tech,2635,904,Mississippi State,344
+55,270,Le Moyne,2330,729,Nebraska,158
+56,721,Purdue,2509,961,Gonzaga,2250
+57,957,Denver,2172,722,Wisconsin,275
+58,818,Central Michigan,2117,960,UL Monroe,2433
+59,892,Navy,2426,667,George Washington,45
+60,787,NC Central,2428,894,Georgia,61
+61,814,Kent State,2309,973,Louisiana Tech,2348
+62,801,Canisius,2099,720,Penn State,213
+63,810,Saint Peters,2612,687,Seton Hall,2550
+64,179,Southern Indiana,88,652,Belmont,2057
+65,869,Morehead State,2413,949,Western Kentucky,98
+66,653,Campbell,2097,647,NC State,152
+67,658,Lipscomb,288,254,Southeast Missouri St,2546
+68,829,Maryland Eastern Shore,2379,651,Wake Forest,154
+69,937,Kansas City,140,835,Creighton,156
+70,381,West Georgia,2698,679,DePaul,305
+71,666,Fordham,2230,726,Kansas,2305
+72,811,Akron,2006,959,Louisiana,309
+73,300,East Texas A&M C,2837,730,Oklahoma,201
+74,891,Lehigh,2329,674,Saint Louis,139
+75,823,Bethune,2065,914,Furman,231
+76,809,Siena,2561,853,Bryant,2803
+77,855,Fair Dick,161,712,Illinois,356
+78,821,Toledo,2649,956,Arkansas State,2032
+79,874,UT Martin,2630,763,Tulane,2655
+80,632,Binghamton,2066,718,Northwestern,77
+81,938,Western Illinois,2710,782,Valparaiso,2674
+82,133,Lindenwood,2815,849,TCU,2628
+83,947,Southern,2582,998,SMU,2567
+84,925,Texas Corpus,357,926,Texas State,326
+85,911,The Citadel,2643,780,Loyola Chicago,2350
+86,816,Ohio,195,953,South Alabama,6
+87,826,Florida A&M,50,643,Florida State,52
+88,934,Oral Roberts,198,917,Central Arkansas,2110
+89,941,Alcorn State,2016,903,Ole Miss,145
+90,719,Ohio State,194,845,BYU,252
+91,768,Chicago State,2130,732,Texas,251
+92,988,Abilene Christian,2000,724,Colorado,38
+93,738,Long Be St,299,851,Utah,254
+94,135,Utah Tech,3101,847,New Mexico,167
+95,948,Texas Southern,2640,890,Grand Canyon,2253
+96,985,Incarnate Word,2916,731,Oklahoma State,197
+97,771,North Dakota,155,717,Minnesota,135
+98,907,Chattanooga,236,681,Louisville,97
+99,704,Gardner-Webb,2241,678,Connecticut,41
+100,668,La Salle,2325,757,Houston,248
+101,913,Davidson,2166,884,Washington State,265
+102,921,Northwestern State,2466,723,Baylor,239
+103,694,Idaho State,304,977,Utah State,328
+104,701,Weber State,2692,879,Oregon State,204
+105,881,UCLA,26,875,Arizona,12
+106,693,Eastern Washington,331,880,Stanford,24
+107,860,Robert Morris,2523,974,Nevada,2440
+108,753,Towson,119,967,Santa Clara,2541
+109,888,Colgate,2142,883,Washington,264
+110,654,East Tenn St,2193,876,Arizona St,9
+111,696,Montana State,147,846,Colorado State,36
+112,838,Illinois State,2287,581,St. Marys CA,2608
+113,708,Radford,2515,966,San Francisco,2539
+114,695,Montana,149,878,Oregon,2483
+115,987,North Alabama,2453,740,UC Davis,302
+116,781,Milwaukee,270,882,USC,30
+117,705,High Point,2272,706,Liberty,2335
+118,943,Grambling,2755,820,Northern Illinois,2459
+119,999,Merrimack,2771,906,Appalachian State,2026

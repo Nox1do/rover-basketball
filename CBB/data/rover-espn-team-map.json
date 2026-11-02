@@ -1,0 +1,957 @@
+{
+  "733": {
+    "rover_name": "Queens University",
+    "espn_id": "2511",
+    "espn_name": "Queens University Royals"
+  },
+  "711": {
+    "rover_name": "Winthrop",
+    "espn_id": "2737"
+  },
+  "872": {
+    "rover_name": "Tennessee State",
+    "espn_id": "2634"
+  },
+  "870": {
+    "rover_name": "Murray State",
+    "espn_id": "93"
+  },
+  "980": {
+    "rover_name": "Northern Kentucky",
+    "espn_id": "94"
+  },
+  "767": {
+    "rover_name": "UTEP",
+    "espn_id": "2638"
+  },
+  "928": {
+    "rover_name": "UTSA Roadrunners",
+    "espn_id": "2636"
+  },
+  "976": {
+    "rover_name": "San Jose",
+    "espn_id": "23"
+  },
+  "638": {
+    "rover_name": "UMBC",
+    "espn_id": "2378"
+  },
+  "746": {
+    "rover_name": "George Mason",
+    "espn_id": "2244"
+  },
+  "919": {
+    "rover_name": "McNeese State",
+    "espn_id": "2377"
+  },
+  "765": {
+    "rover_name": "UAB",
+    "espn_id": "5"
+  },
+  "646": {
+    "rover_name": "Miami (FL)",
+    "espn_id": "2390"
+  },
+  "893": {
+    "rover_name": "Florida",
+    "espn_id": "57"
+  },
+  "933": {
+    "rover_name": "Oakland",
+    "espn_id": "2473"
+  },
+  "715": {
+    "rover_name": "Michigan",
+    "espn_id": "130"
+  },
+  "963": {
+    "rover_name": "Pepperdine",
+    "espn_id": "2492"
+  },
+  "795": {
+    "rover_name": "Cornell",
+    "espn_id": "172"
+  },
+  "812": {
+    "rover_name": "Bowling Green",
+    "espn_id": "189"
+  },
+  "747": {
+    "rover_name": "Georgia State",
+    "espn_id": "2247"
+  },
+  "804": {
+    "rover_name": "Loyola Maryland",
+    "espn_id": "2352"
+  },
+  "680": {
+    "rover_name": "Georgetown",
+    "espn_id": "46"
+  },
+  "886": {
+    "rover_name": "Army",
+    "espn_id": "349"
+  },
+  "642": {
+    "rover_name": "Duke",
+    "espn_id": "150"
+  },
+  "857": {
+    "rover_name": "Monmouth",
+    "espn_id": "2405"
+  },
+  "689": {
+    "rover_name": "St. Johns",
+    "espn_id": "2599"
+  },
+  "854": {
+    "rover_name": "Central Connecticut",
+    "espn_id": "2115"
+  },
+  "997": {
+    "rover_name": "Temple",
+    "espn_id": "218"
+  },
+  "709": {
+    "rover_name": "UNC Asheville",
+    "espn_id": "2427"
+  },
+  "671": {
+    "rover_name": "Richmond",
+    "espn_id": "257"
+  },
+  "663": {
+    "rover_name": "Charlotte",
+    "espn_id": "2429"
+  },
+  "839": {
+    "rover_name": "Indiana St",
+    "espn_id": "282"
+  },
+  "635": {
+    "rover_name": "Maine",
+    "espn_id": "311"
+  },
+  "685": {
+    "rover_name": "Providence",
+    "espn_id": "2507"
+  },
+  "981": {
+    "rover_name": "Lafayette",
+    "espn_id": "322"
+  },
+  "775": {
+    "rover_name": "Butler",
+    "espn_id": "2086"
+  },
+  "858": {
+    "rover_name": "Mount St. Marys",
+    "espn_id": "116"
+  },
+  "676": {
+    "rover_name": "Xavier",
+    "espn_id": "2752"
+  },
+  "784": {
+    "rover_name": "Youngst St",
+    "espn_id": "2754"
+  },
+  "673": {
+    "rover_name": "St. Bonaventure",
+    "espn_id": "179"
+  },
+  "822": {
+    "rover_name": "Western Michigan",
+    "espn_id": "2711"
+  },
+  "752": {
+    "rover_name": "Old Dominion",
+    "espn_id": "295"
+  },
+  "808": {
+    "rover_name": "Rider",
+    "espn_id": "2520"
+  },
+  "684": {
+    "rover_name": "Pittsburgh",
+    "espn_id": "221"
+  },
+  "815": {
+    "rover_name": "Miami (OH)",
+    "espn_id": "193"
+  },
+  "749": {
+    "rover_name": "James Madison",
+    "espn_id": "256"
+  },
+  "661": {
+    "rover_name": "USC Upstate",
+    "espn_id": "2908"
+  },
+  "756": {
+    "rover_name": "East Carolina",
+    "espn_id": "151"
+  },
+  "887": {
+    "rover_name": "Bucknell",
+    "espn_id": "2083"
+  },
+  "645": {
+    "rover_name": "Maryland",
+    "espn_id": "120"
+  },
+  "285": {
+    "rover_name": "New Haven",
+    "espn_id": "2441"
+  },
+  "690": {
+    "rover_name": "Syracuse",
+    "espn_id": "183"
+  },
+  "819": {
+    "rover_name": "Eastern Michigan",
+    "espn_id": "2199"
+  },
+  "703": {
+    "rover_name": "Coast Carolina",
+    "espn_id": "324"
+  },
+  "636": {
+    "rover_name": "New Hampshire",
+    "espn_id": "160"
+  },
+  "793": {
+    "rover_name": "Brown Bears",
+    "espn_id": "225"
+  },
+  "770": {
+    "rover_name": "NJIT Highlanders",
+    "espn_id": "2885"
+  },
+  "664": {
+    "rover_name": "Dayton",
+    "espn_id": "2168"
+  },
+  "759": {
+    "rover_name": "Memphis Tigers",
+    "espn_id": "235"
+  },
+  "725": {
+    "rover_name": "Iowa State",
+    "espn_id": "66"
+  },
+  "702": {
+    "rover_name": "Charlest So.",
+    "espn_id": "2127"
+  },
+  "688": {
+    "rover_name": "South Florida",
+    "espn_id": "58"
+  },
+  "813": {
+    "rover_name": "Buffalo",
+    "espn_id": "2084"
+  },
+  "758": {
+    "rover_name": "Marshall",
+    "espn_id": "276"
+  },
+  "817": {
+    "rover_name": "Ball State",
+    "espn_id": "2050"
+  },
+  "915": {
+    "rover_name": "Georgia Southern",
+    "espn_id": "290"
+  },
+  "944": {
+    "rover_name": "Jackson State",
+    "espn_id": "2296"
+  },
+  "734": {
+    "rover_name": "Texas Tech",
+    "espn_id": "2641"
+  },
+  "796": {
+    "rover_name": "Dartmouth",
+    "espn_id": "159"
+  },
+  "806": {
+    "rover_name": "Marist",
+    "espn_id": "2368"
+  },
+  "388": {
+    "rover_name": "Bellarmine",
+    "espn_id": "91"
+  },
+  "898": {
+    "rover_name": "Vanderbilt",
+    "espn_id": "238"
+  },
+  "910": {
+    "rover_name": "Western Carolina",
+    "espn_id": "2717"
+  },
+  "648": {
+    "rover_name": "North Carolina",
+    "espn_id": "153"
+  },
+  "639": {
+    "rover_name": "Vermont",
+    "espn_id": "261"
+  },
+  "803": {
+    "rover_name": "Iona",
+    "espn_id": "314"
+  },
+  "885": {
+    "rover_name": "American University",
+    "espn_id": "44"
+  },
+  "677": {
+    "rover_name": "Cincinnati",
+    "espn_id": "2132"
+  },
+  "400": {
+    "rover_name": "Florida Gulf Coast",
+    "espn_id": "526"
+  },
+  "766": {
+    "rover_name": "UCF",
+    "espn_id": "2116"
+  },
+  "866": {
+    "rover_name": "Eastern Illinois",
+    "espn_id": "2197"
+  },
+  "713": {
+    "rover_name": "Indiana",
+    "espn_id": "84"
+  },
+  "908": {
+    "rover_name": "Elon Phoenix",
+    "espn_id": "2210"
+  },
+  "794": {
+    "rover_name": "Columbia",
+    "espn_id": "171"
+  },
+  "751": {
+    "rover_name": "Northeastern",
+    "espn_id": "111"
+  },
+  "633": {
+    "rover_name": "Boston University",
+    "espn_id": "104"
+  },
+  "662": {
+    "rover_name": "Stetson",
+    "espn_id": "56"
+  },
+  "641": {
+    "rover_name": "Clemson",
+    "espn_id": "228"
+  },
+  "807": {
+    "rover_name": "Niagara",
+    "espn_id": "315"
+  },
+  "692": {
+    "rover_name": "West Virginia",
+    "espn_id": "277"
+  },
+  "828": {
+    "rover_name": "Howard",
+    "espn_id": "47"
+  },
+  "800": {
+    "rover_name": "Yale",
+    "espn_id": "43"
+  },
+  "955": {
+    "rover_name": "Little Rock",
+    "espn_id": "2031"
+  },
+  "754": {
+    "rover_name": "VCU",
+    "espn_id": "2670"
+  },
+  "669": {
+    "rover_name": "Massachusetts",
+    "espn_id": "113"
+  },
+  "954": {
+    "rover_name": "Troy",
+    "espn_id": "2653"
+  },
+  "856": {
+    "rover_name": "LIU Brooklyn",
+    "espn_id": "112358"
+  },
+  "951": {
+    "rover_name": "Florida Atlantic",
+    "espn_id": "2226"
+  },
+  "859": {
+    "rover_name": "Quinnipiac",
+    "espn_id": "2514"
+  },
+  "716": {
+    "rover_name": "Michigan State",
+    "espn_id": "127"
+  },
+  "844": {
+    "rover_name": "Air Force",
+    "espn_id": "2005"
+  },
+  "783": {
+    "rover_name": "Wright State",
+    "espn_id": "2750"
+  },
+  "176": {
+    "rover_name": "St. Thomas-Minnesota",
+    "espn_id": "2900"
+  },
+  "707": {
+    "rover_name": "Presbyterian",
+    "espn_id": "2506"
+  },
+  "382": {
+    "rover_name": "Mercyhurst",
+    "espn_id": "2385"
+  },
+  "682": {
+    "rover_name": "Marquette",
+    "espn_id": "269"
+  },
+  "873": {
+    "rover_name": "Tennessee Tech",
+    "espn_id": "2635"
+  },
+  "904": {
+    "rover_name": "Mississippi State",
+    "espn_id": "344"
+  },
+  "270": {
+    "rover_name": "Le Moyne",
+    "espn_id": "2330"
+  },
+  "729": {
+    "rover_name": "Nebraska",
+    "espn_id": "158"
+  },
+  "721": {
+    "rover_name": "Purdue",
+    "espn_id": "2509"
+  },
+  "961": {
+    "rover_name": "Gonzaga",
+    "espn_id": "2250"
+  },
+  "957": {
+    "rover_name": "Denver",
+    "espn_id": "2172"
+  },
+  "722": {
+    "rover_name": "Wisconsin",
+    "espn_id": "275"
+  },
+  "818": {
+    "rover_name": "Central Michigan",
+    "espn_id": "2117"
+  },
+  "960": {
+    "rover_name": "UL Monroe",
+    "espn_id": "2433"
+  },
+  "892": {
+    "rover_name": "Navy",
+    "espn_id": "2426"
+  },
+  "667": {
+    "rover_name": "George Washington",
+    "espn_id": "45"
+  },
+  "787": {
+    "rover_name": "NC Central",
+    "espn_id": "2428"
+  },
+  "894": {
+    "rover_name": "Georgia",
+    "espn_id": "61"
+  },
+  "814": {
+    "rover_name": "Kent State",
+    "espn_id": "2309"
+  },
+  "973": {
+    "rover_name": "Louisiana Tech",
+    "espn_id": "2348"
+  },
+  "801": {
+    "rover_name": "Canisius",
+    "espn_id": "2099"
+  },
+  "720": {
+    "rover_name": "Penn State",
+    "espn_id": "213"
+  },
+  "810": {
+    "rover_name": "Saint Peters",
+    "espn_id": "2612"
+  },
+  "687": {
+    "rover_name": "Seton Hall",
+    "espn_id": "2550"
+  },
+  "179": {
+    "rover_name": "Southern Indiana",
+    "espn_id": "88",
+    "espn_name": "Southern Indiana Screaming Eagles"
+  },
+  "652": {
+    "rover_name": "Belmont",
+    "espn_id": "2057"
+  },
+  "869": {
+    "rover_name": "Morehead State",
+    "espn_id": "2413"
+  },
+  "949": {
+    "rover_name": "Western Kentucky",
+    "espn_id": "98"
+  },
+  "653": {
+    "rover_name": "Campbell",
+    "espn_id": "2097"
+  },
+  "647": {
+    "rover_name": "NC State",
+    "espn_id": "152"
+  },
+  "658": {
+    "rover_name": "Lipscomb",
+    "espn_id": "288"
+  },
+  "254": {
+    "rover_name": "Southeast Missouri St",
+    "espn_id": "2546"
+  },
+  "829": {
+    "rover_name": "Maryland Eastern Shore",
+    "espn_id": "2379"
+  },
+  "651": {
+    "rover_name": "Wake Forest",
+    "espn_id": "154"
+  },
+  "937": {
+    "rover_name": "Kansas City",
+    "espn_id": "140"
+  },
+  "835": {
+    "rover_name": "Creighton",
+    "espn_id": "156"
+  },
+  "381": {
+    "rover_name": "West Georgia",
+    "espn_id": "2698"
+  },
+  "679": {
+    "rover_name": "DePaul",
+    "espn_id": "305"
+  },
+  "666": {
+    "rover_name": "Fordham",
+    "espn_id": "2230"
+  },
+  "726": {
+    "rover_name": "Kansas",
+    "espn_id": "2305"
+  },
+  "811": {
+    "rover_name": "Akron",
+    "espn_id": "2006"
+  },
+  "959": {
+    "rover_name": "Louisiana",
+    "espn_id": "309"
+  },
+  "300": {
+    "rover_name": "East Texas A&M C",
+    "espn_id": "2837"
+  },
+  "730": {
+    "rover_name": "Oklahoma",
+    "espn_id": "201"
+  },
+  "891": {
+    "rover_name": "Lehigh",
+    "espn_id": "2329"
+  },
+  "674": {
+    "rover_name": "Saint Louis",
+    "espn_id": "139"
+  },
+  "823": {
+    "rover_name": "Bethune",
+    "espn_id": "2065"
+  },
+  "914": {
+    "rover_name": "Furman",
+    "espn_id": "231"
+  },
+  "809": {
+    "rover_name": "Siena",
+    "espn_id": "2561"
+  },
+  "853": {
+    "rover_name": "Bryant",
+    "espn_id": "2803"
+  },
+  "855": {
+    "rover_name": "Fair Dick",
+    "espn_id": "161"
+  },
+  "712": {
+    "rover_name": "Illinois",
+    "espn_id": "356"
+  },
+  "821": {
+    "rover_name": "Toledo",
+    "espn_id": "2649"
+  },
+  "956": {
+    "rover_name": "Arkansas State",
+    "espn_id": "2032"
+  },
+  "874": {
+    "rover_name": "UT Martin",
+    "espn_id": "2630"
+  },
+  "763": {
+    "rover_name": "Tulane",
+    "espn_id": "2655"
+  },
+  "632": {
+    "rover_name": "Binghamton",
+    "espn_id": "2066"
+  },
+  "718": {
+    "rover_name": "Northwestern",
+    "espn_id": "77"
+  },
+  "938": {
+    "rover_name": "Western Illinois",
+    "espn_id": "2710"
+  },
+  "782": {
+    "rover_name": "Valparaiso",
+    "espn_id": "2674"
+  },
+  "133": {
+    "rover_name": "Lindenwood",
+    "espn_id": "2815",
+    "espn_name": "Lindenwood Lions"
+  },
+  "849": {
+    "rover_name": "TCU",
+    "espn_id": "2628"
+  },
+  "947": {
+    "rover_name": "Southern",
+    "espn_id": "2582"
+  },
+  "998": {
+    "rover_name": "SMU",
+    "espn_id": "2567"
+  },
+  "925": {
+    "rover_name": "Texas Corpus",
+    "espn_id": "357"
+  },
+  "926": {
+    "rover_name": "Texas State",
+    "espn_id": "326"
+  },
+  "911": {
+    "rover_name": "The Citadel",
+    "espn_id": "2643"
+  },
+  "780": {
+    "rover_name": "Loyola Chicago",
+    "espn_id": "2350"
+  },
+  "816": {
+    "rover_name": "Ohio",
+    "espn_id": "195"
+  },
+  "953": {
+    "rover_name": "South Alabama",
+    "espn_id": "6"
+  },
+  "826": {
+    "rover_name": "Florida A&M",
+    "espn_id": "50"
+  },
+  "643": {
+    "rover_name": "Florida State",
+    "espn_id": "52"
+  },
+  "934": {
+    "rover_name": "Oral Roberts",
+    "espn_id": "198"
+  },
+  "917": {
+    "rover_name": "Central Arkansas",
+    "espn_id": "2110"
+  },
+  "941": {
+    "rover_name": "Alcorn State",
+    "espn_id": "2016"
+  },
+  "903": {
+    "rover_name": "Ole Miss",
+    "espn_id": "145"
+  },
+  "719": {
+    "rover_name": "Ohio State",
+    "espn_id": "194"
+  },
+  "845": {
+    "rover_name": "BYU",
+    "espn_id": "252"
+  },
+  "768": {
+    "rover_name": "Chicago State",
+    "espn_id": "2130"
+  },
+  "732": {
+    "rover_name": "Texas",
+    "espn_id": "251"
+  },
+  "988": {
+    "rover_name": "Abilene Christian",
+    "espn_id": "2000"
+  },
+  "724": {
+    "rover_name": "Colorado",
+    "espn_id": "38"
+  },
+  "738": {
+    "rover_name": "Long Be St",
+    "espn_id": "299"
+  },
+  "851": {
+    "rover_name": "Utah",
+    "espn_id": "254"
+  },
+  "135": {
+    "rover_name": "Utah Tech",
+    "espn_id": "3101"
+  },
+  "847": {
+    "rover_name": "New Mexico",
+    "espn_id": "167"
+  },
+  "948": {
+    "rover_name": "Texas Southern",
+    "espn_id": "2640"
+  },
+  "890": {
+    "rover_name": "Grand Canyon",
+    "espn_id": "2253"
+  },
+  "985": {
+    "rover_name": "Incarnate Word",
+    "espn_id": "2916"
+  },
+  "731": {
+    "rover_name": "Oklahoma State",
+    "espn_id": "197"
+  },
+  "771": {
+    "rover_name": "North Dakota",
+    "espn_id": "155"
+  },
+  "717": {
+    "rover_name": "Minnesota",
+    "espn_id": "135"
+  },
+  "907": {
+    "rover_name": "Chattanooga",
+    "espn_id": "236"
+  },
+  "681": {
+    "rover_name": "Louisville",
+    "espn_id": "97"
+  },
+  "704": {
+    "rover_name": "Gardner-Webb",
+    "espn_id": "2241"
+  },
+  "678": {
+    "rover_name": "Connecticut",
+    "espn_id": "41"
+  },
+  "668": {
+    "rover_name": "La Salle",
+    "espn_id": "2325"
+  },
+  "757": {
+    "rover_name": "Houston",
+    "espn_id": "248"
+  },
+  "913": {
+    "rover_name": "Davidson",
+    "espn_id": "2166"
+  },
+  "884": {
+    "rover_name": "Washington State",
+    "espn_id": "265"
+  },
+  "921": {
+    "rover_name": "Northwestern State",
+    "espn_id": "2466"
+  },
+  "723": {
+    "rover_name": "Baylor",
+    "espn_id": "239"
+  },
+  "694": {
+    "rover_name": "Idaho State",
+    "espn_id": "304"
+  },
+  "977": {
+    "rover_name": "Utah State",
+    "espn_id": "328"
+  },
+  "701": {
+    "rover_name": "Weber State",
+    "espn_id": "2692"
+  },
+  "879": {
+    "rover_name": "Oregon State",
+    "espn_id": "204"
+  },
+  "881": {
+    "rover_name": "UCLA",
+    "espn_id": "26"
+  },
+  "875": {
+    "rover_name": "Arizona",
+    "espn_id": "12"
+  },
+  "693": {
+    "rover_name": "Eastern Washington",
+    "espn_id": "331"
+  },
+  "880": {
+    "rover_name": "Stanford",
+    "espn_id": "24"
+  },
+  "860": {
+    "rover_name": "Robert Morris",
+    "espn_id": "2523"
+  },
+  "974": {
+    "rover_name": "Nevada",
+    "espn_id": "2440"
+  },
+  "753": {
+    "rover_name": "Towson",
+    "espn_id": "119"
+  },
+  "967": {
+    "rover_name": "Santa Clara",
+    "espn_id": "2541"
+  },
+  "888": {
+    "rover_name": "Colgate",
+    "espn_id": "2142"
+  },
+  "883": {
+    "rover_name": "Washington",
+    "espn_id": "264"
+  },
+  "654": {
+    "rover_name": "East Tenn St",
+    "espn_id": "2193"
+  },
+  "876": {
+    "rover_name": "Arizona St",
+    "espn_id": "9"
+  },
+  "696": {
+    "rover_name": "Montana State",
+    "espn_id": "147"
+  },
+  "846": {
+    "rover_name": "Colorado State",
+    "espn_id": "36"
+  },
+  "838": {
+    "rover_name": "Illinois State",
+    "espn_id": "2287"
+  },
+  "581": {
+    "rover_name": "St. Marys CA",
+    "espn_id": "2608"
+  },
+  "708": {
+    "rover_name": "Radford",
+    "espn_id": "2515"
+  },
+  "966": {
+    "rover_name": "San Francisco",
+    "espn_id": "2539"
+  },
+  "695": {
+    "rover_name": "Montana",
+    "espn_id": "149"
+  },
+  "878": {
+    "rover_name": "Oregon",
+    "espn_id": "2483"
+  },
+  "987": {
+    "rover_name": "North Alabama",
+    "espn_id": "2453"
+  },
+  "740": {
+    "rover_name": "UC Davis",
+    "espn_id": "302"
+  },
+  "781": {
+    "rover_name": "Milwaukee",
+    "espn_id": "270"
+  },
+  "882": {
+    "rover_name": "USC",
+    "espn_id": "30"
+  },
+  "705": {
+    "rover_name": "High Point",
+    "espn_id": "2272"
+  },
+  "706": {
+    "rover_name": "Liberty",
+    "espn_id": "2335"
+  },
+  "943": {
+    "rover_name": "Grambling",
+    "espn_id": "2755"
+  },
+  "820": {
+    "rover_name": "Northern Illinois",
+    "espn_id": "2459"
+  },
+  "999": {
+    "rover_name": "Merrimack",
+    "espn_id": "2771"
+  },
+  "906": {
+    "rover_name": "Appalachian State",
+    "espn_id": "2026"
+  }
+}

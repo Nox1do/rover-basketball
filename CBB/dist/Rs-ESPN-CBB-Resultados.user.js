@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Rs - ESPN CBB LLoader
 // @namespace    https://roversport.net/
-// @version     0.1.3
+// @version     0.1.4
 // @description  CBB LLoader: coloca links ESPN, comprueba horarios y equipos invertidos; no llena resultados.
 // @author       noeg
 // @match        https://www.roversport.lol/adm/es/index.php*
@@ -20,13 +20,17 @@
 (() => {
     "use strict";
 
-    const VERSION = "0.1.3";
+    const VERSION = "0.1.4";
     // Rover usa America/New_York, independientemente de la zona horaria del equipo.
     const ROVER_TIME_ZONE = "America/New_York";
     const TAG = "[CBB LLoader]";
-    const PANEL_ID = "cbb-lloader-panel";
-    const STYLE_ID = "cbb-lloader-style";
-    const LAUNCHER_ID = "cbb-lloader-launcher";
+    // Previous versions shared the same panel ID. An older script may own
+    // the UI even while newer code is running. Separate the new UI namespace.
+    const PANEL_ID = "cbb-lloader-panel-v2";
+    const STYLE_ID = "cbb-lloader-style-v2";
+    const LAUNCHER_ID = "cbb-lloader-launcher-v2";
+    const LEGACY_PANEL_ID = "cbb-lloader-panel";
+    const LEGACY_LAUNCHER_ID = "cbb-lloader-launcher";
     const ESPN_GAME_URL = id =>
         `https://www.espn.com/mens-college-basketball/game/_/gameId/${id}`;
 
@@ -72,7 +76,8 @@
         viewActive: null,
         planSignature: "",
         linkAudit: [],
-        auditSignature: ""
+        auditSignature: "",
+        legacyCollision: false
     };
 
     const clean = value => String(value ?? "").replace(/\s+/g, " ").trim();
@@ -84,6 +89,25 @@
         try {
             if (typeof unsafeWindow !== "undefined") unsafeWindow[name] = value;
         } catch (_) {}
+    }
+
+    function hasLegacyCollision() {
+        return Boolean(document.getElementById(LEGACY_PANEL_ID) ||
+            document.getElementById(LEGACY_LAUNCHER_ID));
+    }
+    function requireSingleLoader() {
+        if (hasLegacyCollision()) throw new Error(
+            "Hay otra versión de CBB LLoader activa. Desactívala en Tampermonkey y recarga la página antes de guardar enlaces."
+        );
+    }
+    function uiDiagnostics() {
+        return {
+            version: VERSION, panelId: PANEL_ID,
+            label: document.getElementById(PANEL_ID)?.querySelector(".cbbll-version")?.textContent || "",
+            legacyPanelPresent: Boolean(document.getElementById(LEGACY_PANEL_ID)),
+            legacyLauncherPresent: Boolean(document.getElementById(LEGACY_LAUNCHER_ID)),
+            legacyCollision: hasLegacyCollision()
+        };
     }
 
     function isVisible(element) {
@@ -774,13 +798,13 @@
         const active = isCBBView();
 
         analyze.disabled = busy || !active;
-        test.disabled = busy || !active || exactCount === 0;
-        load.disabled = busy || !active || exactCount === 0;
+        test.disabled = busy || !active || exactCount === 0 || hasLegacyCollision();
+        load.disabled = busy || !active || exactCount === 0 || hasLegacyCollision();
         load.textContent = exactCount ? `Cargar ${exactCount} enlaces` : "Cargar enlaces";
         if (audit) audit.disabled = busy || !active;
         const pending = state.linkAudit.filter(r => r.status === "WRONG_ESPN").length;
         if (fix) {
-            fix.disabled = busy || !active || !pending || !state.auditSignature || state.auditSignature !== state.planSignature;
+            fix.disabled = busy || !active || hasLegacyCollision() || !pending || !state.auditSignature || state.auditSignature !== state.planSignature;
             fix.textContent = pending ? `Corregir ${pending} incorrectos` : "Corregir incorrectos";
         }
         stop.hidden = !busy;
@@ -1347,6 +1371,7 @@
         }
     }
     async function correctExistingLinks() {
+        requireSingleLoader();
         if (["analyzing", "loading", "auditing", "correcting"].includes(state.phase))
             throw new Error("Ya existe un proceso CBB activo");
         requireAuditedTable();
@@ -1419,6 +1444,7 @@
     }
 
     async function loadLinks({ limit = Infinity } = {}) {
+        requireSingleLoader();
         if (["analyzing", "loading", "auditing", "correcting"].includes(state.phase)) return state.plan;
         if (!state.plan.some(item => item.status === "READY")) await analyze();
 
@@ -1507,6 +1533,9 @@
         const style = document.createElement("style");
         style.id = STYLE_ID;
         style.textContent = `
+            /* Old scripts may re-show their panel every second. Hide it but
+               retain a warning and block writes until it is disabled. */
+            #${LEGACY_PANEL_ID}, #${LEGACY_LAUNCHER_ID} { display:none !important; }
             #${PANEL_ID} {
                 position: fixed; right: 16px; top: 74px; z-index: 2147483000;
                 width: 330px; box-sizing: border-box; padding: 12px;
@@ -1515,6 +1544,7 @@
                 font: 600 13px/1.35 system-ui, -apple-system, Segoe UI, sans-serif;
             }
             #${PANEL_ID}[hidden] { display: none !important; }
+            #${PANEL_ID} .cbbll-legacy-warning { margin:6px 0; padding:7px; border-radius:6px; background:#fef3c7; color:#92400e; font-size:11px; font-weight:700; }
             #${PANEL_ID} .cbbll-title { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; font-size:14px; font-weight:800; }
             #${PANEL_ID} .cbbll-version { color:#64748b; font-size:11px; font-weight:600; }
             #${PANEL_ID} .cbbll-actions { display:flex; gap:6px; }
@@ -1547,7 +1577,7 @@
 
     function ensureLauncher() {
         let launcher = document.getElementById(LAUNCHER_ID);
-        if (launcher) return launcher;
+        if (launcher) { launcher.title = `Abrir CBB LLoader v${VERSION}`; return launcher; }
 
         const sportHead = [...document.querySelectorAll(".ge-sport-head")].find(head =>
             /(?:BALONCESTO|BASKETBALL)/i.test(clean(head.querySelector("h4")?.textContent))
@@ -1582,6 +1612,7 @@
                     <span>🏀 CBB LLoader</span>
                     <span class="cbbll-version">v${VERSION}</span>
                 </div>
+                <div class="cbbll-legacy-warning" data-role="legacy-warning" hidden></div>
                 <div class="cbbll-actions">
                     <button type="button" data-action="analyze">Analizar</button>
                     <button type="button" data-action="test" disabled>Probar 1</button>
@@ -1635,6 +1666,16 @@
             document.body.appendChild(panel);
         }
 
+        // Version label must be in sync even when an existing node is reused.
+        const versionLabel = panel.querySelector(".cbbll-version");
+        if (versionLabel) versionLabel.textContent = `v${VERSION}`;
+        const legacyDetected = hasLegacyCollision();
+        const warning = panel.querySelector('[data-role="legacy-warning"]');
+        if (warning) {
+            warning.hidden = !legacyDetected;
+            if (legacyDetected) warning.textContent =
+                "Conflicto: otra versión de CBB LLoader está activa. Desactívala en Tampermonkey y recarga. Las escrituras están bloqueadas.";
+        }
         const active = isCBBView();
         const last = panel.querySelector('[data-role="last"]');
 
@@ -1654,7 +1695,8 @@
         // The one-second panel heartbeat must not toggle enabled/disabled because
         // Rover temporarily swaps select elements and grouped rows during redraws.
         // loadLinks() still revalidates the complete context before every write.
-        if (created || state.phase !== "ready") updateButtons();
+        if (created || state.phase !== "ready" || state.legacyCollision !== legacyDetected) updateButtons();
+        state.legacyCollision = legacyDetected;
         return panel;
     }
 
@@ -1669,6 +1711,7 @@
         getPlan: () => state.plan,
         getSummary: planSummary,
         getLog: () => [...state.log],
+        uiDiagnostics,
         getRoverEvents,
         isCBBView,
         qa: Object.freeze({

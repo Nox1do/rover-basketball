@@ -1,6 +1,6 @@
 # CBB LLoader — NCAA Men's Basketball
 
-Versión estable **0.1.3** (primera versión 0.1.0) basada en el archivo aportado `userscript - cfb lloader-0.1.6.user.js`.
+Versión estable **0.1.4** (primera versión 0.1.0) basada en el archivo aportado `userscript - cfb lloader-0.1.6.user.js`.
 
 Este script **vincula enlaces de partidos de ESPN con la tabla de eventos de Rover**. No llena puntajes ni resultados del juego. **Exclusivamente vincula partidos ESPN, compara la hora y verifica si los equipos están invertidos.** Las 58 funciones del CFB LLoader fueron transferidas y adaptadas; se añadieron cuatro funciones auxiliares para CBB.
 
@@ -53,3 +53,9 @@ Cuando el análisis está listo, el latido de la interfaz (cada segundo) ya no c
 **Verificar enlaces** abre los editores uno a uno en modo solo lectura y compara los links existentes con los eventos ESPN verificados. Al terminar, **Corregir incorrectos** reemplaza exclusivamente enlaces ESPN CBB que apuntan al partido equivocado, siempre que Rover y ESPN coincidan exactamente en equipos, orden local/visitante, fecha y hora. No sustituye proveedores externos ni coincidencias inciertas. Antes de guardar revalida el link anterior; tras guardar reabre el editor y comprueba el nuevo link. Solo después envía una notificación de Tampermonkey. Usar `__CBB_LLOADER.getLinkAudit()` para diagnosticar.
 
 La auditoría de los 119 juegos puede tardar; permite **Detener**. Se recomienda validar en un enlace incorrecto de prueba antes de una corrección masiva.
+
+## Compatibilidad con paneles de versiones anteriores (v0.1.4)
+
+Las versiones 0.1.0 a 0.1.3 usaban el ID `cbb-lloader-panel`, por lo que el nuevo script podía reutilizar el panel de 0.1.0 con el título antiguo y botones sin actualizar. La v0.1.4 utiliza un ID de panel independiente (`cbb-lloader-panel-v2`) y sincroniza la versión visible en cada comprobación de UI.
+
+Si se detecta otra instalación activa del script, se oculta su panel antiguo, se muestra un aviso en el panel nuevo y se bloquean **Cargar enlaces** y **Corregir incorrectos** hasta que desactives la copia antigua en Tampermonkey y recargues Rover. Análisis y verificación de solo lectura siguen disponibles. Diagnóstico: `__CBB_LLOADER.uiDiagnostics()`.

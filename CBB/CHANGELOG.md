@@ -2,6 +2,15 @@
 
 ## [Unreleased]
 
+## [0.1.4] - 2026-11-02
+
+- Corregida versión visual v0.1.0 tras actualizar: la UI antigua se reutilizaba porque todas las versiones compartían su ID de panel.
+- IDs de panel, launcher y CSS únicos a partir de esta versión; etiqueta de versión sincronizada en cada sondeo.
+- Detecta panel heredado, lo oculta y advierte sobre instalaciones duplicadas en Tampermonkey.
+- Bloquea escritura de enlaces mientras una versión antigua siga activa para prevenir controles simultáneos.
+- Diagnóstico `uiDiagnostics()` y pruebas de versión visible, compatibilidad y bloqueo seguro.
+
+
 ## [0.1.3] - 2026-11-02
 
 - Nuevo botón **Verificar enlaces** para auditar URLs existentes sin escribir.

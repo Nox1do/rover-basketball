@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+## [0.1.5] - 2026-11-02
+
+- Añadidos 20 emparejamientos NCAA CBB y 38 nuevos códigos de equipo Rover; 276 equipos totales y 139 enfrentamientos documentados.
+- Mapeos verificados contra el catálogo y las fichas de equipos ESPN, incluidos California Baptist (`19210→2856`), Sam Houston State (`923→2534`) y San Diego State (`848→21`).
+- Preservados Stetson (`662→56`) y Lipscomb (`658→288`) sin duplicar entradas.
+- Pruebas de integridad de los 20 encuentros y de código Rover de cinco dígitos; funcionalidades de carga/auditoría sin cambios.
+
+
 ## [0.1.4] - 2026-11-02
 
 - Corregida versión visual v0.1.0 tras actualizar: la UI antigua se reutilizaba porque todas las versiones compartían su ID de panel.

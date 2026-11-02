@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-11-02
+
+- Corregida la alternancia de Cargar enlaces/Probar 1 en Firefox: el sondeo de 1 segundo deja de recalcular `disabled` tras completar Analizar.
+- Se mantiene la validación estricta de contexto justo antes de cada escritura; si la tabla o liga cambia, la carga se cancela.
+- Añadido control de instancia única para evitar paneles/intervalos competidores desde v0.1.2 en adelante. Las versiones anteriores (0.1.0 y 0.1.1) deben desactivarse manualmente si están duplicadas.
+- Aplicados los dos `@match` aprobados para `index.php` y restringido `@include` a esa página para evitar inyecciones en otras pantallas.
+- Pruebas de regresión de estabilidad del botón, guardia de liga, instancias duplicadas y metadatos.
+
 ## [0.1.1] - 2026-11-02
 
 - Se corrige el nombre a **CBB LLoader**, cuya función es exclusivamente enlazar ESPN, comprobar horarios e identificar localías invertidas.

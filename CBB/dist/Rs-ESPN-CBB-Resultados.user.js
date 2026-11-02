@@ -1,14 +1,12 @@
 // ==UserScript==
 // @name         Rs - ESPN CBB LLoader
 // @namespace    https://roversport.net/
-// @version     0.1.1
+// @version     0.1.2
 // @description  CBB LLoader: coloca links ESPN, comprueba horarios y equipos invertidos; no llena resultados.
 // @author       noeg
-// @match        https://www.roversport.net/adm/es/*
-// @match        https://roversport.net/adm/es/*
-// @match        https://www.roversport.lol/adm/es/*
-// @match        https://roversport.lol/adm/es/*
-// @include      /^https?:\/\/(?:www\.)?roversport\.[^/]+\/adm\/es(?:\/.*)?(?:\?.*)?$/
+// @match        https://www.roversport.lol/adm/es/index.php*
+// @match        https://www.roversport.net/adm/es/index.php*
+// @include      /^https?:\/\/(?:www\.)?roversport\.[^/]+\/adm\/es\/index\.php(?:\?.*)?$/
 // @grant        GM.xmlHttpRequest
 // @grant        GM_xmlhttpRequest
 // @grant        unsafeWindow
@@ -21,7 +19,7 @@
 (() => {
     "use strict";
 
-    const VERSION = "0.1.1";
+    const VERSION = "0.1.2";
     // Rover usa America/New_York, independientemente de la zona horaria del equipo.
     const ROVER_TIME_ZONE = "America/New_York";
     const TAG = "[CBB LLoader]";
@@ -34,6 +32,34 @@
     // Mapeo CBB 2026-27: 238 identificadores verificados contra ESPN.
     // No mezclar con los IDs Rover usados en CFB: son deportes distintos.
     const TEAM_IDS = {"733":"2511","711":"2737","872":"2634","870":"93","980":"94","767":"2638","928":"2636","976":"23","638":"2378","746":"2244","919":"2377","765":"5","646":"2390","893":"57","933":"2473","715":"130","963":"2492","795":"172","812":"189","747":"2247","804":"2352","680":"46","886":"349","642":"150","857":"2405","689":"2599","854":"2115","997":"218","709":"2427","671":"257","663":"2429","839":"282","635":"311","685":"2507","981":"322","775":"2086","858":"116","676":"2752","784":"2754","673":"179","822":"2711","752":"295","808":"2520","684":"221","815":"193","749":"256","661":"2908","756":"151","887":"2083","645":"120","285":"2441","690":"183","819":"2199","703":"324","636":"160","793":"225","770":"2885","664":"2168","759":"235","725":"66","702":"2127","688":"58","813":"2084","758":"276","817":"2050","915":"290","944":"2296","734":"2641","796":"159","806":"2368","388":"91","898":"238","910":"2717","648":"153","639":"261","803":"314","885":"44","677":"2132","400":"526","766":"2116","866":"2197","713":"84","908":"2210","794":"171","751":"111","633":"104","662":"56","641":"228","807":"315","692":"277","828":"47","800":"43","955":"2031","754":"2670","669":"113","954":"2653","856":"112358","951":"2226","859":"2514","716":"127","844":"2005","783":"2750","176":"2900","707":"2506","382":"2385","682":"269","873":"2635","904":"344","270":"2330","729":"158","721":"2509","961":"2250","957":"2172","722":"275","818":"2117","960":"2433","892":"2426","667":"45","787":"2428","894":"61","814":"2309","973":"2348","801":"2099","720":"213","810":"2612","687":"2550","179":"88","652":"2057","869":"2413","949":"98","653":"2097","647":"152","658":"288","254":"2546","829":"2379","651":"154","937":"140","835":"156","381":"2698","679":"305","666":"2230","726":"2305","811":"2006","959":"309","300":"2837","730":"201","891":"2329","674":"139","823":"2065","914":"231","809":"2561","853":"2803","855":"161","712":"356","821":"2649","956":"2032","874":"2630","763":"2655","632":"2066","718":"77","938":"2710","782":"2674","133":"2815","849":"2628","947":"2582","998":"2567","925":"357","926":"326","911":"2643","780":"2350","816":"195","953":"6","826":"50","643":"52","934":"198","917":"2110","941":"2016","903":"145","719":"194","845":"252","768":"2130","732":"251","988":"2000","724":"38","738":"299","851":"254","135":"3101","847":"167","948":"2640","890":"2253","985":"2916","731":"197","771":"155","717":"135","907":"236","681":"97","704":"2241","678":"41","668":"2325","757":"248","913":"2166","884":"265","921":"2466","723":"239","694":"304","977":"328","701":"2692","879":"204","881":"26","875":"12","693":"331","880":"24","860":"2523","974":"2440","753":"119","967":"2541","888":"2142","883":"264","654":"2193","876":"9","696":"147","846":"36","838":"2287","581":"2608","708":"2515","966":"2539","695":"149","878":"2483","987":"2453","740":"302","781":"270","882":"30","705":"2272","706":"2335","943":"2755","820":"2459","999":"2771","906":"2026"};
+
+
+    // Prevent competing intervals/panels when the same loader is injected twice.
+    // Legacy v0.1.0/v0.1.1 instances do not have this contract and must be disabled in Tampermonkey.
+    const RUNTIME_KEY = "__CBB_LLOADER_RUNTIME__";
+    const runtimeWindow = typeof unsafeWindow !== "undefined" && unsafeWindow ? unsafeWindow : window;
+    const previousRuntime = runtimeWindow[RUNTIME_KEY];
+    const versionNumber = version => String(version || "").split(".").reduce((value, part) => value * 1000 + Number(part || 0), 0);
+    if (previousRuntime?.active) {
+        if (versionNumber(previousRuntime.version) >= versionNumber(VERSION)) {
+            console.warn(`${TAG} v${VERSION}: otra instancia igual o más reciente ya está activa; omitida.`);
+            return;
+        }
+        previousRuntime.dispose?.();
+    }
+    let panelPollId = null;
+    const runtime = {
+        version: VERSION,
+        active: true,
+        dispose() {
+            if (!this.active) return;
+            this.active = false;
+            if (panelPollId !== null) clearInterval(panelPollId);
+            document.getElementById(PANEL_ID)?.remove();
+            document.getElementById(LAUNCHER_ID)?.remove();
+        }
+    };
+    runtimeWindow[RUNTIME_KEY] = runtime;
 
     const state = {
         phase: "idle",
@@ -1333,6 +1359,7 @@
     function ensurePanel() {
         installStyles();
         let panel = document.getElementById(PANEL_ID);
+        const created = !panel;
 
         if (!panel) {
             panel = document.createElement("section");
@@ -1403,7 +1430,11 @@
         }
         panel.hidden = false;
         ensureLauncher();
-        updateButtons();
+        // In the READY phase the previously verified plan owns the button state.
+        // The one-second panel heartbeat must not toggle enabled/disabled because
+        // Rover temporarily swaps select elements and grouped rows during redraws.
+        // loadLinks() still revalidates the complete context before every write.
+        if (created || state.phase !== "ready") updateButtons();
         return panel;
     }
 
@@ -1438,6 +1469,8 @@
 
     expose("__CBB_LLOADER", API);
     ensurePanel();
-    setInterval(ensurePanel, 1000);
+    panelPollId = setInterval(() => {
+        if (runtime.active) ensurePanel();
+    }, 1000);
     console.log(`${TAG} v${VERSION} cargado. Dataset: ${Object.keys(TEAM_IDS).length} equipos.`);
 })();

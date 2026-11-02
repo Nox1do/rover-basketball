@@ -7,7 +7,8 @@ const code=readFileSync(new URL('src/Rs-ESPN-CBB-LLoader.user.js',root),'utf8');
 const mapping=JSON.parse(readFileSync(new URL('data/rover-espn-team-map.json',root),'utf8'));
 const csv=readFileSync(new URL('data/rover-espn-matchups.csv',root),'utf8');
 function harness({category='BASKETBALL',league='CBB',date='2026-11-02',feed=null,grouped=true}={}){
- const elem=()=>({style:{},hidden:false,disabled:false,textContent:'',addEventListener(){},replaceChildren(){},appendChild(){},querySelector(){return elem()},querySelectorAll(){return[]}});
+ const controls=new Map(),intervals=[];
+ const elem=()=>({style:{},hidden:false,disabled:false,textContent:'',addEventListener(){},replaceChildren(){},appendChild(){},append(){},remove(){},getClientRects(){return[1]},querySelector(s){if(s?.includes('[data-action=')){if(!controls.has(s))controls.set(s,elem());return controls.get(s)}return elem()},querySelectorAll(){return[]}});
  const selects=[category,league].map(value=>({tagName:'SELECT',value,options:[{textContent:value}],selectedIndex:0}));
  const dateControl={value:date};
  const team=id=>({dataset:{team:id},cloneNode(){return {textContent:id==='733'?'Queens University':'Winthrop',querySelectorAll(){return[]}}}});
@@ -18,15 +19,15 @@ function harness({category='BASKETBALL',league='CBB',date='2026-11-02',feed=null
  const nodes=new Map();
  const document={head:{appendChild(e){nodes.set(e.id,e)}},body:{appendChild(e){nodes.set(e.id,e)}},createElement(){return elem()},getElementById(id){return nodes.get(id)||null},querySelector(s){return s==='#tablaEventos'?table:null},querySelectorAll(s){if(s==='label')return ['CATEGORY','LEAGUE'].map((textContent,i)=>({textContent,parentElement:{querySelector(){return selects[i]}}}));if(s==='select')return selects;if(s==='table')return[table];if(s.includes('input[name="fecha"]'))return[dateControl];return[]}};
  const urls=[];
- const context={document,console:{log(){},warn(){},error(){},table(){}},setInterval(){},getComputedStyle(){return {display:'block',visibility:'visible'}},GM:{xmlHttpRequest(opts){urls.push(opts.url);return Promise.resolve({status:200,responseText:JSON.stringify(feed?.(opts.url)||{events:[]})})}}};
+ const context={document,console:{log(){},warn(){},error(){},table(){}},setInterval(fn){intervals.push(fn)},getComputedStyle(){return {display:'block',visibility:'visible'}},GM:{xmlHttpRequest(opts){urls.push(opts.url);return Promise.resolve({status:200,responseText:JSON.stringify(feed?.(opts.url)||{events:[]})})}}};
  context.window=context;
  vm.runInNewContext(code,context,{timeout:2500});
- return {api:context.__CBB_LLOADER,qa:context.__CBB_LLOADER.qa,urls,dateControl,selects};
+ return {api:context.__CBB_LLOADER,qa:context.__CBB_LLOADER.qa,urls,dateControl,selects,controls,intervals,context};
 }
 const h=harness();
 function game(away='2511',home='2737',date='2026-11-02T23:00:00Z',id='401921423') {return {id,date,competitions:[{competitors:[{homeAway:'away',team:{id:away}},{homeAway:'home',team:{id:home}}]}]}}
 function rover(away='733',home='711',time=1080,date='2026-11-02'){return {date,timeMinutes:time,away:{roverCode:away},home:{roverCode:home}}}
-test('version and source CBB are correct',()=>{assert.equal(h.api.version,'0.1.1');assert.match(code,/mens-college-basketball\/scoreboard/);assert.doesNotMatch(code,/football\/college-football|__CFB_LLOADER/)});
+test('version and source CBB are correct',()=>{assert.equal(h.api.version,'0.1.2');assert.match(code,/mens-college-basketball\/scoreboard/);assert.doesNotMatch(code,/football\/college-football|__CFB_LLOADER/)});
 test('all 58 original functions preserved plus four helpers',()=>{assert.equal((code.match(/(?:async\s+)?function\s+\w+/g)||[]).length,62)});
 test('238 Rover IDs exactly match ESPN crosswalk',()=>{assert.equal(Object.keys(h.qa.teamIds).length,238);for(const [id,data] of Object.entries(mapping))assert.equal(h.qa.teamIds[id],data.espn_id);assert.equal(new Set(Object.values(h.qa.teamIds)).size,238)});
 test('all 119 fixtures have valid away+home team IDs',()=>{const rows=csv.trim().replace(/^\uFEFF/,'').split(/\r?\n/).slice(1);assert.equal(rows.length,119);for(const line of rows){const cols=line.split(',');assert.equal(h.qa.teamIds[cols[1]],cols[3]);assert.equal(h.qa.teamIds[cols[4]],cols[6])}});
@@ -45,3 +46,36 @@ test('analyze -> READY from group 50 and CBB ESPN URL',async()=>{const x=harness
 test('change of displayed date after analysis cancels link loading',async()=>{const x=harness({feed(){return {events:[game()]}}});await x.api.analyze();x.dateControl.value='2026-11-03';await assert.rejects(x.api.load({limit:1}),/cambiaron/)});
 
 test('CBB is an ESPN link-and-schedule auditor, not score writer',()=>{assert.match(code,/@name\s+Rs - ESPN CBB LLoader/);assert.match(code,/mens-college-basketball\/game\/_\/gameId/);assert.match(code,/function findExact\(/);assert.match(code,/function writeUrlField\(/);assert.doesNotMatch(code,/function (?:writeScore|saveScore|saveResults|setScore)\(/);});
+
+test('buttons remain stable during READY panel heartbeat, but write guard rejects changed league',async()=>{
+ const x=harness({feed(){return {events:[game()]}}});
+ await x.api.analyze();
+ const load=x.controls.get('[data-action="load"]');
+ assert.equal(load.disabled,false);
+ x.selects[1].value='NBA';
+ x.selects[1].options[0].textContent='NBA';
+ x.intervals[0]();
+ assert.equal(load.disabled,false);
+ await assert.rejects(x.api.load({limit:1}),/cambiaron/);
+ assert.equal(load.disabled,true);
+});
+test('singleton prevents duplicate version from scheduling conflicting panel refreshes',()=>{
+ const x=harness();
+ const firstIntervalCount=x.intervals.length;
+ vm.runInNewContext(code,x.context,{timeout:2500});
+ assert.equal(firstIntervalCount,1);
+ assert.equal(x.intervals.length,1);
+ assert.equal(x.context.__CBB_LLOADER.version,'0.1.2');
+});
+test('Tampermonkey metadata matches only index.php and stays versioned',()=>{
+ const lines=code.split(/\r?\n/);
+ const matches=lines.filter(line=>/^\/\/\s*@match\s+/.test(line));
+ assert.deepEqual(matches,[
+  '// @match        https://www.roversport.lol/adm/es/index.php*',
+  '// @match        https://www.roversport.net/adm/es/index.php*'
+ ]);
+ const include=lines.find(line=>/^\/\/\s*@include\s+/.test(line));
+ assert.match(include,/index\\\.php/);
+ assert.doesNotMatch(include,/adm\\\/es\(\?/);
+ assert.match(code,/@version\s+0\.1\.2/);
+});

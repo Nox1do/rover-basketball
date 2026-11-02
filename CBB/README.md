@@ -1,6 +1,6 @@
 # CBB LLoader — NCAA Men's Basketball
 
-Versión estable **0.1.1** (primera versión 0.1.0) basada en el archivo aportado `userscript - cfb lloader-0.1.6.user.js`.
+Versión estable **0.1.2** (primera versión 0.1.0) basada en el archivo aportado `userscript - cfb lloader-0.1.6.user.js`.
 
 Este script **vincula enlaces de partidos de ESPN con la tabla de eventos de Rover**. No llena puntajes ni resultados del juego. **Exclusivamente vincula partidos ESPN, compara la hora y verifica si los equipos están invertidos.** Las 58 funciones del CFB LLoader fueron transferidas y adaptadas; se añadieron cuatro funciones auxiliares para CBB.
 
@@ -41,3 +41,9 @@ Se conserva la ruta de actualización de la v0.1.0 (`dist/Rs-ESPN-CBB-Resultados
 - No ejecutar a la vez otros loaders de CBB que puedan modificar los mismos campos.
 
 Fuentes de endpoints: `https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/scoreboard?groups=50&limit=1000&dates=AAAAMMDD` y `/teams/{teamId}/schedule?season=2027`.
+
+## Nota de compatibilidad Firefox (v0.1.2)
+
+En Tampermonkey, **deja habilitado un solo CBB LLoader**. Los nombres de la v0.1.0 y v0.1.1 cambiaron y pueden aparecer como dos usuarioscripts diferentes que manipulan el mismo panel. La v0.1.2 protege inyecciones duplicadas de esta versión y futuras, pero no puede desactivar automáticamente scripts anteriores que carecen de la protección.
+
+Cuando el análisis está listo, el latido de la interfaz (cada segundo) ya no cambia el estado del botón. Antes de cualquier guardado, `loadLinks()` vuelve a comprobar la liga, fecha, equipos y horario de la tabla. Solo se ejecuta en `https://www.roversport.lol/adm/es/index.php` o `https://www.roversport.net/adm/es/index.php` (con parámetros de consulta opcionales).

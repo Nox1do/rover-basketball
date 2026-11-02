@@ -27,7 +27,7 @@ function harness({category='BASKETBALL',league='CBB',date='2026-11-02',feed=null
 const h=harness();
 function game(away='2511',home='2737',date='2026-11-02T23:00:00Z',id='401921423') {return {id,date,competitions:[{competitors:[{homeAway:'away',team:{id:away}},{homeAway:'home',team:{id:home}}]}]}}
 function rover(away='733',home='711',time=1080,date='2026-11-02'){return {date,timeMinutes:time,away:{roverCode:away},home:{roverCode:home}}}
-test('version and source CBB are correct',()=>{assert.equal(h.api.version,'0.1.8');assert.match(code,/mens-college-basketball\/scoreboard/);assert.doesNotMatch(code,/football\/college-football|__CFB_LLOADER/)});
+test('version and source CBB are correct',()=>{assert.equal(h.api.version,'0.1.9');assert.match(code,/mens-college-basketball\/scoreboard/);assert.doesNotMatch(code,/football\/college-football|__CFB_LLOADER/)});
 test('all 58 original functions preserved plus four helpers',()=>{assert.ok((code.match(/(?:async\s+)?function\s+\w+/g)||[]).length>=62)});
 test('276 Rover IDs exactly match ESPN crosswalk',()=>{assert.equal(Object.keys(h.qa.teamIds).length,276);for(const [id,data] of Object.entries(mapping))assert.equal(h.qa.teamIds[id],data.espn_id);assert.equal(new Set(Object.values(h.qa.teamIds)).size,276)});
 test('all 139 fixtures have valid away+home team IDs',()=>{const rows=csv.trim().replace(/^\uFEFF/,'').split(/\r?\n/).slice(1);assert.equal(rows.length,139);for(const line of rows){const cols=line.split(',');assert.equal(h.qa.teamIds[cols[1]],cols[3]);assert.equal(h.qa.teamIds[cols[4]],cols[6])}});
@@ -65,7 +65,7 @@ test('singleton prevents duplicate version from scheduling conflicting panel ref
  vm.runInNewContext(code,x.context,{timeout:2500});
  assert.equal(firstIntervalCount,1);
  assert.equal(x.intervals.length,1);
- assert.equal(x.context.__CBB_LLOADER.version,'0.1.8');
+ assert.equal(x.context.__CBB_LLOADER.version,'0.1.9');
 });
 test('Tampermonkey metadata matches only index.php and stays versioned',()=>{
  const lines=code.split(/\r?\n/);
@@ -77,10 +77,10 @@ test('Tampermonkey metadata matches only index.php and stays versioned',()=>{
  const include=lines.find(line=>/^\/\/\s*@include\s+/.test(line));
  assert.match(include,/index\\\.php/);
  assert.doesNotMatch(include,/adm\\\/es\(\?/);
- assert.match(code,/@version\s+0\.1\.8/);
+ assert.match(code,/@version\s+0\.1\.9/);
 });
 
-test('v0.1.8 tests strict parsing and safe classification',()=>{
+test('v0.1.9 tests strict parsing and safe classification',()=>{
  const item={status:'READY',match:{eventId:'401911469'}};
  assert.equal(h.qa.strictEspnId('https://www.espn.com/mens-college-basketball/game/_/gameId/401911469'),'401911469');
  assert.equal(h.qa.strictEspnId('https://bad.example/path/espn.com/mens-college-basketball/game/_/gameId/401911469'),'');
@@ -91,12 +91,12 @@ test('v0.1.8 tests strict parsing and safe classification',()=>{
  assert.equal(h.qa.classifyLink(item,{url:'https://www.foxsports.com/game/123'}),'OTHER_LINK');
  assert.equal(h.qa.classifyLink({status:'REVERSED_PAIR',match:null},{url:'https://www.espn.com/mens-college-basketball/game/_/gameId/401911468'}),'NEEDS_REVIEW');
 });
-test('v0.1.8 requires verification before correcting',async()=>{
+test('v0.1.9 requires verification before correcting',async()=>{
  const x=harness({feed(){return {events:[game()]}}});
  await x.api.analyze();
  await assert.rejects(x.api.correctLinks(),/Verificar enlaces/);
 });
-test('v0.1.8 includes separate read-only audit and post-save confirmation/notification',()=>{
+test('v0.1.9 includes separate read-only audit and post-save confirmation/notification',()=>{
  assert.equal(typeof h.api.verifyLinks,'function');
  assert.equal(typeof h.api.correctLinks,'function');
  assert.match(code,/data-action="audit">Verificar enlaces/);
@@ -176,30 +176,30 @@ test('changed ESPN link after audit is not overwritten, no notification',async()
  assert.equal(x.saves,0);assert.equal(x.notifications.length,0);
 });
 
-test('v0.1.8 refreshes displayed version after old UI text is modified',()=>{
+test('v0.1.9 refreshes displayed version after old UI text is modified',()=>{
  const x=harness();
  const label=x.controls.get('.cbbll-version');
- assert.equal(label.textContent,'v0.1.8');
+ assert.equal(label.textContent,'v0.1.9');
  label.textContent='v0.1.0';
  x.intervals[0]();
- assert.equal(label.textContent,'v0.1.8');
- assert.equal(x.api.uiDiagnostics().label,'v0.1.8');
+ assert.equal(label.textContent,'v0.1.9');
+ assert.equal(x.api.uiDiagnostics().label,'v0.1.9');
  assert.equal(x.api.uiDiagnostics().panelId,'cbb-lloader-panel-v2');
 });
-test('v0.1.8 detects legacy UI and blocks all link writes',async()=>{
+test('v0.1.9 detects legacy UI and blocks all link writes',async()=>{
  const x=harness({feed(){return {events:[game()]}}});
  const original=x.context.document.getElementById.bind(x.context.document);
  x.context.document.getElementById=id=>id==='cbb-lloader-panel'?{id}:original(id);
  await x.api.analyze();
  assert.equal(x.api.uiDiagnostics().legacyCollision,true);
- assert.equal(x.api.uiDiagnostics().label,'v0.1.8');
+ assert.equal(x.api.uiDiagnostics().label,'v0.1.9');
  await assert.rejects(x.api.load({limit:1}),/otra versi.n/i);
  await assert.rejects(x.api.correctLinks(),/otra versi.n/i);
  x.intervals[0]();
  assert.equal(x.controls.get('[data-action="load"]').disabled,true);
  assert.equal(x.controls.get('[data-role="legacy-warning"]').hidden,false);
 });
-test('v0.1.8 uses separate IDs while retaining the ESPN link auditor',()=>{
+test('v0.1.9 uses separate IDs while retaining the ESPN link auditor',()=>{
  assert.match(code,/const PANEL_ID = "cbb-lloader-panel-v2"/);
  assert.match(code,/const LEGACY_PANEL_ID = "cbb-lloader-panel"/);
  assert.match(code,/function requireSingleLoader\(/);
@@ -288,7 +288,7 @@ test('bulk engine validates each live target and verifies saved link before succ
 });
 
 
-function sequentialSaveHarness({dropPendingAfterFirst=false,addUnrelatedAfterFirst=false,changeSecondAfterFirst=false,includeThird=false}={}){
+function sequentialSaveHarness({dropPendingAfterFirst=false,addUnrelatedAfterFirst=false,changeSecondAfterFirst=false,includeThird=false,delayEditorFields=0,keepOpenOnSave=false,failPersistence=false}={}){
  const games=[
   {id:'401921423',date:'2026-11-02T23:00:00Z',competitions:[{competitors:[{homeAway:'away',team:{id:'2511'}},{homeAway:'home',team:{id:'2737'}}]}]},
   {id:'401921424',date:'2026-11-02T23:00:00Z',competitions:[{competitors:[{homeAway:'away',team:{id:'2634'}},{homeAway:'home',team:{id:'93'}}]}]}
@@ -304,7 +304,7 @@ function sequentialSaveHarness({dropPendingAfterFirst=false,addUnrelatedAfterFir
    initial.push({id:'123458',away:'790',awayName:'Seattle U',home:'971',homeName:'Hawaii'});
  }
  const stored=new Map(initial.map(item=>[item.id,''])),nodes=new Map(),controls=new Map();
- let rows=[],activeId='',modalOpen=false,saves=0,opens=0,activeField=null;
+ let rows=[],activeId='',modalOpen=false,saves=0,opens=0,activeField=null,fieldsLeft=0;
  const selects=['BASKETBALL','CBB'].map(value=>({tagName:'SELECT',value,options:[{textContent:value}],selectedIndex:0}));
  const dateControl={value:'2026-11-02'};
  const e=()=>({style:{},hidden:false,disabled:false,textContent:'',getClientRects(){return[1]},
@@ -345,7 +345,7 @@ function sequentialSaveHarness({dropPendingAfterFirst=false,addUnrelatedAfterFir
      return[];
     },
     querySelector(sel){if(sel==='button[onclick^="geEeOpen("][title="Editar"]'){
-       return{click(){opens++;activeId=item.id;activeField.value=stored.get(item.id);modalOpen=true}};
+       return{click(){opens++;activeId=item.id;activeField.value=stored.get(item.id);modalOpen=true;fieldsLeft=delayEditorFields}};
      }return null}
    };
    return row;
@@ -357,7 +357,9 @@ function sequentialSaveHarness({dropPendingAfterFirst=false,addUnrelatedAfterFir
  const cancel={textContent:'Cerrar',value:'',title:'Cerrar',getAttribute(){return null},
   getClientRects(){return[1]},click(){modalOpen=false}};
  const save={click(){
-   saves++;stored.set(activeId,field.value);modalOpen=false;
+   saves++;
+   if(!failPersistence)stored.set(activeId,field.value);
+   if(!keepOpenOnSave)modalOpen=false;
    for(const r of rows)r.isConnected=false;
    buildRows();
  }};
@@ -366,6 +368,8 @@ function sequentialSaveHarness({dropPendingAfterFirst=false,addUnrelatedAfterFir
  const form={getClientRects(){return[1]},closest(){return scope},
   querySelector(sel){
    const a=initial.find(item=>item.id===activeId);
+   if(sel==='#ge-ee-serial'&&fieldsLeft>0){fieldsLeft--;return null;}
+   if(fieldsLeft>0)return null;
    if(sel==='#ge-ee-serial')return{value:activeId};
    if(sel==='#ge-ee-team1')return{value:a?.away};
    if(sel==='#ge-ee-team2')return{value:a?.home};
@@ -395,6 +399,10 @@ function sequentialSaveHarness({dropPendingAfterFirst=false,addUnrelatedAfterFir
   Event:class{constructor(type,opts){this.type=type;this.opts=opts}},
   HTMLInputElement:class{}
  };
+ if(keepOpenOnSave) {
+   let now=0;
+   context.Date=class extends Date{static now(){return now+=300}};
+ }
  context.window=context;
  vm.runInNewContext(code,context,{timeout:2500});
  return {api:context.__CBB_LLOADER,stored,opens:()=>opens,saves:()=>saves};
@@ -486,6 +494,60 @@ test('ambiguous candidate fields never trigger a write; diagnostic does not prin
 });
 test('field readiness and success confirmation still require persisted link verification',()=>{
  assert.match(code,/await waitForUrlField\(item\)/);
- assert.match(code,/message !== beforeText/);
+ assert.match(code,/message !== before/);
  assert.match(code,/await verifySavedUrl\(item\)/);
+});
+
+test('real editor requires SN, both teams and ge-ee-url before writing',()=>{
+ const item={rover:{roverEventId:'1198954',away:{roverCode:'935'},home:{roverCode:'727'}}};
+ let id='',away='',home='';
+ const field={tagName:'INPUT',type:'text',value:''};
+ const form={querySelector(q){
+  if(q==='#ge-ee-serial')return{value:id};
+  if(q==='#ge-ee-team1')return{value:away};
+  if(q==='#ge-ee-team2')return{value:home};
+  if(q==='#ge-ee-url')return field;
+  return null;
+ }};
+ const modal={form,scope:form};
+ assert.equal(h.qa.modalReadiness(item,modal).ready,false);
+ id='1198954';
+ assert.equal(h.qa.modalReadiness(item,modal).ready,false);
+ away='935';home='727';
+ assert.equal(h.qa.modalReadiness(item,modal).ready,true);
+ id='1198955';
+ assert.equal(h.qa.modalReadiness(item,modal).ready,false);
+ id='1198954';home='971';
+ assert.equal(h.qa.modalReadiness(item,modal).mismatch,true);
+});
+test('delayed editor mounts still save three links in correct order',async()=>{
+ const x=sequentialSaveHarness({includeThird:true,delayEditorFields:4});
+ await x.api.analyze();
+ const plan=await x.api.load();
+ assert.deepEqual(plan.map(p=>p.loadStatus),['SAVED','SAVED','SAVED']);
+ assert.equal(x.saves(),3);
+ assert.equal(x.opens(),6);
+});
+test('no save toast but persistent URL is verified after reopening',async()=>{
+ const x=sequentialSaveHarness({keepOpenOnSave:true});
+ await x.api.analyze();
+ const plan=await x.api.load({limit:1});
+ assert.equal(plan[0].loadStatus,'SAVED');
+ assert.equal(x.saves(),1);
+ assert.match(x.stored.get('123456'),/gameId\/401921423/);
+});
+test('no save toast and no persistence never claims SAVED or resubmits',async()=>{
+ const x=sequentialSaveHarness({keepOpenOnSave:true,failPersistence:true});
+ await x.api.analyze();
+ const plan=await x.api.load({limit:1});
+ assert.equal(plan[0].loadStatus,'ERROR');
+ assert.equal(x.saves(),1);
+ assert.equal(x.stored.get('123456'),'');
+ assert.match(plan[0].error,/no conserv.|no persist/i);
+});
+
+test('stale toast from a previous event cannot confirm the current save',()=>{
+ assert.match(code,/const previousToasts = new Map/);
+ assert.match(code,/!previousToasts\.has\(el\)/);
+ assert.match(code,/previousToasts\.get\(el\) !== clean\(el\.textContent\)/);
 });

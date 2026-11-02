@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Rs - ESPN CBB LLoader
 // @namespace    https://roversport.net/
-// @version      0.1.8
+// @version      0.1.9
 // @description  CBB LLoader: coloca links ESPN, comprueba horarios y equipos invertidos; no llena resultados.
 // @author       noeg
 // @match        https://www.roversport.lol/adm/es/index.php*
@@ -20,7 +20,7 @@
 (() => {
     "use strict";
 
-    const VERSION = "0.1.8";
+    const VERSION = "0.1.9";
     // Rover usa America/New_York, independientemente de la zona horaria del equipo.
     const ROVER_TIME_ZONE = "America/New_York";
     const TAG = "[CBB LLoader]";
@@ -994,57 +994,62 @@
         return { form, scope };
     }
 
-    async function openEditor(item) {
-        const row = item.rover.row?.isConnected
-            ? item.rover.row
-            : await waitForRoverRow(item.rover.roverEventId);
-        if (!row) throw new Error("La fila ya no existe");
 
+    function modalReadiness(item, modal) {
+        if (!modal?.form) return { ready: false, reason: "formulario ausente" };
+        const id = clean(modal.form.querySelector("#ge-ee-serial")?.value ||
+            modal.form.querySelector('input[name="evento[]"]')?.value);
+        const away = clean(modal.form.querySelector("#ge-ee-team1")?.value);
+        const home = clean(modal.form.querySelector("#ge-ee-team2")?.value);
+        if (id !== item.rover.roverEventId)
+            return { ready: false, reason: id ? "otro SN" : "SN pendiente" };
+        if (!away || !home)
+            return { ready: false, reason: "equipos pendientes" };
+        if (away !== item.rover.away.roverCode || home !== item.rover.home.roverCode)
+            return { ready: false, reason: "equipos diferentes", mismatch: true };
+        const field = findUrlField(modal);
+        return field
+            ? { ready: true, reason: "listo", field }
+            : { ready: false, reason: "URL sin montar" };
+    }
+
+    async function openEditor(item) {
+        if (currentModal()) throw new Error(
+            "Hay otro editor abierto. Ciérralo antes de procesar este evento."
+        );
+        const row = await waitForRoverRow(item.rover.roverEventId, 5000);
+        if (!row) throw new Error("La fila ya no existe");
+        item.rover.row = row;
         const button = findEditButton(row);
         if (!button) throw new Error("No encontré el botón Editar");
-
         row.scrollIntoView({ block: "center", behavior: "auto" });
         button.click();
 
         const started = Date.now();
-        while (Date.now() - started < 8000) {
+        let reason = "modal no visible";
+        while (Date.now() - started < 10000) {
             const modal = currentModal();
             if (modal) {
-                const serial = clean(
-                    modal.form.querySelector("#ge-ee-serial")?.value ||
-                    modal.form.querySelector('input[name="evento[]"]')?.value
+                const status = modalReadiness(item, modal);
+                if (status.ready) return modal;
+                reason = status.reason;
+                if (status.mismatch) throw new Error(
+                    "SN " + item.rover.roverEventId + ": equipos distintos en el editor."
                 );
-                if (serial && serial !== item.rover.roverEventId) {
-                    await sleep(100);
-                    continue;
-                }
-                return modal;
             }
             await sleep(100);
         }
-
-        throw new Error("El modal de edición no abrió");
+        throw new Error(
+            "SN " + item.rover.roverEventId + ": editor incompleto (" + reason + ")."
+        );
     }
 
     function validateModalEvent(item, modal) {
-        const serial = clean(
-            modal.form.querySelector("#ge-ee-serial")?.value ||
-            modal.form.querySelector('input[name="evento[]"]')?.value
+        const status = modalReadiness(item, modal);
+        if (!status.ready) throw new Error(
+            "SN " + item.rover.roverEventId + ": editor no listo (" + status.reason + ")."
         );
-        if (serial && serial !== item.rover.roverEventId) {
-            throw new Error(`Modal #${serial}; esperaba #${item.rover.roverEventId}`);
-        }
-
-        const team1 = clean(modal.form.querySelector("#ge-ee-team1")?.value);
-        const team2 = clean(modal.form.querySelector("#ge-ee-team2")?.value);
-        if (team1 && team1 !== item.rover.away.roverCode) {
-            throw new Error(`AWAY del modal no coincide (${team1})`);
-        }
-        if (team2 && team2 !== item.rover.home.roverCode) {
-            throw new Error(`HOME del modal no coincide (${team2})`);
-        }
     }
-
     const ESPN_URL_PATTERN = /https?:\/\/[^\s"'<>]*espn\.com\/mens-college-basketball\/game\/_\/gameId\/(\d+)/i;
 
     // Explicit or accessible label association only; never select an
@@ -1095,21 +1100,28 @@
                 .map(v => clean(v).slice(0,50)).filter(Boolean).join("/")
         ).join("; ") || "ninguno");
     }
+
     async function waitForUrlField(item, milliseconds = 4500) {
         const since = Date.now();
-        let lastModal = null;
+        let reason = "no hay controles";
         while (Date.now() - since < milliseconds) {
-            lastModal = currentModal();
-            if (!lastModal) throw new Error("Se cerró el editor mientras esperaba EVENT RESULTS URL");
-            validateModalEvent(item, lastModal);
-            const field = findUrlField(lastModal);
-            if (field) return field;
+            const modal = currentModal();
+            if (modal) {
+                const status = modalReadiness(item, modal);
+                if (status.ready) return status.field;
+                reason = status.reason;
+                if (status.mismatch) throw new Error(
+                    "SN " + item.rover.roverEventId + ": equipos distintos en el editor."
+                );
+            } else {
+                reason = "modal cerrado durante la espera";
+            }
             await sleep(125);
         }
-        throw new Error("SN " + item.rover.roverEventId +
-            ": No encontré EVENT RESULTS URL. " + modalUrlDiagnostic(lastModal));
+        throw new Error(
+            "SN " + item.rover.roverEventId + ": editor no listo (" + reason + ")."
+        );
     }
-
     function readExistingLink(modal, field) {
         const values = [];
         if (field) {
@@ -1261,54 +1273,56 @@
         return "";
     }
 
+
     async function saveModal(item, modal) {
+        validateModalEvent(item, modal);
         const button = modal.scope.querySelector("#ge-ee-save-btn") ||
             document.querySelector("#ge-ee-save-btn") ||
             findModalButton(modal, /guardar\s+cambios/i) ||
             findModalButton(modal, /^\s*guardar\s*$/i);
         if (!button) throw new Error("No encontré Guardar Cambios");
 
-        const before = modal.scope.querySelector("#ge-ee-msg.ok");
-        const beforeText = before && isVisible(before) ? clean(before.textContent) : "";
+        const beforeBox = modal.scope.querySelector("#ge-ee-msg.ok");
+        const before = beforeBox && isVisible(beforeBox) ? clean(beforeBox.textContent) : "";
+        const toastSelector = ".toast, .alert, .swal2-popup, [role='alert']";
+        const previousToasts = new Map([...document.querySelectorAll(toastSelector)]
+            .map(element => [element, clean(element.textContent)]));
         button.click();
-        const started = Date.now();
-        let lastMessage = "";
-
-        while (Date.now() - started < 12000) {
+        const start = Date.now();
+        let sawConfirmation = false;
+        while (Date.now() - start < 12000) {
             const active = currentModal();
-            if (!active) return;
-
+            if (!active) return { ui: "closed" };
             const errorBox = active.scope.querySelector("#ge-ee-msg.err");
-            if (errorBox && isVisible(errorBox)) {
+            if (errorBox && isVisible(errorBox))
                 throw new Error(clean(errorBox.textContent) || "Rover rechazó el guardado");
-            }
 
             const okBox = active.scope.querySelector("#ge-ee-msg.ok");
             const message = okBox && isVisible(okBox) ? clean(okBox.textContent) : "";
-            if (message) lastMessage = message;
-            if (message && message !== beforeText &&
-                /guardad|actualizad|correct|success|éxito|exito|saved/i.test(message)) {
-                // A success message permits closing the editor, but NOT marking
-                // the link saved. Caller reopens to verify persisted event ID.
-                await closeModal(active);
-                if (!currentModal()) return;
-            }
-
-            const success = [...document.querySelectorAll(
-                ".toast, .alert, .swal2-popup, [role='alert']"
-            )].find(element => isVisible(element) && /guardad|actualizad|success|éxito/i.test(element.textContent));
-            if (success && persistedEventId(active) === item.match.eventId) {
-                await closeModal(active);
-                return;
+            const explicit = message && message !== before &&
+                /guardad|actualizad|correct|success|éxito|exito|saved/i.test(message);
+            const toast = [...document.querySelectorAll(toastSelector)]
+                .some(el => isVisible(el) &&
+                    /guardad|actualizad|success|éxito/i.test(el.textContent) &&
+                    (!previousToasts.has(el) ||
+                        previousToasts.get(el) !== clean(el.textContent)));
+            if (explicit || toast) {
+                sawConfirmation = true;
+                break;
             }
             await sleep(125);
         }
-
-        throw new Error("No pude confirmar que Rover guardó el enlace, SN " +
-            item.rover.roverEventId + (lastMessage ? ". Mensaje: " + lastMessage.slice(0,140) :
-                ". Rover no mostró una confirmación detectable."));
+        // A missing toast is NOT a failed save. Close without resubmitting
+        // and verify persisted gameId in a freshly reopened editor.
+        const active = currentModal();
+        if (active) {
+            await closeModal(active);
+            if (currentModal()) throw new Error(
+                "Editor aún abierto tras guardar; resultado incierto, sin reintento."
+            );
+        }
+        return { ui: sawConfirmation ? "confirmed" : "unknown" };
     }
-
     async function waitForTableRefresh(previousTable, previousRow, timeoutMs = 10000) {
         const started = Date.now();
         while (Date.now() - started < timeoutMs) {
@@ -1409,8 +1423,9 @@
 
             await saveModal(item, modal);
 
-            if (!(await waitForTableRefresh(tableBeforeSave, rowBeforeSave))) {
-                throw new Error("Rover no terminó de actualizar la tabla después de guardar");
+            if (!(await waitForTableRefresh(tableBeforeSave, rowBeforeSave, 3500))) {
+                log("SN " + item.rover.roverEventId +
+                    ": recarga no detectada; verificando URL persistida.", "warn");
             }
             await verifySavedUrl(item);
             return "SAVED";
@@ -1868,6 +1883,7 @@
             currentPlanSignature,
             readExistingLink,
             findUrlField,
+            modalReadiness,
             modalUrlDiagnostic,
             resultsUrlLabel,
             strictEspnId,

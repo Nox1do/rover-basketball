@@ -1,6 +1,6 @@
 # CBB LLoader — NCAA Men's Basketball
 
-Versión estable **0.1.8** (primera versión 0.1.0) basada en el archivo aportado `userscript - cfb lloader-0.1.6.user.js`.
+Versión estable **0.1.9** (primera versión 0.1.0) basada en el archivo aportado `userscript - cfb lloader-0.1.6.user.js`.
 
 Este script **vincula enlaces de partidos de ESPN con la tabla de eventos de Rover**. No llena puntajes ni resultados del juego. **Exclusivamente vincula partidos ESPN, compara la hora y verifica si los equipos están invertidos.** Las 58 funciones del CFB LLoader fueron transferidas y adaptadas; se añadieron cuatro funciones auxiliares para CBB.
 
@@ -75,3 +75,9 @@ La carga valida individualmente SN, equipos, fecha y hora del evento actual, y p
 ## Editor URL dinámico (v0.1.8)
 
 Detecta EVENT RESULTS URL por identificador, metadatos o etiqueta accesible asociada; espera hasta 4,5 segundos por controles de carga tardía. Si no hay campo inequívoco, no escribe y registra SN con metadatos de los controles sin revelar sus valores. Si Rover informa éxito y deja abierto el editor, lo cierra, pero solo se declara SAVED después de volver a abrir y verificar la URL persistida. Diagnóstico de solo lectura: `__CBB_LLOADER.diagnoseModal()` mientras el editor esté abierto.
+
+## Editor sincronizado con el DOM real de Firefox (v0.1.9)
+
+Un modal visible no equivale a un formulario listo. CBB LLoader espera ahora que `#ge-ee-serial` identifique el SN esperado, que `#ge-ee-team1` y `#ge-ee-team2` coincidan con visitante y local, y que `#ge-ee-url` esté montado antes de leer o escribir. Estas cuatro referencias fueron comprobadas en el editor real de Rover. No necesita que la etiqueta visual `EVENT RESULTS URL` tenga atributo `for`.
+
+Tras hacer clic una sola vez en Guardar Cambios, el script espera cierre o confirmación de Rover. Si no aparece mensaje, cierra de forma controlada y reabre el SN para verificar la URL almacenada; no se confía solo en un toast ni se repite el guardado automáticamente. La falta de recarga de la tabla deja de ser un error por sí misma. Se ignoran las notificaciones de éxito que ya estaban visibles antes del guardado. Sigue siendo recomendable comenzar con **Probar 1** y verificar el SN en Rover antes de cargar todos los enlaces.

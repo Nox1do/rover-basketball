@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+## [0.1.9] - 2026-11-02
+
+- Sincronización del editor con las estructuras confirmadas en Firefox: `#ge-ee-serial`, `#ge-ee-team1`, `#ge-ee-team2` y `#ge-ee-url`.
+- Bloquea escritura sobre modales visibles pero incompletos, con SN equivocado o equipos diferentes.
+- Evita falsos errores cuando Rover guarda el enlace sin mostrar una notificación: confirma persistencia reabriendo el evento tras una sola escritura.
+- La recarga de la tabla es informativa; la confirmación depende del `gameId` persistido.
+- Ignora toasts de éxito de eventos anteriores para evitar cierres prematuros.
+- Pruebas de montaje tardío, tres guardados consecutivos, ausencia de confirmación y ausencia real de persistencia; 51 regresiones automatizadas.
+
+
 ## [0.1.8] - 2026-11-02
 
 - Diagnóstico de 11 campos `EVENT RESULTS URL` ausentes y un fallo de confirmación de guardado.

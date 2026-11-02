@@ -2,6 +2,15 @@
 
 ## [Unreleased]
 
+## [0.1.7] - 2026-11-02
+
+- Corregida detención prematura tras primer guardado causada por validación estricta de todo el conjunto de filas.
+- Validación por evento de SN, fecha, hora, visitante y local; se permiten filas nuevas y filtradas por Rover.
+- Filas ausentes o cambiadas se omiten sin escribir y el lote continúa.
+- Eliminado corte automático de dos errores consecutivos; continúa el bloqueo ante cambio de liga/fecha o editor inseguro.
+- Resumen de guardados, existentes, omitidos, errores y pendientes. Nuevas pruebas de tres eventos con DOM dinámico.
+
+
 ## [0.1.6] - 2026-11-02
 
 - Corregido el fallo que enlazaba un evento y omitía el resto tras recargar la tabla.

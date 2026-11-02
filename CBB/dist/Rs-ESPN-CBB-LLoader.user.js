@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Rs - ESPN CBB LLoader
 // @namespace    https://roversport.net/
-// @version     0.1.6
+// @version     0.1.7
 // @description  CBB LLoader: coloca links ESPN, comprueba horarios y equipos invertidos; no llena resultados.
 // @author       noeg
 // @match        https://www.roversport.lol/adm/es/index.php*
@@ -20,7 +20,7 @@
 (() => {
     "use strict";
 
-    const VERSION = "0.1.6";
+    const VERSION = "0.1.7";
     // Rover usa America/New_York, independientemente de la zona horaria del equipo.
     const ROVER_TIME_ZONE = "America/New_York";
     const TAG = "[CBB LLoader]";
@@ -75,6 +75,7 @@
         log: [],
         viewActive: null,
         planSignature: "",
+        planSelectedDate: "",
         linkAudit: [],
         auditSignature: "",
         legacyCollision: false
@@ -822,6 +823,7 @@
         state.linkAudit = [];
         state.auditSignature = "";
         state.planSignature = currentPlanSignature();
+        state.planSelectedDate = getGlobalIsoDate();
         renderAudit();
         const oldSummary = document.querySelector(`#${PANEL_ID} [data-role="summary"]`);
         if (oldSummary) oldSummary.textContent = "";
@@ -1265,28 +1267,21 @@
         return false;
     }
 
-    function isPlanContextSafe() {
+    function isPlanContextSafe(item = null, liveRow = null) {
         if (!isCBBView() || !state.planSignature || !state.plan.length) return false;
-        const expected = new Map(state.plan.map(({ rover, loadStatus }) =>
-            [rover.roverEventId, { rover, loadStatus }]
-        ));
-        const seen = new Set();
-        for (const event of getRoverEvents()) {
-            const old = expected.get(event.roverEventId);
-            if (!old || seen.has(event.roverEventId)) return false;
-            seen.add(event.roverEventId);
-            const before = old.rover;
-            if (event.date !== before.date || event.timeMinutes !== before.timeMinutes ||
-                event.away.roverCode !== before.away.roverCode ||
-                event.home.roverCode !== before.home.roverCode) return false;
-        }
-        // A row can disappear after Rover filters out already-processed events.
-        // Missing pending rows, changed teams/times or new events must stop loading.
-        for (const [id, old] of expected) {
-            if (!seen.has(id) && !["SAVED", "ALREADY_LINKED"].includes(old.loadStatus))
-                return false;
-        }
-        return true;
+        // Selected date is a global guard. Per-row identity must be verified
+        // separately because Rover rebuilds, filters and reorders the table.
+        if (state.planSelectedDate !== getGlobalIsoDate()) return false;
+        if (!item) return true;
+        const row = liveRow || findRoverRow(item.rover.roverEventId);
+        const current = row ? parseRoverRow(row) : null;
+        if (!current) return false;
+        const before = item.rover;
+        return current.roverEventId === before.roverEventId &&
+            current.date === before.date &&
+            current.timeMinutes === before.timeMinutes &&
+            current.away.roverCode === before.away.roverCode &&
+            current.home.roverCode === before.home.roverCode;
     }
 
     async function verifySavedUrl(item) {
@@ -1518,7 +1513,6 @@
         updateButtons();
         setProgress(0, ready.length);
         log(`Iniciando carga controlada de ${ready.length} enlaces…`);
-        let consecutiveErrors = 0;
 
         for (let index = 0; index < ready.length; index += 1) {
             const item = ready[index];
@@ -1536,16 +1530,33 @@
 
             if (!isPlanContextSafe()) {
                 item.loadStatus = "ERROR";
-                item.error = "La tabla cambió o faltan eventos pendientes; proceso detenido por seguridad";
+                item.error = "Cambió la liga o fecha seleccionada; es necesario volver a analizar antes de guardar.";
+                log(item.error, "error");
+                log("Carga interrumpida por cambio de liga/fecha. Los restantes siguen pendientes.", "warn");
+                break;
+            }
+            const liveRow = await waitForRoverRow(item.rover.roverEventId, 3200);
+            if (!liveRow) {
+                item.loadStatus = "SKIPPED";
+                item.error = `SN ${item.rover.roverEventId}: no visible después de recargar (sin modificar).`;
+                log(item.error, "warn");
+                setProgress(index + 1, ready.length);
+                continue;
+            }
+            if (!isPlanContextSafe()) {
+                item.loadStatus = "ERROR";
+                item.error = "Cambió la liga o fecha mientras esperaba el evento; vuelve a analizar.";
                 log(item.error, "error");
                 break;
             }
-            const liveRow = await waitForRoverRow(item.rover.roverEventId, 3500);
-            if (!liveRow) {
-                item.loadStatus = "ERROR";
-                item.error = `SN ${item.rover.roverEventId}: la fila no reapareció tras recargar. Proceso detenido.`;
-                log(item.error, "error");
-                break;
+            // Do not require every old row to remain. Check exact identity
+            // of the current event before opening its editor.
+            if (!isPlanContextSafe(item, liveRow)) {
+                item.loadStatus = "SKIPPED";
+                item.error = `SN ${item.rover.roverEventId}: equipos, hora o fecha de la fila cambiaron; omitido sin escribir.`;
+                log(item.error, "warn");
+                setProgress(index + 1, ready.length);
+                continue;
             }
             item.rover.row = liveRow;
             log(
@@ -1556,14 +1567,12 @@
             try {
                 item.loadStatus = await processItem(item);
                 item.error = "";
-                consecutiveErrors = 0;
             } catch (error) {
                 item.loadStatus = "ERROR";
                 item.error = clean(error?.message || error);
-                consecutiveErrors++;
                 log(`#${item.rover.roverEventId}: ${item.error}`, "error");
-                if (consecutiveErrors >= 2) {
-                    log("Dos errores consecutivos: se detiene la carga para no saltar los demás.", "error");
+                if (currentModal()) {
+                    log("Editor todavía abierto tras un error: carga interrumpida para evitar escrituras inseguras.", "error");
                     setProgress(index + 1, ready.length);
                     break;
                 }
@@ -1580,7 +1589,9 @@
         const saved = ready.filter(item => item.loadStatus === "SAVED").length;
         const existing = ready.filter(item => item.loadStatus === "ALREADY_LINKED").length;
         const errors = ready.filter(item => item.loadStatus === "ERROR").length;
-        log(`Finalizado: ${saved} guardados, ${existing} ya vinculados, ${errors} errores.`);
+        const skipped = ready.filter(item => item.loadStatus === "SKIPPED").length;
+        const remaining = ready.filter(item => !item.loadStatus).length;
+        log(`Finalizado: ${saved} guardados, ${existing} ya vinculados, ${skipped} omitidos, ${errors} errores, ${remaining} pendientes.`);
         console.table(ready.map(item => ({
             ROVER_EVENT_ID: item.rover.roverEventId,
             ESPN_EVENT_ID: item.match.eventId,

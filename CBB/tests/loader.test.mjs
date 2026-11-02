@@ -27,7 +27,7 @@ function harness({category='BASKETBALL',league='CBB',date='2026-11-02',feed=null
 const h=harness();
 function game(away='2511',home='2737',date='2026-11-02T23:00:00Z',id='401921423') {return {id,date,competitions:[{competitors:[{homeAway:'away',team:{id:away}},{homeAway:'home',team:{id:home}}]}]}}
 function rover(away='733',home='711',time=1080,date='2026-11-02'){return {date,timeMinutes:time,away:{roverCode:away},home:{roverCode:home}}}
-test('version and source CBB are correct',()=>{assert.equal(h.api.version,'0.1.6');assert.match(code,/mens-college-basketball\/scoreboard/);assert.doesNotMatch(code,/football\/college-football|__CFB_LLOADER/)});
+test('version and source CBB are correct',()=>{assert.equal(h.api.version,'0.1.7');assert.match(code,/mens-college-basketball\/scoreboard/);assert.doesNotMatch(code,/football\/college-football|__CFB_LLOADER/)});
 test('all 58 original functions preserved plus four helpers',()=>{assert.ok((code.match(/(?:async\s+)?function\s+\w+/g)||[]).length>=62)});
 test('276 Rover IDs exactly match ESPN crosswalk',()=>{assert.equal(Object.keys(h.qa.teamIds).length,276);for(const [id,data] of Object.entries(mapping))assert.equal(h.qa.teamIds[id],data.espn_id);assert.equal(new Set(Object.values(h.qa.teamIds)).size,276)});
 test('all 139 fixtures have valid away+home team IDs',()=>{const rows=csv.trim().replace(/^\uFEFF/,'').split(/\r?\n/).slice(1);assert.equal(rows.length,139);for(const line of rows){const cols=line.split(',');assert.equal(h.qa.teamIds[cols[1]],cols[3]);assert.equal(h.qa.teamIds[cols[4]],cols[6])}});
@@ -65,7 +65,7 @@ test('singleton prevents duplicate version from scheduling conflicting panel ref
  vm.runInNewContext(code,x.context,{timeout:2500});
  assert.equal(firstIntervalCount,1);
  assert.equal(x.intervals.length,1);
- assert.equal(x.context.__CBB_LLOADER.version,'0.1.6');
+ assert.equal(x.context.__CBB_LLOADER.version,'0.1.7');
 });
 test('Tampermonkey metadata matches only index.php and stays versioned',()=>{
  const lines=code.split(/\r?\n/);
@@ -77,10 +77,10 @@ test('Tampermonkey metadata matches only index.php and stays versioned',()=>{
  const include=lines.find(line=>/^\/\/\s*@include\s+/.test(line));
  assert.match(include,/index\\\.php/);
  assert.doesNotMatch(include,/adm\\\/es\(\?/);
- assert.match(code,/@version\s+0\.1\.6/);
+ assert.match(code,/@version\s+0\.1\.7/);
 });
 
-test('v0.1.6 tests strict parsing and safe classification',()=>{
+test('v0.1.7 tests strict parsing and safe classification',()=>{
  const item={status:'READY',match:{eventId:'401911469'}};
  assert.equal(h.qa.strictEspnId('https://www.espn.com/mens-college-basketball/game/_/gameId/401911469'),'401911469');
  assert.equal(h.qa.strictEspnId('https://bad.example/path/espn.com/mens-college-basketball/game/_/gameId/401911469'),'');
@@ -91,12 +91,12 @@ test('v0.1.6 tests strict parsing and safe classification',()=>{
  assert.equal(h.qa.classifyLink(item,{url:'https://www.foxsports.com/game/123'}),'OTHER_LINK');
  assert.equal(h.qa.classifyLink({status:'REVERSED_PAIR',match:null},{url:'https://www.espn.com/mens-college-basketball/game/_/gameId/401911468'}),'NEEDS_REVIEW');
 });
-test('v0.1.6 requires verification before correcting',async()=>{
+test('v0.1.7 requires verification before correcting',async()=>{
  const x=harness({feed(){return {events:[game()]}}});
  await x.api.analyze();
  await assert.rejects(x.api.correctLinks(),/Verificar enlaces/);
 });
-test('v0.1.6 includes separate read-only audit and post-save confirmation/notification',()=>{
+test('v0.1.7 includes separate read-only audit and post-save confirmation/notification',()=>{
  assert.equal(typeof h.api.verifyLinks,'function');
  assert.equal(typeof h.api.correctLinks,'function');
  assert.match(code,/data-action="audit">Verificar enlaces/);
@@ -176,30 +176,30 @@ test('changed ESPN link after audit is not overwritten, no notification',async()
  assert.equal(x.saves,0);assert.equal(x.notifications.length,0);
 });
 
-test('v0.1.6 refreshes displayed version after old UI text is modified',()=>{
+test('v0.1.7 refreshes displayed version after old UI text is modified',()=>{
  const x=harness();
  const label=x.controls.get('.cbbll-version');
- assert.equal(label.textContent,'v0.1.6');
+ assert.equal(label.textContent,'v0.1.7');
  label.textContent='v0.1.0';
  x.intervals[0]();
- assert.equal(label.textContent,'v0.1.6');
- assert.equal(x.api.uiDiagnostics().label,'v0.1.6');
+ assert.equal(label.textContent,'v0.1.7');
+ assert.equal(x.api.uiDiagnostics().label,'v0.1.7');
  assert.equal(x.api.uiDiagnostics().panelId,'cbb-lloader-panel-v2');
 });
-test('v0.1.6 detects legacy UI and blocks all link writes',async()=>{
+test('v0.1.7 detects legacy UI and blocks all link writes',async()=>{
  const x=harness({feed(){return {events:[game()]}}});
  const original=x.context.document.getElementById.bind(x.context.document);
  x.context.document.getElementById=id=>id==='cbb-lloader-panel'?{id}:original(id);
  await x.api.analyze();
  assert.equal(x.api.uiDiagnostics().legacyCollision,true);
- assert.equal(x.api.uiDiagnostics().label,'v0.1.6');
+ assert.equal(x.api.uiDiagnostics().label,'v0.1.7');
  await assert.rejects(x.api.load({limit:1}),/otra versi.n/i);
  await assert.rejects(x.api.correctLinks(),/otra versi.n/i);
  x.intervals[0]();
  assert.equal(x.controls.get('[data-action="load"]').disabled,true);
  assert.equal(x.controls.get('[data-role="legacy-warning"]').hidden,false);
 });
-test('v0.1.6 uses separate IDs while retaining the ESPN link auditor',()=>{
+test('v0.1.7 uses separate IDs while retaining the ESPN link auditor',()=>{
  assert.match(code,/const PANEL_ID = "cbb-lloader-panel-v2"/);
  assert.match(code,/const LEGACY_PANEL_ID = "cbb-lloader-panel"/);
  assert.match(code,/function requireSingleLoader\(/);
@@ -280,14 +280,15 @@ test('safe plan context refuses changed league while preserving saved status',as
  x.selects[1].value='NBA';x.selects[1].options[0].textContent='NBA';
  assert.equal(x.qa.isPlanContextSafe(),false);
 });
-test('bulk engine reacquires each row and verifies saved link before success',()=>{
- assert.match(code,/await waitForRoverRow\(item\.rover\.roverEventId, 3500\)/);
+test('bulk engine validates each live target and verifies saved link before success',()=>{
+ assert.match(code,/await waitForRoverRow\(item\.rover\.roverEventId, 3200\)/);
+ assert.match(code,/isPlanContextSafe\(item, liveRow\)/);
  assert.match(code,/await verifySavedUrl\(item\)/);
- assert.match(code,/consecutiveErrors >= 2/);
+ assert.doesNotMatch(code,/consecutiveErrors >= 2/);
 });
 
 
-function sequentialSaveHarness({dropPendingAfterFirst=false}={}){
+function sequentialSaveHarness({dropPendingAfterFirst=false,addUnrelatedAfterFirst=false,changeSecondAfterFirst=false,includeThird=false}={}){
  const games=[
   {id:'401921423',date:'2026-11-02T23:00:00Z',competitions:[{competitors:[{homeAway:'away',team:{id:'2511'}},{homeAway:'home',team:{id:'2737'}}]}]},
   {id:'401921424',date:'2026-11-02T23:00:00Z',competitions:[{competitors:[{homeAway:'away',team:{id:'2634'}},{homeAway:'home',team:{id:'93'}}]}]}
@@ -296,6 +297,12 @@ function sequentialSaveHarness({dropPendingAfterFirst=false}={}){
   {id:'123456',away:'733',awayName:'Queens University',home:'711',homeName:'Winthrop'},
   {id:'123457',away:'872',awayName:'Tennessee State',home:'870',homeName:'Murray State'}
  ];
+ if(includeThird) {
+   games.push({id:'401921425',date:'2026-11-02T23:00:00Z',competitions:[{competitors:[
+     {homeAway:'away',team:{id:'2547'}},{homeAway:'home',team:{id:'62'}}
+   ]}]});
+   initial.push({id:'123458',away:'790',awayName:'Seattle U',home:'971',homeName:'Hawaii'});
+ }
  const stored=new Map(initial.map(item=>[item.id,''])),nodes=new Map(),controls=new Map();
  let rows=[],activeId='',modalOpen=false,saves=0,opens=0,activeField=null;
  const selects=['BASKETBALL','CBB'].map(value=>({tagName:'SELECT',value,options:[{textContent:value}],selectedIndex:0}));
@@ -318,7 +325,13 @@ function sequentialSaveHarness({dropPendingAfterFirst=false}={}){
  };
  const group={textContent:'CBB 2 eventos',classList:{contains(s){return s==='ge-liga-row'}},querySelector(){return null}};
  function buildRows(){
-  rows=initial.filter(item=>!(dropPendingAfterFirst&&saves>0&&item.id==='123457')).map(item=>{
+  const visible=initial.filter(item=>!(dropPendingAfterFirst&&saves>0&&item.id==='123457'));
+  if(addUnrelatedAfterFirst&&saves>0)visible.push({
+    id:'123499',away:'824',awayName:'Coppin State',home:'650',homeName:'Virginia Tech'
+  });
+  rows=visible.map(entry=>{
+   const item=changeSecondAfterFirst&&saves>0&&entry.id==='123457'
+     ? {...entry,home:'733'} : entry;
    const row={id:'',dataset:{},isConnected:true,classList:{contains(){return false}},
     getAttribute(key){return key==='tkt'?item.id:null},
     scrollIntoView(){},closest(){return table},
@@ -398,12 +411,46 @@ test('two ESPN links are saved consecutively across complete tbody row replaceme
  assert.match(h.stored.get('123456'),/gameId\/401921423/);
  assert.match(h.stored.get('123457'),/gameId\/401921424/);
 });
-test('after reload, a pending event disappears: abort instead of skipping remaining',async()=>{
- const h=sequentialSaveHarness({dropPendingAfterFirst:true});
+test('filtered pending row is safely skipped without stopping the next valid event',async()=>{
+ const h=sequentialSaveHarness({dropPendingAfterFirst:true,includeThird:true});
  await h.api.analyze();
  const res=await h.api.load();
  assert.equal(res[0].loadStatus,'SAVED');
- assert.equal(res[1].loadStatus,'ERROR');
- assert.match(res[1].error,/tabla cambi.|faltan eventos pendientes/i);
- assert.equal(h.saves(),1);
+ assert.equal(res[1].loadStatus,'SKIPPED');
+ assert.match(res[1].error,/no visible/i);
+ assert.equal(res[2].loadStatus,'SAVED');
+ assert.equal(h.saves(),2);
+ assert.match(h.stored.get('123458'),/gameId\/401921425/);
+});
+
+test('new row after first save does not stop processing other valid games',async()=>{
+ const h=sequentialSaveHarness({addUnrelatedAfterFirst:true,includeThird:true});
+ await h.api.analyze();
+ const res=await h.api.load();
+ assert.equal(res[0].loadStatus,'SAVED');
+ assert.equal(res[1].loadStatus,'SAVED');
+ assert.equal(res[2].loadStatus,'SAVED');
+ assert.equal(h.saves(),3);
+});
+test('changed target home team is skipped without write and next target continues',async()=>{
+ const h=sequentialSaveHarness({changeSecondAfterFirst:true,includeThird:true});
+ await h.api.analyze();
+ const res=await h.api.load();
+ assert.equal(res[0].loadStatus,'SAVED');
+ assert.equal(res[1].loadStatus,'SKIPPED');
+ assert.match(res[1].error,/equipos/i);
+ assert.equal(res[2].loadStatus,'SAVED');
+ assert.equal(h.saves(),2);
+});
+test('global selected date remains a hard safety gate',async()=>{
+ const h=harness({feed(){return {events:[game()]}}});
+ await h.api.analyze();
+ assert.equal(h.qa.isPlanContextSafe(),true);
+ h.dateControl.value='2026-11-03';
+ assert.equal(h.qa.isPlanContextSafe(),false);
+});
+test('removed arbitrary two-error circuit breaker',()=>{
+ assert.doesNotMatch(code,/consecutiveErrors\s*>=\s*2/);
+ assert.match(code,/SKIPPED/);
+ assert.match(code,/remaining = ready.filter/);
 });

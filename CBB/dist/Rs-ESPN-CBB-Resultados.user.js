@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Rs - ESPN CBB LLoader
 // @namespace    https://roversport.net/
-// @version     0.1.5
+// @version     0.1.6
 // @description  CBB LLoader: coloca links ESPN, comprueba horarios y equipos invertidos; no llena resultados.
 // @author       noeg
 // @match        https://www.roversport.lol/adm/es/index.php*
@@ -20,7 +20,7 @@
 (() => {
     "use strict";
 
-    const VERSION = "0.1.5";
+    const VERSION = "0.1.6";
     // Rover usa America/New_York, independientemente de la zona horaria del equipo.
     const ROVER_TIME_ZONE = "America/New_York";
     const TAG = "[CBB LLoader]";
@@ -951,10 +951,13 @@
         if (!id || !table) return null;
 
         return getCBBRows(table).find(row =>
+            clean(row.getAttribute("tkt")) === id ||
             row.id === id ||
             clean(row.dataset.rsSnValue) === id ||
+            clean(row.dataset.eventId) === id ||
             clean(row.querySelector("input[evento]")?.getAttribute("evento")) === id ||
-            row.querySelector(`button[onclick="geEeOpen('${CSS.escape(id)}')"]`)
+            (typeof CSS !== "undefined" && typeof CSS.escape === "function" &&
+                row.querySelector(`button[onclick="geEeOpen('${CSS.escape(id)}')"]`))
         ) || null;
     }
 
@@ -1243,24 +1246,72 @@
         throw new Error("No pude confirmar que Rover guardó el enlace");
     }
 
-    async function waitForTableRefresh(previousTable, timeoutMs = 10000) {
+    async function waitForTableRefresh(previousTable, previousRow, timeoutMs = 10000) {
         const started = Date.now();
-
         while (Date.now() - started < timeoutMs) {
             const current = findEventTable();
             const panelWrap = document.getElementById("ge-panel-wrap");
             const interactive = panelWrap?.style.pointerEvents !== "none";
-
-            if (current && current !== previousTable && interactive) return true;
+            if (current && interactive && isCBBView() && !currentModal()) {
+                // Rover might replace the full table, only the tbody, or just tr's.
+                // The fallback permits same-node updates; persistence is independently
+                // verified by reopening the saved event.
+                const changed = current !== previousTable ||
+                    (previousRow && previousRow.isConnected === false);
+                if (changed || Date.now() - started >= 1800) return true;
+            }
             await sleep(125);
         }
-
         return false;
+    }
+
+    function isPlanContextSafe() {
+        if (!isCBBView() || !state.planSignature || !state.plan.length) return false;
+        const expected = new Map(state.plan.map(({ rover, loadStatus }) =>
+            [rover.roverEventId, { rover, loadStatus }]
+        ));
+        const seen = new Set();
+        for (const event of getRoverEvents()) {
+            const old = expected.get(event.roverEventId);
+            if (!old || seen.has(event.roverEventId)) return false;
+            seen.add(event.roverEventId);
+            const before = old.rover;
+            if (event.date !== before.date || event.timeMinutes !== before.timeMinutes ||
+                event.away.roverCode !== before.away.roverCode ||
+                event.home.roverCode !== before.home.roverCode) return false;
+        }
+        // A row can disappear after Rover filters out already-processed events.
+        // Missing pending rows, changed teams/times or new events must stop loading.
+        for (const [id, old] of expected) {
+            if (!seen.has(id) && !["SAVED", "ALREADY_LINKED"].includes(old.loadStatus))
+                return false;
+        }
+        return true;
+    }
+
+    async function verifySavedUrl(item) {
+        const liveRow = await waitForRoverRow(item.rover.roverEventId, 5000);
+        if (!liveRow) throw new Error("No pude reabrir el evento para confirmar el enlace guardado");
+        item.rover.row = liveRow;
+        let modal = null;
+        try {
+            modal = await openEditor(item);
+            await sleep(180);
+            modal = currentModal() || modal;
+            validateModalEvent(item, modal);
+            const saved = readExistingLink(modal, findUrlField(modal));
+            if (strictEspnId(saved?.url) !== String(item.match.eventId))
+                throw new Error("Rover no conservó el enlace esperado tras guardar");
+        } finally {
+            if (modal) await closeModal(modal);
+        }
+        if (currentModal()) throw new Error("El editor no se cerró tras confirmar el guardado");
     }
 
     async function processItem(item) {
         const tableBeforeSave = findEventTable();
         let modal = await openEditor(item);
+        const rowBeforeSave = item.rover.row;
 
         try {
             // Da tiempo a los componentes dinámicos de Rover y a otros helpers
@@ -1299,9 +1350,10 @@
 
             await saveModal(item, modal);
 
-            if (!(await waitForTableRefresh(tableBeforeSave))) {
-                throw new Error("El enlace se guardó, pero la tabla no terminó de recargarse");
+            if (!(await waitForTableRefresh(tableBeforeSave, rowBeforeSave))) {
+                throw new Error("Rover no terminó de actualizar la tabla después de guardar");
             }
+            await verifySavedUrl(item);
             return "SAVED";
         } catch (error) {
             await closeModal(modal);
@@ -1449,7 +1501,6 @@
         if (!state.plan.some(item => item.status === "READY")) await analyze();
 
         if (!isCBBView() || !state.planSignature || currentPlanSignature() !== state.planSignature) {
-            state.plan = [];
             state.phase = "idle";
             updateButtons();
             throw new Error("La tabla, fecha, equipos u horarios cambiaron. Presiona Analizar de nuevo.");
@@ -1467,6 +1518,7 @@
         updateButtons();
         setProgress(0, ready.length);
         log(`Iniciando carga controlada de ${ready.length} enlaces…`);
+        let consecutiveErrors = 0;
 
         for (let index = 0; index < ready.length; index += 1) {
             const item = ready[index];
@@ -1482,12 +1534,20 @@
                 break;
             }
 
-            if (currentPlanSignature() !== state.planSignature) {
+            if (!isPlanContextSafe()) {
                 item.loadStatus = "ERROR";
-                item.error = "La tabla cambió durante la carga; se detuvo por seguridad";
+                item.error = "La tabla cambió o faltan eventos pendientes; proceso detenido por seguridad";
                 log(item.error, "error");
                 break;
             }
+            const liveRow = await waitForRoverRow(item.rover.roverEventId, 3500);
+            if (!liveRow) {
+                item.loadStatus = "ERROR";
+                item.error = `SN ${item.rover.roverEventId}: la fila no reapareció tras recargar. Proceso detenido.`;
+                log(item.error, "error");
+                break;
+            }
+            item.rover.row = liveRow;
             log(
                 `${index + 1}/${ready.length} · #${item.rover.roverEventId} · ` +
                 `${item.rover.away.roverName} @ ${item.rover.home.roverName}`
@@ -1496,14 +1556,21 @@
             try {
                 item.loadStatus = await processItem(item);
                 item.error = "";
+                consecutiveErrors = 0;
             } catch (error) {
                 item.loadStatus = "ERROR";
                 item.error = clean(error?.message || error);
+                consecutiveErrors++;
                 log(`#${item.rover.roverEventId}: ${item.error}`, "error");
+                if (consecutiveErrors >= 2) {
+                    log("Dos errores consecutivos: se detiene la carga para no saltar los demás.", "error");
+                    setProgress(index + 1, ready.length);
+                    break;
+                }
             }
 
             setProgress(index + 1, ready.length);
-            await sleep(250);
+            await sleep(350);
         }
 
         state.phase = "ready";
@@ -1726,6 +1793,9 @@
             strictEspnId,
             classifyLink,
             getCBBRows,
+            findRoverRow,
+            isPlanContextSafe,
+            waitForTableRefresh,
             isCollegeBasketballLeague,
             isBasketballCategory
         }),

@@ -2,6 +2,15 @@
 
 ## [Unreleased]
 
+## [0.1.6] - 2026-11-02
+
+- Corregido el fallo que enlazaba un evento y omitía el resto tras recargar la tabla.
+- Recuperación de filas por `tkt`, igual que el parser; compatible con reconstrucciones de `tbody` y tabla completa.
+- Guardado marcado `SAVED` solo después de reabrir el editor y verificar la URL persistida.
+- Validación segura por evento de equipos, hora y fecha, permitiendo desaparecer solamente filas ya guardadas.
+- Detiene errores repetidos con diagnóstico explícito para no recorrer la cola sin procesar.
+
+
 ## [0.1.5] - 2026-11-02
 
 - Añadidos 20 emparejamientos NCAA CBB y 38 nuevos códigos de equipo Rover; 276 equipos totales y 139 enfrentamientos documentados.

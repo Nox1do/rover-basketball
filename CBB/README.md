@@ -1,6 +1,6 @@
 # CBB LLoader — NCAA Men's Basketball
 
-Versión estable **0.1.5** (primera versión 0.1.0) basada en el archivo aportado `userscript - cfb lloader-0.1.6.user.js`.
+Versión estable **0.1.6** (primera versión 0.1.0) basada en el archivo aportado `userscript - cfb lloader-0.1.6.user.js`.
 
 Este script **vincula enlaces de partidos de ESPN con la tabla de eventos de Rover**. No llena puntajes ni resultados del juego. **Exclusivamente vincula partidos ESPN, compara la hora y verifica si los equipos están invertidos.** Las 58 funciones del CFB LLoader fueron transferidas y adaptadas; se añadieron cuatro funciones auxiliares para CBB.
 
@@ -63,3 +63,7 @@ Si se detecta otra instalación activa del script, se oculta su panel antiguo, s
 ## Ampliación de equipos (v0.1.5)
 
 Incorporados 20 enfrentamientos adicionales y 38 equipos nuevos de la NCAA. El mapeo pasa de **238 a 276 IDs Rover↔ESPN** y la lista de enfrentamientos de **119 a 139**. Se conserva la correspondencia original de Stetson (`662→56`) y Lipscomb (`658→288`). Identificadores verificados: California Baptist (`19210→2856`), Sam Houston (`923→2534`), San Diego State (`848→21`), Fullerton (`736→2239`) y New Orleans (`788→2443`). Ninguna regla de comparación, edición ni notificación se altera en esta versión.
+
+## Continuidad tras guardar (v0.1.6)
+
+Para evitar omitir la cola tras el primer guardado: se recupera cada fila nueva por `tkt`, se admiten reconstrucciones completas o parciales del DOM y se reabre cada editor para confirmar la persistencia del enlace. El sistema permite que Rover filtre filas ya guardadas, pero rechaza cambios de equipos, liga, fecha y hora de eventos pendientes. Si dos operaciones seguidas fallan, detiene la carga en lugar de saltarse todo lo restante. Diagnóstico: `__CBB_LLOADER.getLog()` y `__CBB_LLOADER.getPlan()`.

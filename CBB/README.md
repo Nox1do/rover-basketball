@@ -1,6 +1,6 @@
 # CBB LLoader — NCAA Men's Basketball
 
-Versión estable **0.1.2** (primera versión 0.1.0) basada en el archivo aportado `userscript - cfb lloader-0.1.6.user.js`.
+Versión estable **0.1.3** (primera versión 0.1.0) basada en el archivo aportado `userscript - cfb lloader-0.1.6.user.js`.
 
 Este script **vincula enlaces de partidos de ESPN con la tabla de eventos de Rover**. No llena puntajes ni resultados del juego. **Exclusivamente vincula partidos ESPN, compara la hora y verifica si los equipos están invertidos.** Las 58 funciones del CFB LLoader fueron transferidas y adaptadas; se añadieron cuatro funciones auxiliares para CBB.
 
@@ -47,3 +47,9 @@ Fuentes de endpoints: `https://site.api.espn.com/apis/site/v2/sports/basketball/
 En Tampermonkey, **deja habilitado un solo CBB LLoader**. Los nombres de la v0.1.0 y v0.1.1 cambiaron y pueden aparecer como dos usuarioscripts diferentes que manipulan el mismo panel. La v0.1.2 protege inyecciones duplicadas de esta versión y futuras, pero no puede desactivar automáticamente scripts anteriores que carecen de la protección.
 
 Cuando el análisis está listo, el latido de la interfaz (cada segundo) ya no cambia el estado del botón. Antes de cualquier guardado, `loadLinks()` vuelve a comprobar la liga, fecha, equipos y horario de la tabla. Solo se ejecuta en `https://www.roversport.lol/adm/es/index.php` o `https://www.roversport.net/adm/es/index.php` (con parámetros de consulta opcionales).
+
+## Verificar y corregir enlaces (v0.1.3)
+
+**Verificar enlaces** abre los editores uno a uno en modo solo lectura y compara los links existentes con los eventos ESPN verificados. Al terminar, **Corregir incorrectos** reemplaza exclusivamente enlaces ESPN CBB que apuntan al partido equivocado, siempre que Rover y ESPN coincidan exactamente en equipos, orden local/visitante, fecha y hora. No sustituye proveedores externos ni coincidencias inciertas. Antes de guardar revalida el link anterior; tras guardar reabre el editor y comprueba el nuevo link. Solo después envía una notificación de Tampermonkey. Usar `__CBB_LLOADER.getLinkAudit()` para diagnosticar.
+
+La auditoría de los 119 juegos puede tardar; permite **Detener**. Se recomienda validar en un enlace incorrecto de prueba antes de una corrección masiva.

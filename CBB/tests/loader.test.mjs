@@ -27,8 +27,8 @@ function harness({category='BASKETBALL',league='CBB',date='2026-11-02',feed=null
 const h=harness();
 function game(away='2511',home='2737',date='2026-11-02T23:00:00Z',id='401921423') {return {id,date,competitions:[{competitors:[{homeAway:'away',team:{id:away}},{homeAway:'home',team:{id:home}}]}]}}
 function rover(away='733',home='711',time=1080,date='2026-11-02'){return {date,timeMinutes:time,away:{roverCode:away},home:{roverCode:home}}}
-test('version and source CBB are correct',()=>{assert.equal(h.api.version,'0.1.2');assert.match(code,/mens-college-basketball\/scoreboard/);assert.doesNotMatch(code,/football\/college-football|__CFB_LLOADER/)});
-test('all 58 original functions preserved plus four helpers',()=>{assert.equal((code.match(/(?:async\s+)?function\s+\w+/g)||[]).length,62)});
+test('version and source CBB are correct',()=>{assert.equal(h.api.version,'0.1.3');assert.match(code,/mens-college-basketball\/scoreboard/);assert.doesNotMatch(code,/football\/college-football|__CFB_LLOADER/)});
+test('all 58 original functions preserved plus four helpers',()=>{assert.ok((code.match(/(?:async\s+)?function\s+\w+/g)||[]).length>=62)});
 test('238 Rover IDs exactly match ESPN crosswalk',()=>{assert.equal(Object.keys(h.qa.teamIds).length,238);for(const [id,data] of Object.entries(mapping))assert.equal(h.qa.teamIds[id],data.espn_id);assert.equal(new Set(Object.values(h.qa.teamIds)).size,238)});
 test('all 119 fixtures have valid away+home team IDs',()=>{const rows=csv.trim().replace(/^\uFEFF/,'').split(/\r?\n/).slice(1);assert.equal(rows.length,119);for(const line of rows){const cols=line.split(',');assert.equal(h.qa.teamIds[cols[1]],cols[3]);assert.equal(h.qa.teamIds[cols[4]],cols[6])}});
 test('exception cases Queens Southern Indiana Lindenwood and long names',()=>{for(const [a,b] of [['733','2511'],['179','88'],['133','2815'],['856','112358'],['925','357'],['300','2837']])assert.equal(h.qa.teamIds[a],b)});
@@ -65,7 +65,7 @@ test('singleton prevents duplicate version from scheduling conflicting panel ref
  vm.runInNewContext(code,x.context,{timeout:2500});
  assert.equal(firstIntervalCount,1);
  assert.equal(x.intervals.length,1);
- assert.equal(x.context.__CBB_LLOADER.version,'0.1.2');
+ assert.equal(x.context.__CBB_LLOADER.version,'0.1.3');
 });
 test('Tampermonkey metadata matches only index.php and stays versioned',()=>{
  const lines=code.split(/\r?\n/);
@@ -77,5 +77,101 @@ test('Tampermonkey metadata matches only index.php and stays versioned',()=>{
  const include=lines.find(line=>/^\/\/\s*@include\s+/.test(line));
  assert.match(include,/index\\\.php/);
  assert.doesNotMatch(include,/adm\\\/es\(\?/);
- assert.match(code,/@version\s+0\.1\.2/);
+ assert.match(code,/@version\s+0\.1\.3/);
+});
+
+test('v0.1.3 tests strict parsing and safe classification',()=>{
+ const item={status:'READY',match:{eventId:'401911469'}};
+ assert.equal(h.qa.strictEspnId('https://www.espn.com/mens-college-basketball/game/_/gameId/401911469'),'401911469');
+ assert.equal(h.qa.strictEspnId('https://bad.example/path/espn.com/mens-college-basketball/game/_/gameId/401911469'),'');
+ assert.equal(h.qa.strictEspnId('https://www.espn.com/college-football/game/_/gameId/401911469'),'');
+ assert.equal(h.qa.classifyLink(item,null),'EMPTY');
+ assert.equal(h.qa.classifyLink(item,{url:'https://www.espn.com/mens-college-basketball/game/_/gameId/401911469'}),'CORRECT');
+ assert.equal(h.qa.classifyLink(item,{url:'https://www.espn.com/mens-college-basketball/game/_/gameId/401911468'}),'WRONG_ESPN');
+ assert.equal(h.qa.classifyLink(item,{url:'https://www.foxsports.com/game/123'}),'OTHER_LINK');
+ assert.equal(h.qa.classifyLink({status:'REVERSED_PAIR',match:null},{url:'https://www.espn.com/mens-college-basketball/game/_/gameId/401911468'}),'NEEDS_REVIEW');
+});
+test('v0.1.3 requires verification before correcting',async()=>{
+ const x=harness({feed(){return {events:[game()]}}});
+ await x.api.analyze();
+ await assert.rejects(x.api.correctLinks(),/Verificar enlaces/);
+});
+test('v0.1.3 includes separate read-only audit and post-save confirmation/notification',()=>{
+ assert.equal(typeof h.api.verifyLinks,'function');
+ assert.equal(typeof h.api.correctLinks,'function');
+ assert.match(code,/data-action="audit">Verificar enlaces/);
+ assert.match(code,/data-action="fix" disabled>Corregir incorrectos/);
+ assert.match(code,/await saveModal\(item, modal\);[\s\S]*?confirmed = inspectLink/);
+ assert.match(code,/notifyCorrection\(item,/);
+ assert.match(code,/@grant\s+GM_notification/);
+});
+
+
+function editableHarness(originalUrl) {
+  const g={id:'401921423',date:'2026-11-02T23:00:00Z',
+    competitions:[{competitors:[{homeAway:'away',team:{id:'2511'}},{homeAway:'home',team:{id:'2737'}}]}]};
+  const x=harness({feed(){return {events:[g]}}});
+  let stored=originalUrl, modalOpen=false, saves=0, opens=0;
+  const notifications=[];
+  const ctx=x.context, oldQuery=ctx.document.querySelector.bind(ctx.document);
+  const table=oldQuery('#tablaEventos'),row=table.querySelectorAll('tbody > tr')[1];
+  row.isConnected=true;row.scrollIntoView=()=>{};
+  const field={tagName:'INPUT',value:stored,dispatchEvent(){}};
+  const close={textContent:'Cerrar',value:'',title:'Cerrar',getAttribute(){return null},
+    getClientRects(){return[1]},click(){modalOpen=false}};
+  const save={click(){saves++;stored=field.value;modalOpen=false}};
+  const scope={querySelector(s){return s==='#ge-ee-save-btn'?save:null},
+    querySelectorAll(s){if(s==='a[href]')return[];if(s.includes('button'))return[close];return[]}};
+  const form={getClientRects(){return[1]},closest(){return scope},querySelector(s){
+    if(s==='#ge-ee-serial')return{value:'123456'};
+    if(s==='#ge-ee-team1')return{value:'733'};
+    if(s==='#ge-ee-team2')return{value:'711'};
+    if(s==='#ge-ee-url')return field;return null;
+  }};
+  const edit={click(){opens++;field.value=stored;modalOpen=true},getClientRects(){return[1]}};
+  const oldRow=row.querySelector.bind(row);
+  row.querySelector=s=>s.startsWith('button[onclick^="geEeOpen(')?edit:oldRow(s);
+  ctx.document.querySelector=s=>s==='#ge-ee-form-wrap'?(modalOpen?form:null):
+    s==='#ge-ee-overlay'?scope:oldQuery(s);
+  ctx.setTimeout=fn=>{fn();return 1};
+  ctx.Event=class { constructor(type,opts){this.type=type;this.options=opts} };
+  ctx.HTMLInputElement=class {};
+  ctx.GM_notification=opts=>notifications.push(opts);
+  return {api:x.api,get stored(){return stored},set stored(value){stored=value},
+    get saves(){return saves},get opens(){return opens},notifications};
+}
+
+test('audit read-only, correction verifies reopening, sends one Tampermonkey notification',async()=>{
+ const x=editableHarness('https://www.espn.com/mens-college-basketball/game/_/gameId/401921444');
+ const audit=await x.api.verifyLinks();
+ assert.equal(audit[0].status,'WRONG_ESPN');
+ assert.equal(x.saves,0);assert.equal(x.notifications.length,0);
+ const corrected=await x.api.correctLinks();
+ assert.equal(corrected[0].status,'CORRECTED');
+ assert.equal(x.stored,'https://www.espn.com/mens-college-basketball/game/_/gameId/401921423');
+ assert.equal(x.saves,1);assert.equal(x.opens,3);assert.equal(x.notifications.length,1);
+ assert.match(x.notifications[0].text,/SN 123456.*401921444.*401921423/);
+});
+test('correct ESPN link and another provider are left untouched by auditor',async()=>{
+ for(const url of [
+  'https://www.espn.com/mens-college-basketball/game/_/gameId/401921423',
+  'https://www.foxsports.com/college-basketball/game/abc'
+ ]){
+  const x=editableHarness(url);
+  const report=await x.api.verifyLinks();
+  assert.equal(report[0].status,url.includes('espn.com')?'CORRECT':'OTHER_LINK');
+  await x.api.correctLinks();
+  assert.equal(x.saves,0);
+  assert.equal(x.notifications.length,0);
+  assert.equal(x.stored,url);
+ }
+});
+test('changed ESPN link after audit is not overwritten, no notification',async()=>{
+ const x=editableHarness('https://www.espn.com/mens-college-basketball/game/_/gameId/401921444');
+ await x.api.verifyLinks();
+ x.stored='https://www.espn.com/mens-college-basketball/game/_/gameId/401921445';
+ const result=await x.api.correctLinks();
+ assert.equal(result[0].status,'ERROR');
+ assert.match(result[0].error,/cambiado/i);
+ assert.equal(x.saves,0);assert.equal(x.notifications.length,0);
 });

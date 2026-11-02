@@ -2,6 +2,15 @@
 
 ## [Unreleased]
 
+## [0.1.3] - 2026-11-02
+
+- Nuevo botón **Verificar enlaces** para auditar URLs existentes sin escribir.
+- Nuevo botón **Corregir incorrectos**: solo cambia links ESPN CBB con `gameId` equivocado cuando el partido esperado está confirmado `READY`.
+- Protege los enlaces correctos, de otros proveedores y los eventos con horarios distintos, localías invertidas o sin coincidencia.
+- Revalida el enlace original antes de editar; después del guardado reabre para comprobar persistencia y notifica SN e IDs corregidos mediante `GM_notification`.
+- Nuevas APIs de diagnóstico `verifyLinks()`, `correctLinks()` y `getLinkAudit()`; scoreboard ESPN actualizado antes de cada auditoría.
+
+
 ## [0.1.2] - 2026-11-02
 
 - Corregida la alternancia de Cargar enlaces/Probar 1 en Firefox: el sondeo de 1 segundo deja de recalcular `disabled` tras completar Analizar.

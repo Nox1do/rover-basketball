@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Rs - ESPN CBB LLoader
 // @namespace    https://roversport.net/
-// @version      0.1.2
+// @version      0.1.3
 // @description  CBB LLoader: coloca links ESPN, comprueba horarios y equipos invertidos; no llena resultados.
 // @author       noeg
 // @match        https://www.roversport.lol/adm/es/index.php*
@@ -9,6 +9,7 @@
 // @include      /^https?:\/\/(?:www\.)?roversport\.[^/]+\/adm\/es\/index\.php(?:\?.*)?$/
 // @grant        GM.xmlHttpRequest
 // @grant        GM_xmlhttpRequest
+// @grant        GM_notification
 // @grant        unsafeWindow
 // @connect      site.api.espn.com
 // @run-at       document-idle
@@ -19,7 +20,7 @@
 (() => {
     "use strict";
 
-    const VERSION = "0.1.2";
+    const VERSION = "0.1.3";
     // Rover usa America/New_York, independientemente de la zona horaria del equipo.
     const ROVER_TIME_ZONE = "America/New_York";
     const TAG = "[CBB LLoader]";
@@ -69,7 +70,9 @@
         scheduleCache: new Map(),
         log: [],
         viewActive: null,
-        planSignature: ""
+        planSignature: "",
+        linkAudit: [],
+        auditSignature: ""
     };
 
     const clean = value => String(value ?? "").replace(/\s+/g, " ").trim();
@@ -761,22 +764,30 @@
         const test = panel.querySelector('[data-action="test"]');
         const load = panel.querySelector('[data-action="load"]');
         const stop = panel.querySelector('[data-action="stop"]');
+        const audit = panel.querySelector('[data-action="audit"]');
+        const fix = panel.querySelector('[data-action="fix"]');
         const exactCount = state.plan.filter(item =>
             item.status === "READY" &&
             !["SAVED", "ALREADY_LINKED"].includes(item.loadStatus)
         ).length;
-        const busy = ["analyzing", "loading"].includes(state.phase);
+        const busy = ["analyzing", "loading", "auditing", "correcting"].includes(state.phase);
         const active = isCBBView();
 
         analyze.disabled = busy || !active;
         test.disabled = busy || !active || exactCount === 0;
         load.disabled = busy || !active || exactCount === 0;
         load.textContent = exactCount ? `Cargar ${exactCount} enlaces` : "Cargar enlaces";
+        if (audit) audit.disabled = busy || !active;
+        const pending = state.linkAudit.filter(r => r.status === "WRONG_ESPN").length;
+        if (fix) {
+            fix.disabled = busy || !active || !pending || !state.auditSignature || state.auditSignature !== state.planSignature;
+            fix.textContent = pending ? `Corregir ${pending} incorrectos` : "Corregir incorrectos";
+        }
         stop.hidden = !busy;
     }
 
     async function analyze() {
-        if (state.phase === "analyzing" || state.phase === "loading") return state.plan;
+        if (["analyzing", "loading", "auditing", "correcting"].includes(state.phase)) return state.plan;
         if (!isCBBView()) throw new Error("Abre CATEGORY=BASKETBALL y LEAGUE=CBB");
 
         const roverEvents = getRoverEvents();
@@ -784,7 +795,10 @@
 
         state.phase = "analyzing";
         state.plan = [];
+        state.linkAudit = [];
+        state.auditSignature = "";
         state.planSignature = currentPlanSignature();
+        renderAudit();
         const oldSummary = document.querySelector(`#${PANEL_ID} [data-role="summary"]`);
         if (oldSummary) oldSummary.textContent = "";
         renderReviewDetails();
@@ -1038,6 +1052,67 @@
         return null;
     }
 
+
+    // Strict host/path parser: never treat another provider or football URL as ESPN CBB.
+    function strictEspnId(url) {
+        const match = clean(url).match(/^https?:\/\/(?:www\.)?espn\.com\/mens-college-basketball\/game\/_\/gameId\/(\d+)(?=[/?#]|$)/i);
+        return match?.[1] || "";
+    }
+    function classifyLink(item, current) {
+        if (!current?.url) return "EMPTY";
+        const eventId = strictEspnId(current.url);
+        if (!eventId) return "OTHER_LINK";
+        if (item.status !== "READY" || !item.match?.eventId) return "NEEDS_REVIEW";
+        return eventId === String(item.match.eventId) ? "CORRECT" : "WRONG_ESPN";
+    }
+    function inspectLink(modal) {
+        const field = findUrlField(modal);
+        const current = readExistingLink(modal, field);
+        const fieldUrl = clean(field?.value).match(/^https?:\/\/\S+/)?.[0] || "";
+        const actual = [...modal.scope.querySelectorAll("a[href]")].find(a => /\bactual\b/i.test(clean(a.parentElement?.textContent)));
+        const actualUrl = clean(actual?.getAttribute("href") || actual?.href);
+        return { field, current, conflict: Boolean(fieldUrl && actualUrl && fieldUrl !== actualUrl) };
+    }
+    function auditTotals() {
+        return state.linkAudit.reduce((sum, r) => {
+            sum[r.status] = (sum[r.status] || 0) + 1;
+            return sum;
+        }, {});
+    }
+    function renderAudit() {
+        const panel = document.getElementById(PANEL_ID);
+        const label = panel?.querySelector('[data-role="audit-summary"]');
+        const details = panel?.querySelector('[data-role="audit-details"]');
+        const list = panel?.querySelector('[data-role="audit-list"]');
+        if (!label || !details || !list) return;
+        const c = auditTotals();
+        const review = (c.OTHER_LINK || 0) + (c.NEEDS_REVIEW || 0) + (c.CONFLICT || 0) + (c.ERROR || 0);
+        label.textContent = state.linkAudit.length ?
+            `Links: ${c.CORRECT || 0} correctos · ${c.WRONG_ESPN || 0} incorrectos · ${c.CORRECTED || 0} corregidos · ${c.EMPTY || 0} vacíos · ${review} revisión` : "";
+        const items = state.linkAudit.filter(r => !["CORRECT", "EMPTY"].includes(r.status));
+        details.hidden = items.length === 0;
+        details.open = items.length > 0;
+        details.querySelector("summary").textContent = `Auditoría de links (${items.length})`;
+        list.replaceChildren();
+        for (const r of items) {
+            const line = document.createElement("div");
+            line.className = "cbbll-review-item";
+            line.textContent = `SN ${r.item.rover.roverEventId} · ${r.status} · ESPN anterior #${r.existingId || "?"} · esperado #${r.item.match?.eventId || "sin validar"}` +
+                (r.error ? ` · ${r.error}` : "");
+            list.appendChild(line);
+        }
+    }
+    function notifyCorrection(item, oldId, newId) {
+        const text = `SN ${item.rover.roverEventId}: ESPN #${oldId} → #${newId}`;
+        log(`Enlace corregido y comprobado: ${text}`);
+        try {
+            if (typeof GM_notification === "function") {
+                GM_notification({ title: "CBB LLoader: enlace corregido", text, timeout: 10000,
+                    tag: `cbb-correction-${item.rover.roverEventId}` });
+            }
+        } catch (error) { console.warn(TAG, "Error mostrando notificación:", error); }
+    }
+
     function setNativeValue(element, value) {
         const prototype = element.tagName === "SELECT"
             ? HTMLSelectElement.prototype
@@ -1210,8 +1285,141 @@
         }
     }
 
+
+    function requireAuditedTable() {
+        if (!isCBBView() || !state.planSignature || currentPlanSignature() !== state.planSignature) {
+            throw new Error("La tabla, fecha, hora o equipos cambiaron. Pulsa Analizar de nuevo.");
+        }
+    }
+    async function verifyExistingLinks() {
+        if (["analyzing", "loading", "auditing", "correcting"].includes(state.phase)) {
+            throw new Error("Ya existe un proceso CBB activo.");
+        }
+        state.scoreboardCache.clear();
+        state.scheduleCache.clear();
+        await analyze();
+        requireAuditedTable();
+        state.phase = "auditing";
+        state.auditSignature = "";
+        state.linkAudit = [];
+        state.stopRequested = false;
+        updateButtons();
+        setProgress(0, state.plan.length);
+        let completed = false;
+        try {
+            for (const item of state.plan) {
+                if (state.stopRequested) break;
+                requireAuditedTable();
+                let modal = null;
+                const result = { item, status: "ERROR", existingUrl: "", existingId: "", error: "" };
+                try {
+                    modal = await openEditor(item);
+                    await sleep(180);
+                    modal = currentModal() || modal;
+                    validateModalEvent(item, modal);
+                    const data = inspectLink(modal);
+                    result.existingUrl = data.current?.url || "";
+                    result.existingId = strictEspnId(result.existingUrl);
+                    result.status = data.conflict ? "CONFLICT" : classifyLink(item, data.current);
+                    if (result.status === "WRONG_ESPN")
+                        log(`SN ${item.rover.roverEventId}: link #${result.existingId} incorrecto; corresponde #${item.match.eventId}`, "warn");
+                } catch (error) {
+                    result.error = clean(error?.message || error);
+                    log(`Auditoría SN ${item.rover.roverEventId}: ${result.error}`, "error");
+                } finally {
+                    if (modal) await closeModal(modal);
+                }
+                state.linkAudit.push(result);
+                setProgress(state.linkAudit.length, state.plan.length);
+                if (currentModal()) throw new Error("No se pudo cerrar el editor; auditoría detenida.");
+                await sleep(75);
+            }
+            completed = !state.stopRequested && state.linkAudit.length === state.plan.length;
+            if (completed) state.auditSignature = state.planSignature;
+            const totals = auditTotals();
+            log(`Verificación: ${totals.CORRECT || 0} correctos, ${totals.WRONG_ESPN || 0} incorrectos, ${totals.EMPTY || 0} vacíos.`);
+            return state.linkAudit;
+        } finally {
+            if (!completed) state.auditSignature = "";
+            state.phase = "ready";
+            renderAudit();
+            updateButtons();
+        }
+    }
+    async function correctExistingLinks() {
+        if (["analyzing", "loading", "auditing", "correcting"].includes(state.phase))
+            throw new Error("Ya existe un proceso CBB activo");
+        requireAuditedTable();
+        if (!state.auditSignature || state.auditSignature !== state.planSignature)
+            throw new Error("Primero pulsa Verificar enlaces y completa la auditoría.");
+        const wrong = state.linkAudit.filter(r =>
+            r.status === "WRONG_ESPN" && r.item.status === "READY" && r.existingId && r.item.match?.eventId);
+        if (!wrong.length) { log("No hay enlaces ESPN incorrectos para corregir."); return state.linkAudit; }
+        state.phase = "correcting";
+        state.stopRequested = false;
+        updateButtons();
+        setProgress(0, wrong.length);
+        try {
+            for (let idx = 0; idx < wrong.length; idx++) {
+                if (state.stopRequested) break;
+                requireAuditedTable();
+                const r = wrong[idx], item = r.item, oldId = r.existingId;
+                let modal = null;
+                try {
+                    modal = await openEditor(item);
+                    await sleep(180);
+                    modal = currentModal() || modal;
+                    validateModalEvent(item, modal);
+                    const old = inspectLink(modal);
+                    if (old.conflict || !old.field || !old.current ||
+                        strictEspnId(old.current.url) !== r.existingId ||
+                        clean(old.current.url) !== clean(r.existingUrl))
+                        throw new Error("Enlace cambiado desde auditoría; no se reemplazó.");
+                    writeUrlField(old.field, item.url);
+                    await sleep(120);
+                    modal = currentModal() || modal;
+                    validateModalEvent(item, modal);
+                    if (strictEspnId(findUrlField(modal)?.value) !== String(item.match.eventId))
+                        throw new Error("El control de URL cambió antes de guardar.");
+                    await saveModal(item, modal);
+                    if (currentModal()) throw new Error("El editor no se cerró tras guardar");
+                    await sleep(250);
+                    requireAuditedTable();
+                    modal = await openEditor(item);
+                    await sleep(180);
+                    modal = currentModal() || modal;
+                    validateModalEvent(item, modal);
+                    const confirmed = inspectLink(modal);
+                    if (confirmed.conflict || strictEspnId(confirmed.current?.url) !== String(item.match.eventId))
+                        throw new Error("No se pudo confirmar el link persistido después de reabrir.");
+                    r.status = "CORRECTED";
+                    r.existingId = String(item.match.eventId);
+                    r.existingUrl = confirmed.current.url;
+                    notifyCorrection(item, oldId, r.existingId);
+                } catch (error) {
+                    r.status = "ERROR";
+                    r.error = clean(error?.message || error);
+                    log(`SN ${item.rover.roverEventId}: ${r.error}`, "error");
+                } finally {
+                    if (modal) await closeModal(modal);
+                }
+                setProgress(idx + 1, wrong.length);
+                renderAudit();
+                if (currentModal()) throw new Error("Editor abierto; deteniendo por seguridad");
+                await sleep(125);
+            }
+            const c = auditTotals();
+            log(`Enlaces reparados y comprobados: ${c.CORRECTED || 0}.`);
+            return state.linkAudit;
+        } finally {
+            state.phase = "ready";
+            renderAudit();
+            updateButtons();
+        }
+    }
+
     async function loadLinks({ limit = Infinity } = {}) {
-        if (state.phase === "analyzing" || state.phase === "loading") return state.plan;
+        if (["analyzing", "loading", "auditing", "correcting"].includes(state.phase)) return state.plan;
         if (!state.plan.some(item => item.status === "READY")) await analyze();
 
         if (!isCBBView() || !state.planSignature || currentPlanSignature() !== state.planSignature) {
@@ -1316,6 +1524,11 @@
             #${PANEL_ID} [data-action="test"] { color:#1e3a8a; background:#dbeafe; }
             #${PANEL_ID} [data-action="load"] { flex:1; color:#fff; background:#2563eb; }
             #${PANEL_ID} [data-action="stop"] { color:#fff; background:#dc2626; }
+            #${PANEL_ID} .cbbll-audit-actions { display:flex; gap:6px; margin-top:7px; }
+            #${PANEL_ID} .cbbll-audit-actions button { flex:1; }
+            #${PANEL_ID} [data-action="audit"] { background:#ccfbf1; color:#0f766e; }
+            #${PANEL_ID} [data-action="fix"] { background:#b45309; color:white; }
+            #${PANEL_ID} .cbbll-audit-summary { margin-top:5px; font-size:11px; font-weight:700; color:#92400e; }
             #${PANEL_ID} .cbbll-progress { height:7px; margin:9px 0 6px; overflow:hidden; background:#e7edf7; border-radius:10px; }
             #${PANEL_ID} .cbbll-progress > i { display:block; width:0; height:100%; background:#22c55e; transition:width .15s ease; }
             #${PANEL_ID} .cbbll-status { display:flex; justify-content:space-between; gap:8px; color:#475569; font-size:11px; }
@@ -1375,12 +1588,15 @@
                     <button type="button" data-action="load" disabled>Cargar enlaces</button>
                     <button type="button" data-action="stop" hidden>Detener</button>
                 </div>
+                <div class="cbbll-audit-actions"><button type="button" data-action="audit">Verificar enlaces</button><button type="button" data-action="fix" disabled>Corregir incorrectos</button></div>
                 <div class="cbbll-progress"><i data-role="bar"></i></div>
                 <div class="cbbll-status">
                     <span data-role="last">Listo para analizar.</span>
                     <span data-role="count">0/0</span>
                 </div>
                 <div class="cbbll-result-summary" data-role="summary" aria-live="polite"></div>
+                <div class="cbbll-audit-summary" data-role="audit-summary" aria-live="polite"></div>
+                <details class="cbbll-review" data-role="audit-details" hidden><summary>Links por revisar</summary><div class="cbbll-review-list" data-role="audit-list"></div></details>
                 <details class="cbbll-review" data-role="review-details" hidden>
                     <summary data-role="review-title">⚠ Requieren revisión (0)</summary>
                     <div class="cbbll-review-list" data-role="review-list"></div>
@@ -1408,6 +1624,10 @@
                         updateButtons();
                         log(clean(error?.message || error), "error");
                     });
+                } else if (button.dataset.action === "audit") {
+                    verifyExistingLinks().catch(e => log(clean(e?.message || e), "error"));
+                } else if (button.dataset.action === "fix") {
+                    correctExistingLinks().catch(e => log(clean(e?.message || e), "error"));
                 } else if (button.dataset.action === "stop") {
                     stop();
                 }
@@ -1443,6 +1663,9 @@
         analyze,
         load: loadLinks,
         stop,
+        verifyLinks: verifyExistingLinks,
+        correctLinks: correctExistingLinks,
+        getLinkAudit: () => state.linkAudit.map(r => ({ roverEventId: r.item.rover.roverEventId, status: r.status, existingId: r.existingId, expectedId: r.item.match?.eventId || "", error: r.error })),
         getPlan: () => state.plan,
         getSummary: planSummary,
         getLog: () => [...state.log],
@@ -1457,6 +1680,8 @@
             basketballSeasonYear,
             currentPlanSignature,
             readExistingLink,
+            strictEspnId,
+            classifyLink,
             getCBBRows,
             isCollegeBasketballLeague,
             isBasketballCategory

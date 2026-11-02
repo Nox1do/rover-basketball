@@ -2,6 +2,15 @@
 
 ## [Unreleased]
 
+## [0.1.8] - 2026-11-02
+
+- Diagnóstico de 11 campos `EVENT RESULTS URL` ausentes y un fallo de confirmación de guardado.
+- Detección de URL por selector fijo, atributos y etiquetas de formularios; espera acotada a controles asíncronos.
+- Metadatos de control en errores para diagnóstico sin imprimir valores de campos.
+- Reconoce mensajes explícitos nuevos de guardado con modal abierto, pero exige reabrir y verificar el enlace persistido.
+- Nuevas pruebas de etiquetas, campos ambiguos y confirmación del guardado.
+
+
 ## [0.1.7] - 2026-11-02
 
 - Corregida detención prematura tras primer guardado causada por validación estricta de todo el conjunto de filas.

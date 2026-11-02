@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Rs - ESPN CBB LLoader
 // @namespace    https://roversport.net/
-// @version      0.1.7
+// @version      0.1.8
 // @description  CBB LLoader: coloca links ESPN, comprueba horarios y equipos invertidos; no llena resultados.
 // @author       noeg
 // @match        https://www.roversport.lol/adm/es/index.php*
@@ -20,7 +20,7 @@
 (() => {
     "use strict";
 
-    const VERSION = "0.1.7";
+    const VERSION = "0.1.8";
     // Rover usa America/New_York, independientemente de la zona horaria del equipo.
     const ROVER_TIME_ZONE = "America/New_York";
     const TAG = "[CBB LLoader]";
@@ -1047,14 +1047,67 @@
 
     const ESPN_URL_PATTERN = /https?:\/\/[^\s"'<>]*espn\.com\/mens-college-basketball\/game\/_\/gameId\/(\d+)/i;
 
+    // Explicit or accessible label association only; never select an
+    // unrelated odds/score field.
+    function validUrlControl(field) {
+        return Boolean(field && ["INPUT","SELECT","TEXTAREA"].includes(
+            String(field.tagName || "").toUpperCase()
+        ) && !field.disabled && String(field.type || "").toLowerCase() !== "hidden");
+    }
+    function resultsUrlLabel(text) {
+        const v = clean(text);
+        return /(?:event.{0,12})?result(?:s|ados)?.{0,35}(?:url|link|enlace)|(?:url|link|enlace).{0,35}result(?:s|ados)?/i.test(v);
+    }
     function findUrlField(modal) {
-        return modal.form.querySelector("#ge-ee-url") ||
-            modal.scope.querySelector("#ge-ee-url") ||
-            [...modal.form.querySelectorAll("input, select, textarea")].find(element =>
-                /event.*results.*url|results.*url/i.test(
-                    `${element.id} ${element.name} ${element.placeholder}`
-                )
-            );
+        if (!modal?.form || !modal?.scope) return null;
+        const explicit = modal.form.querySelector("#ge-ee-url") ||
+            modal.scope.querySelector("#ge-ee-url");
+        if (validUrlControl(explicit)) return explicit;
+        const scopes = [modal.form, modal.scope];
+        const fields = [...new Set(scopes.flatMap(node =>
+            [...(node.querySelectorAll?.("input, select, textarea") || [])]
+        ))];
+        const named = fields.filter(field => validUrlControl(field) &&
+            resultsUrlLabel([
+                field.id, field.name, field.placeholder,
+                field.getAttribute?.("aria-label"),
+                field.getAttribute?.("data-field"),
+                [...(field.labels || [])].map(label => label.textContent).join(" ")
+            ].join(" ")));
+        if (named.length === 1) return named[0];
+        if (named.length > 1) return null;
+        const labeled = [];
+        for (const scope of scopes) {
+            for (const label of scope.querySelectorAll?.("label") || []) {
+                if (!resultsUrlLabel(label.textContent)) continue;
+                const linked = label.control ||
+                    (label.htmlFor && fields.find(field => field.id === label.htmlFor)) ||
+                    label.querySelector?.("input, select, textarea");
+                if (validUrlControl(linked) && !labeled.includes(linked)) labeled.push(linked);
+            }
+        }
+        return labeled.length === 1 ? labeled[0] : null;
+    }
+    function modalUrlDiagnostic(modal) {
+        const fields = [...(modal?.scope?.querySelectorAll?.("input, select, textarea") || [])];
+        return "Controles: " + (fields.slice(0,30).map(field =>
+            [field.tagName,field.id,field.name,field.placeholder]
+                .map(v => clean(v).slice(0,50)).filter(Boolean).join("/")
+        ).join("; ") || "ninguno");
+    }
+    async function waitForUrlField(item, milliseconds = 4500) {
+        const since = Date.now();
+        let lastModal = null;
+        while (Date.now() - since < milliseconds) {
+            lastModal = currentModal();
+            if (!lastModal) throw new Error("Se cerró el editor mientras esperaba EVENT RESULTS URL");
+            validateModalEvent(item, lastModal);
+            const field = findUrlField(lastModal);
+            if (field) return field;
+            await sleep(125);
+        }
+        throw new Error("SN " + item.rover.roverEventId +
+            ": No encontré EVENT RESULTS URL. " + modalUrlDiagnostic(lastModal));
     }
 
     function readExistingLink(modal, field) {
@@ -1215,10 +1268,13 @@
             findModalButton(modal, /^\s*guardar\s*$/i);
         if (!button) throw new Error("No encontré Guardar Cambios");
 
+        const before = modal.scope.querySelector("#ge-ee-msg.ok");
+        const beforeText = before && isVisible(before) ? clean(before.textContent) : "";
         button.click();
         const started = Date.now();
+        let lastMessage = "";
 
-        while (Date.now() - started < 10000) {
+        while (Date.now() - started < 12000) {
             const active = currentModal();
             if (!active) return;
 
@@ -1227,12 +1283,15 @@
                 throw new Error(clean(errorBox.textContent) || "Rover rechazó el guardado");
             }
 
-            if (persistedEventId(active) === item.match.eventId) {
-                const successBox = active.scope.querySelector("#ge-ee-msg.ok");
-                if (successBox && isVisible(successBox)) {
-                    // Rover cerrará el modal y ejecutará geReload() 1.5 s después.
-                    await sleep(125);
-                }
+            const okBox = active.scope.querySelector("#ge-ee-msg.ok");
+            const message = okBox && isVisible(okBox) ? clean(okBox.textContent) : "";
+            if (message) lastMessage = message;
+            if (message && message !== beforeText &&
+                /guardad|actualizad|correct|success|éxito|exito|saved/i.test(message)) {
+                // A success message permits closing the editor, but NOT marking
+                // the link saved. Caller reopens to verify persisted event ID.
+                await closeModal(active);
+                if (!currentModal()) return;
             }
 
             const success = [...document.querySelectorAll(
@@ -1245,7 +1304,9 @@
             await sleep(125);
         }
 
-        throw new Error("No pude confirmar que Rover guardó el enlace");
+        throw new Error("No pude confirmar que Rover guardó el enlace, SN " +
+            item.rover.roverEventId + (lastMessage ? ". Mensaje: " + lastMessage.slice(0,140) :
+                ". Rover no mostró una confirmación detectable."));
     }
 
     async function waitForTableRefresh(previousTable, previousRow, timeoutMs = 10000) {
@@ -1294,7 +1355,9 @@
             await sleep(180);
             modal = currentModal() || modal;
             validateModalEvent(item, modal);
-            const saved = readExistingLink(modal, findUrlField(modal));
+            const savedField = await waitForUrlField(item, 2600);
+            modal = currentModal() || modal;
+            const saved = readExistingLink(modal, savedField);
             if (strictEspnId(saved?.url) !== String(item.match.eventId))
                 throw new Error("Rover no conservó el enlace esperado tras guardar");
         } finally {
@@ -1314,7 +1377,8 @@
             await sleep(180);
             modal = currentModal() || modal;
             validateModalEvent(item, modal);
-            let field = findUrlField(modal);
+            let field = await waitForUrlField(item);
+            modal = currentModal() || modal;
             const existing = readExistingLink(modal, field);
 
             if (existing?.eventId === item.match.eventId) {
@@ -1335,7 +1399,7 @@
             await sleep(120);
             modal = currentModal() || modal;
             validateModalEvent(item, modal);
-            field = findUrlField(modal);
+            field = await waitForUrlField(item, 1400);
             const pendingId = clean(field?.value).match(ESPN_URL_PATTERN)?.[1] || "";
             if (pendingId !== item.match.eventId) {
                 throw new Error(
@@ -1789,6 +1853,8 @@
         getPlan: () => state.plan,
         getSummary: planSummary,
         getLog: () => [...state.log],
+        diagnoseModal: () => { const m = currentModal(); return m ?
+            modalUrlDiagnostic(m) : "No hay editor abierto"; },
         uiDiagnostics,
         getRoverEvents,
         isCBBView,
@@ -1801,6 +1867,9 @@
             basketballSeasonYear,
             currentPlanSignature,
             readExistingLink,
+            findUrlField,
+            modalUrlDiagnostic,
+            resultsUrlLabel,
             strictEspnId,
             classifyLink,
             getCBBRows,

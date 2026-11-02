@@ -27,7 +27,7 @@ function harness({category='BASKETBALL',league='CBB',date='2026-11-02',feed=null
 const h=harness();
 function game(away='2511',home='2737',date='2026-11-02T23:00:00Z',id='401921423') {return {id,date,competitions:[{competitors:[{homeAway:'away',team:{id:away}},{homeAway:'home',team:{id:home}}]}]}}
 function rover(away='733',home='711',time=1080,date='2026-11-02'){return {date,timeMinutes:time,away:{roverCode:away},home:{roverCode:home}}}
-test('version and source CBB are correct',()=>{assert.equal(h.api.version,'0.1.7');assert.match(code,/mens-college-basketball\/scoreboard/);assert.doesNotMatch(code,/football\/college-football|__CFB_LLOADER/)});
+test('version and source CBB are correct',()=>{assert.equal(h.api.version,'0.1.8');assert.match(code,/mens-college-basketball\/scoreboard/);assert.doesNotMatch(code,/football\/college-football|__CFB_LLOADER/)});
 test('all 58 original functions preserved plus four helpers',()=>{assert.ok((code.match(/(?:async\s+)?function\s+\w+/g)||[]).length>=62)});
 test('276 Rover IDs exactly match ESPN crosswalk',()=>{assert.equal(Object.keys(h.qa.teamIds).length,276);for(const [id,data] of Object.entries(mapping))assert.equal(h.qa.teamIds[id],data.espn_id);assert.equal(new Set(Object.values(h.qa.teamIds)).size,276)});
 test('all 139 fixtures have valid away+home team IDs',()=>{const rows=csv.trim().replace(/^\uFEFF/,'').split(/\r?\n/).slice(1);assert.equal(rows.length,139);for(const line of rows){const cols=line.split(',');assert.equal(h.qa.teamIds[cols[1]],cols[3]);assert.equal(h.qa.teamIds[cols[4]],cols[6])}});
@@ -65,7 +65,7 @@ test('singleton prevents duplicate version from scheduling conflicting panel ref
  vm.runInNewContext(code,x.context,{timeout:2500});
  assert.equal(firstIntervalCount,1);
  assert.equal(x.intervals.length,1);
- assert.equal(x.context.__CBB_LLOADER.version,'0.1.7');
+ assert.equal(x.context.__CBB_LLOADER.version,'0.1.8');
 });
 test('Tampermonkey metadata matches only index.php and stays versioned',()=>{
  const lines=code.split(/\r?\n/);
@@ -77,10 +77,10 @@ test('Tampermonkey metadata matches only index.php and stays versioned',()=>{
  const include=lines.find(line=>/^\/\/\s*@include\s+/.test(line));
  assert.match(include,/index\\\.php/);
  assert.doesNotMatch(include,/adm\\\/es\(\?/);
- assert.match(code,/@version\s+0\.1\.7/);
+ assert.match(code,/@version\s+0\.1\.8/);
 });
 
-test('v0.1.7 tests strict parsing and safe classification',()=>{
+test('v0.1.8 tests strict parsing and safe classification',()=>{
  const item={status:'READY',match:{eventId:'401911469'}};
  assert.equal(h.qa.strictEspnId('https://www.espn.com/mens-college-basketball/game/_/gameId/401911469'),'401911469');
  assert.equal(h.qa.strictEspnId('https://bad.example/path/espn.com/mens-college-basketball/game/_/gameId/401911469'),'');
@@ -91,12 +91,12 @@ test('v0.1.7 tests strict parsing and safe classification',()=>{
  assert.equal(h.qa.classifyLink(item,{url:'https://www.foxsports.com/game/123'}),'OTHER_LINK');
  assert.equal(h.qa.classifyLink({status:'REVERSED_PAIR',match:null},{url:'https://www.espn.com/mens-college-basketball/game/_/gameId/401911468'}),'NEEDS_REVIEW');
 });
-test('v0.1.7 requires verification before correcting',async()=>{
+test('v0.1.8 requires verification before correcting',async()=>{
  const x=harness({feed(){return {events:[game()]}}});
  await x.api.analyze();
  await assert.rejects(x.api.correctLinks(),/Verificar enlaces/);
 });
-test('v0.1.7 includes separate read-only audit and post-save confirmation/notification',()=>{
+test('v0.1.8 includes separate read-only audit and post-save confirmation/notification',()=>{
  assert.equal(typeof h.api.verifyLinks,'function');
  assert.equal(typeof h.api.correctLinks,'function');
  assert.match(code,/data-action="audit">Verificar enlaces/);
@@ -176,30 +176,30 @@ test('changed ESPN link after audit is not overwritten, no notification',async()
  assert.equal(x.saves,0);assert.equal(x.notifications.length,0);
 });
 
-test('v0.1.7 refreshes displayed version after old UI text is modified',()=>{
+test('v0.1.8 refreshes displayed version after old UI text is modified',()=>{
  const x=harness();
  const label=x.controls.get('.cbbll-version');
- assert.equal(label.textContent,'v0.1.7');
+ assert.equal(label.textContent,'v0.1.8');
  label.textContent='v0.1.0';
  x.intervals[0]();
- assert.equal(label.textContent,'v0.1.7');
- assert.equal(x.api.uiDiagnostics().label,'v0.1.7');
+ assert.equal(label.textContent,'v0.1.8');
+ assert.equal(x.api.uiDiagnostics().label,'v0.1.8');
  assert.equal(x.api.uiDiagnostics().panelId,'cbb-lloader-panel-v2');
 });
-test('v0.1.7 detects legacy UI and blocks all link writes',async()=>{
+test('v0.1.8 detects legacy UI and blocks all link writes',async()=>{
  const x=harness({feed(){return {events:[game()]}}});
  const original=x.context.document.getElementById.bind(x.context.document);
  x.context.document.getElementById=id=>id==='cbb-lloader-panel'?{id}:original(id);
  await x.api.analyze();
  assert.equal(x.api.uiDiagnostics().legacyCollision,true);
- assert.equal(x.api.uiDiagnostics().label,'v0.1.7');
+ assert.equal(x.api.uiDiagnostics().label,'v0.1.8');
  await assert.rejects(x.api.load({limit:1}),/otra versi.n/i);
  await assert.rejects(x.api.correctLinks(),/otra versi.n/i);
  x.intervals[0]();
  assert.equal(x.controls.get('[data-action="load"]').disabled,true);
  assert.equal(x.controls.get('[data-role="legacy-warning"]').hidden,false);
 });
-test('v0.1.7 uses separate IDs while retaining the ESPN link auditor',()=>{
+test('v0.1.8 uses separate IDs while retaining the ESPN link auditor',()=>{
  assert.match(code,/const PANEL_ID = "cbb-lloader-panel-v2"/);
  assert.match(code,/const LEGACY_PANEL_ID = "cbb-lloader-panel"/);
  assert.match(code,/function requireSingleLoader\(/);
@@ -453,4 +453,39 @@ test('removed arbitrary two-error circuit breaker',()=>{
  assert.doesNotMatch(code,/consecutiveErrors\s*>=\s*2/);
  assert.match(code,/SKIPPED/);
  assert.match(code,/remaining = ready.filter/);
+});
+
+test('find URL field via accessible label when no fixed ID exists',()=>{
+ const field={tagName:'INPUT',value:'',name:'unspecified',type:'text'};
+ const label={textContent:'EVENT RESULTS URL',control:field};
+ const scope={querySelector(){return null},querySelectorAll(s){
+  if(s==='input, select, textarea')return[field];
+  if(s==='label')return[label];
+  return[];
+ }};
+ assert.equal(h.qa.findUrlField({form:scope,scope}),field);
+});
+test('URL field via metadata but not another provider field',()=>{
+ const target={tagName:'TEXTAREA',name:'link_resultados',value:''};
+ const other={tagName:'INPUT',name:'odds_score',value:''};
+ const scope={querySelector(){return null},querySelectorAll(s){
+  return s==='input, select, textarea'?[target,other]:[];
+ }};
+ assert.equal(h.qa.findUrlField({form:scope,scope}),target);
+ assert.equal(h.qa.resultsUrlLabel('URL DE RESULTADOS'),true);
+});
+test('ambiguous candidate fields never trigger a write; diagnostic does not print values',()=>{
+ const a={tagName:'INPUT',name:'results_url_a',value:'PRIVATE A'};
+ const b={tagName:'INPUT',name:'results_url_b',value:'PRIVATE B'};
+ const scope={querySelector(){return null},querySelectorAll(s){
+  return s==='input, select, textarea'?[a,b]:[];
+ }};
+ assert.equal(h.qa.findUrlField({form:scope,scope}),null);
+ assert.match(h.qa.modalUrlDiagnostic({scope}),/results_url_a/);
+ assert.doesNotMatch(h.qa.modalUrlDiagnostic({scope}),/PRIVATE/);
+});
+test('field readiness and success confirmation still require persisted link verification',()=>{
+ assert.match(code,/await waitForUrlField\(item\)/);
+ assert.match(code,/message !== beforeText/);
+ assert.match(code,/await verifySavedUrl\(item\)/);
 });

@@ -3,7 +3,8 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const FILE = 'Rs-ESPN-CBB-Resultados.user.js';
+const FILE = 'Rs-ESPN-CBB-LLoader.user.js';
+const LEGACY_FILE = 'Rs-ESPN-CBB-Resultados.user.js';
 const RAW = 'https://raw.githubusercontent.com/Nox1do/rover-basketball/main/CBB/dist/' + FILE;
 
 export function parseVersion(value) {
@@ -30,8 +31,8 @@ export function stampUserscript(source, version) {
   const header = lines.slice(start, end + 1);
   const tagLines = (tag) => header.filter((line) => new RegExp('^\\s*//\\s*@' + tag + '\\s+').test(line));
   const names = tagLines('name');
-  if (names.length !== 1 || !/^\s*\/\/\s*@name\s+Rs - ESPN CBB Resultados\s*$/.test(names[0])) {
-    throw new Error('El @name debe ser Rs - ESPN CBB Resultados.');
+  if (names.length !== 1 || !/^\s*\/\/\s*@name\s+Rs - ESPN CBB LLoader\s*$/.test(names[0])) {
+    throw new Error('El @name debe ser Rs - ESPN CBB LLoader.');
   }
   if (tagLines('namespace').length !== 1 || tagLines('match').length === 0) {
     throw new Error('Faltan @namespace o @match.');
@@ -57,16 +58,18 @@ export function release(version, { dryRun = false, root = ROOT } = {}) {
   if (!changelog.includes('## [' + version + ']')) throw new Error('Falta la entrada ## [' + version + '] en CHANGELOG.md.');
   const source = readFileSync(join(root, 'src', FILE), 'utf8');
   const built = stampUserscript(source, version);
-  const archive = join(root, 'versions', 'Rs-ESPN-CBB-Resultados-v' + version + '.user.js');
+  const archive = join(root, 'versions', 'Rs-ESPN-CBB-LLoader-v' + version + '.user.js');
   const stable = join(root, 'dist', FILE);
+  const legacy = join(root, 'dist', LEGACY_FILE);
   if (existsSync(archive)) throw new Error('La version historica ya existe y es inmutable: ' + archive);
-  if (dryRun) return { version, archive, stable, dryRun: true };
+  if (dryRun) return { version, archive, stable, legacy, dryRun: true };
   mkdirSync(dirname(archive), { recursive: true });
   mkdirSync(dirname(stable), { recursive: true });
   writeFileSync(archive, built, { encoding: 'utf8', flag: 'wx' });
   writeFileSync(stable, built, 'utf8');
+  writeFileSync(legacy, built, 'utf8'); // compatibility update path for 0.1.0
   writeFileSync(join(root, 'VERSION'), version + '\n', 'utf8');
-  return { version, archive, stable, dryRun: false };
+  return { version, archive, stable, legacy, dryRun: false };
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

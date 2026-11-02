@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-11-02
+
+- Se corrige el nombre a **CBB LLoader**, cuya función es exclusivamente enlazar ESPN, comprobar horarios e identificar localías invertidas.
+- Nuevo archivo instalable estable `Rs-ESPN-CBB-LLoader.user.js`; actualización compatible con la ruta de la v0.1.0.
+- Publicador y pruebas del proyecto adaptados. Motor de comparación y escritura de enlaces sin cambios.
+
 ## [0.1.0] - 2026-11-02
 
 - Adaptación del CFB LLoader 0.1.6 adjunto: conservadas las 58 funciones originales, adaptadas a baloncesto universitario masculino.

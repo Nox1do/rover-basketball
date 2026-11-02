@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import vm from 'node:vm';
 import {readFileSync} from 'node:fs';
 const root=new URL('../',import.meta.url);
-const code=readFileSync(new URL('src/Rs-ESPN-CBB-Resultados.user.js',root),'utf8');
+const code=readFileSync(new URL('src/Rs-ESPN-CBB-LLoader.user.js',root),'utf8');
 const mapping=JSON.parse(readFileSync(new URL('data/rover-espn-team-map.json',root),'utf8'));
 const csv=readFileSync(new URL('data/rover-espn-matchups.csv',root),'utf8');
 function harness({category='BASKETBALL',league='CBB',date='2026-11-02',feed=null,grouped=true}={}){
@@ -26,7 +26,7 @@ function harness({category='BASKETBALL',league='CBB',date='2026-11-02',feed=null
 const h=harness();
 function game(away='2511',home='2737',date='2026-11-02T23:00:00Z',id='401921423') {return {id,date,competitions:[{competitors:[{homeAway:'away',team:{id:away}},{homeAway:'home',team:{id:home}}]}]}}
 function rover(away='733',home='711',time=1080,date='2026-11-02'){return {date,timeMinutes:time,away:{roverCode:away},home:{roverCode:home}}}
-test('version and source CBB are correct',()=>{assert.equal(h.api.version,'0.1.0');assert.match(code,/mens-college-basketball\/scoreboard/);assert.doesNotMatch(code,/football\/college-football|__CFB_LLOADER/)});
+test('version and source CBB are correct',()=>{assert.equal(h.api.version,'0.1.1');assert.match(code,/mens-college-basketball\/scoreboard/);assert.doesNotMatch(code,/football\/college-football|__CFB_LLOADER/)});
 test('all 58 original functions preserved plus four helpers',()=>{assert.equal((code.match(/(?:async\s+)?function\s+\w+/g)||[]).length,62)});
 test('238 Rover IDs exactly match ESPN crosswalk',()=>{assert.equal(Object.keys(h.qa.teamIds).length,238);for(const [id,data] of Object.entries(mapping))assert.equal(h.qa.teamIds[id],data.espn_id);assert.equal(new Set(Object.values(h.qa.teamIds)).size,238)});
 test('all 119 fixtures have valid away+home team IDs',()=>{const rows=csv.trim().replace(/^\uFEFF/,'').split(/\r?\n/).slice(1);assert.equal(rows.length,119);for(const line of rows){const cols=line.split(',');assert.equal(h.qa.teamIds[cols[1]],cols[3]);assert.equal(h.qa.teamIds[cols[4]],cols[6])}});
@@ -43,3 +43,5 @@ test('legacy ungrouped and grouped rows supported',()=>{assert.equal(harness({gr
 test('existing URLs from any league are protected',()=>{const modal={scope:{querySelectorAll(){return[]}}};assert.equal(h.qa.readExistingLink(modal,{tagName:'INPUT',value:'https://www.espn.com/college-football/game/_/gameId/4000'}).eventId,'');assert.equal(h.qa.readExistingLink(modal,{tagName:'INPUT',value:'https://www.espn.com/mens-college-basketball/game/_/gameId/401921423'}).eventId,'401921423')});
 test('analyze -> READY from group 50 and CBB ESPN URL',async()=>{const x=harness({feed(){return {events:[game()]}}});const p=await x.api.analyze();assert.equal(p.length,1);assert.equal(p[0].status,'READY');assert.equal(p[0].url,'https://www.espn.com/mens-college-basketball/game/_/gameId/401921423');assert.ok(x.urls.some(u=>u.includes('groups=50')))});
 test('change of displayed date after analysis cancels link loading',async()=>{const x=harness({feed(){return {events:[game()]}}});await x.api.analyze();x.dateControl.value='2026-11-03';await assert.rejects(x.api.load({limit:1}),/cambiaron/)});
+
+test('CBB is an ESPN link-and-schedule auditor, not score writer',()=>{assert.match(code,/@name\s+Rs - ESPN CBB LLoader/);assert.match(code,/mens-college-basketball\/game\/_\/gameId/);assert.match(code,/function findExact\(/);assert.match(code,/function writeUrlField\(/);assert.doesNotMatch(code,/function (?:writeScore|saveScore|saveResults|setScore)\(/);});

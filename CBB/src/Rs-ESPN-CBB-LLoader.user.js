@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         Rs - ESPN CBB Resultados
+// @name         Rs - ESPN CBB LLoader
 // @namespace    https://roversport.net/
-// @version      0.1.0
-// @description  CBB: vincula eventos ESPN por ID, localía, fecha y hora ET; avisa discrepancias antes de guardar.
+// @version      0.1.1
+// @description  CBB LLoader: coloca links ESPN, comprueba horarios y equipos invertidos; no llena resultados.
 // @author       noeg
 // @match        https://www.roversport.net/adm/es/*
 // @match        https://roversport.net/adm/es/*
@@ -14,12 +14,14 @@
 // @grant        unsafeWindow
 // @connect      site.api.espn.com
 // @run-at       document-idle
+// @updateURL    https://raw.githubusercontent.com/Nox1do/rover-basketball/main/CBB/dist/Rs-ESPN-CBB-LLoader.user.js
+// @downloadURL  https://raw.githubusercontent.com/Nox1do/rover-basketball/main/CBB/dist/Rs-ESPN-CBB-LLoader.user.js
 // ==/UserScript==
 
 (() => {
     "use strict";
 
-    const VERSION = "0.1.0";
+    const VERSION = "0.1.1";
     // Rover usa America/New_York, independientemente de la zona horaria del equipo.
     const ROVER_TIME_ZONE = "America/New_York";
     const TAG = "[CBB LLoader]";

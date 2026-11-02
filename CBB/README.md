@@ -1,12 +1,14 @@
 # CBB LLoader — NCAA Men's Basketball
 
-Versión inicial **0.1.0** basada en el archivo aportado `userscript - cfb lloader-0.1.6.user.js`.
+Versión estable **0.1.1** (primera versión 0.1.0) basada en el archivo aportado `userscript - cfb lloader-0.1.6.user.js`.
 
-Este script **vincula enlaces de partidos de ESPN con la tabla de eventos de Rover**. No llena puntajes ni resultados del juego. Las 58 funciones del CFB LLoader fueron transferidas y adaptadas; se añadieron cuatro funciones auxiliares para CBB.
+Este script **vincula enlaces de partidos de ESPN con la tabla de eventos de Rover**. No llena puntajes ni resultados del juego. **Exclusivamente vincula partidos ESPN, compara la hora y verifica si los equipos están invertidos.** Las 58 funciones del CFB LLoader fueron transferidas y adaptadas; se añadieron cuatro funciones auxiliares para CBB.
 
 ## Instalación (Firefox + Tampermonkey)
 
-Instala `dist/Rs-ESPN-CBB-Resultados.user.js` desde la URL **Raw**. Las actualizaciones se detectan por la misma ruta estable con `@updateURL` y `@downloadURL`, siempre que se incremente `@version`.
+Instala `dist/Rs-ESPN-CBB-LLoader.user.js` desde la URL **Raw**. Las actualizaciones se detectan por la misma ruta estable con `@updateURL` y `@downloadURL`, siempre que se incremente `@version`.
+
+Se conserva la ruta de actualización de la v0.1.0 (`dist/Rs-ESPN-CBB-Resultados.user.js`) como alias compatible para Firefox/Tampermonkey. Si se solicita, confirma el cambio de URL.
 
 ## Uso
 
@@ -23,7 +25,7 @@ Instala `dist/Rs-ESPN-CBB-Resultados.user.js` desde la URL **Raw**. Las actualiz
 
 - `src/`: fuente editable (no editar copias publicadas).
 - `dist/`: ruta estable de instalación y actualización.
-- `versions/`: copia histórica inmutable `Rs-ESPN-CBB-Resultados-vX.Y.Z.user.js`.
+- `versions/`: copia histórica inmutable `Rs-ESPN-CBB-LLoader-vX.Y.Z.user.js`.
 - `data/`: cruce Rover ↔ ESPN y partidos de la ronda inicial.
 - `tests/`: validaciones de mapeo, resolución, DST, ligas y seguridad.
 - `VERSION` / `CHANGELOG.md`: versión y cambios.
@@ -33,7 +35,7 @@ Instala `dist/Rs-ESPN-CBB-Resultados.user.js` desde la URL **Raw**. Las actualiz
 
 - La hora se interpreta en `America/New_York`, no en la zona horaria del equipo; el CFB original usaba `America/Santo_Domingo`.
 - Para la temporada 2026-27, ESPN usa `season=2027`.
-- Solo se actualiza el campo EVENT RESULTS URL. Si ya existe un enlace de cualquier proveedor, se conserva y marca error, excepto cuando coincide el mismo evento ESPN.
+- Solo se actualiza el campo EVENT RESULTS URL para colocar el enlace ESPN, no resultados. Si ya existe un enlace de cualquier proveedor, se conserva y marca error, excepto cuando coincide el mismo evento ESPN.
 - No se afirma compatibilidad completa con cambios futuros del DOM de Rover sin inspección con sesión autenticada. Requiere prueba manual en Firefox de apertura, guardado y recarga en `#tablaEventos` / `#ge-ee-form-wrap`.
 - El comparador exige exactitud de minuto, orden visitante/local y fecha; horarios distintos quedan para revisión.
 - No ejecutar a la vez otros loaders de CBB que puedan modificar los mismos campos.

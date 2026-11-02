@@ -7,7 +7,7 @@ import { compareVersions, release, stampUserscript } from '../scripts/release.mj
 
 const fixture = [
   '// ==UserScript==',
-  '// @name         Rs - ESPN CBB Resultados',
+  '// @name         Rs - ESPN CBB LLoader',
   '// @namespace    https://roversport.net/',
   '// @version      0.0.1',
   '// @match        https://www.roversport.net/adm/es/*',
@@ -29,7 +29,7 @@ test('metadatos de Tampermonkey consistentes', () => {
   assert.equal((built.match(/@updateURL/g) || []).length, 1);
   assert.equal((built.match(/@downloadURL/g) || []).length, 1);
   assert.match(built, /raw\.githubusercontent\.com\/Nox1do\/rover-basketball\/main\/CBB\/dist\//);
-  assert.throws(() => stampUserscript(fixture.replace('Rs - ESPN CBB Resultados', 'CFB'), '0.1.0'), /@name/);
+  assert.throws(() => stampUserscript(fixture.replace('Rs - ESPN CBB LLoader', 'CFB'), '0.1.0'), /@name/);
   assert.throws(() => stampUserscript(fixture + '\n// @downloadURL bad', 'invalid'), /Version invalida/);
 });
 
@@ -38,7 +38,7 @@ test('release crea estable, historico, VERSION y no sobrescribe releases', () =>
   mkdirSync(join(root, 'src'));
   writeFileSync(join(root, 'VERSION'), '0.0.0\n');
   writeFileSync(join(root, 'CHANGELOG.md'), '## [0.1.0] - 2026-11-02\n\nPrimer release.\n');
-  writeFileSync(join(root, 'src', 'Rs-ESPN-CBB-Resultados.user.js'), fixture);
+  writeFileSync(join(root, 'src', 'Rs-ESPN-CBB-LLoader.user.js'), fixture);
   const preflight = release('0.1.0', { root, dryRun: true });
   assert.equal(preflight.dryRun, true);
   assert.equal(readFileSync(join(root, 'VERSION'), 'utf8').trim(), '0.0.0');
@@ -46,6 +46,7 @@ test('release crea estable, historico, VERSION y no sobrescribe releases', () =>
   assert.equal(actual.dryRun, false);
   const historical = readFileSync(actual.archive, 'utf8');
   assert.equal(readFileSync(actual.stable, 'utf8'), historical);
+  assert.equal(readFileSync(actual.legacy, 'utf8'), historical);
   assert.match(historical, /@version\s+0\.1\.0/);
   assert.equal(readFileSync(join(root, 'VERSION'), 'utf8').trim(), '0.1.0');
   assert.throws(() => release('0.1.0', { root }), /mayor/);
@@ -57,6 +58,6 @@ test('release bloquea publicacion sin CHANGELOG', () => {
   mkdirSync(join(root, 'src'));
   writeFileSync(join(root, 'VERSION'), '0.0.0');
   writeFileSync(join(root, 'CHANGELOG.md'), '## [Unreleased]\n');
-  writeFileSync(join(root, 'src', 'Rs-ESPN-CBB-Resultados.user.js'), fixture);
+  writeFileSync(join(root, 'src', 'Rs-ESPN-CBB-LLoader.user.js'), fixture);
   assert.throws(() => release('0.1.0', { root, dryRun: true }), /CHANGELOG/);
 });

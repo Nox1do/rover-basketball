@@ -1,6 +1,6 @@
 # CBB LLoader — NCAA Men's Basketball
 
-Versión estable **0.1.9** (primera versión 0.1.0) basada en el archivo aportado `userscript - cfb lloader-0.1.6.user.js`.
+Versión estable **0.1.10** (primera versión 0.1.0) basada en el archivo aportado `userscript - cfb lloader-0.1.6.user.js`.
 
 Este script **vincula enlaces de partidos de ESPN con la tabla de eventos de Rover**. No llena puntajes ni resultados del juego. **Exclusivamente vincula partidos ESPN, compara la hora y verifica si los equipos están invertidos.** Las 58 funciones del CFB LLoader fueron transferidas y adaptadas; se añadieron cuatro funciones auxiliares para CBB.
 
@@ -81,3 +81,7 @@ Detecta EVENT RESULTS URL por identificador, metadatos o etiqueta accesible asoc
 Un modal visible no equivale a un formulario listo. CBB LLoader espera ahora que `#ge-ee-serial` identifique el SN esperado, que `#ge-ee-team1` y `#ge-ee-team2` coincidan con visitante y local, y que `#ge-ee-url` esté montado antes de leer o escribir. Estas cuatro referencias fueron comprobadas en el editor real de Rover. No necesita que la etiqueta visual `EVENT RESULTS URL` tenga atributo `for`.
 
 Tras hacer clic una sola vez en Guardar Cambios, el script espera cierre o confirmación de Rover. Si no aparece mensaje, cierra de forma controlada y reabre el SN para verificar la URL almacenada; no se confía solo en un toast ni se repite el guardado automáticamente. La falta de recarga de la tabla deja de ser un error por sí misma. Se ignoran las notificaciones de éxito que ya estaban visibles antes del guardado. Sigue siendo recomendable comenzar con **Probar 1** y verificar el SN en Rover antes de cargar todos los enlaces.
+
+## Equipos y partidos añadidos el 3 de noviembre de 2026 (v0.1.10)
+
+Se incorporan 11 equipos nuevos y 11 partidos nuevos (SN 1200199, 1200411, 1200412, 1200413, 1200414, 1200447, 1200448, 1200478, 1200491, 1200492 y 1200493), sin sustituir los 11 equipos que ya figuraban en el mapeo. Total: **287 equipos Rover↔ESPN** y **150 enfrentamientos**. Las equivalencias separan expresamente North Dakota State (932→2449) de North Dakota (155), California (877→25) de California Baptist (19210→2856), y Southeastern Louisiana (922→2545) de Southeast Missouri State (ESPN 2546). No se han cambiado las funciones de apertura del editor, fecha, hora, localía ni verificación de enlaces.

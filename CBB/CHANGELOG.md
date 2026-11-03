@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+## [0.1.10] - 2026-11-03
+
+- Se incorporan 11 enfrentamientos y sus 11 nuevos equipos Rover verificados con el catálogo NCAA CBB de ESPN.
+- Mapeo incrementado de 276 a 287 códigos, sin cambiar los existentes; enfrentamientos aumentados de 139 a 150.
+- Casos diferenciados: SIU Edwardsville (791→2565), Cal State Northridge (737→2463), Southeastern Louisiana (922→2545), South Dakota (772→233) y North Dakota State (932→2449).
+- Nueva suite de regresión para los 11 pares, identidades existentes y partidos invertidos. No se modifica el procesamiento ni guardado de los enlaces.
+
+
 ## [0.1.9] - 2026-11-02
 
 - Sincronización del editor con las estructuras confirmadas en Firefox: `#ge-ee-serial`, `#ge-ee-team1`, `#ge-ee-team2` y `#ge-ee-url`.

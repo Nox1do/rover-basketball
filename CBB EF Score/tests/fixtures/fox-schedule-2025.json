@@ -1,0 +1,263 @@
+{
+  "tables": [
+    {
+      "template": "table-emphasized-title",
+      "headers": [
+        {
+          "columns": [
+            {
+              "index": 0,
+              "text": "PAST GAMES",
+              "priority": 1,
+              "template": "cell-text",
+              "weight": 1.5,
+              "emphasized": true,
+              "sortable": "none"
+            },
+            {
+              "index": 1,
+              "priority": 4,
+              "template": "cell-text",
+              "weight": 0.5,
+              "emphasized": false,
+              "sortable": "none"
+            },
+            {
+              "index": 2,
+              "priority": 2,
+              "template": "cell-entity",
+              "weight": 5.5,
+              "emphasized": false,
+              "sortable": "none"
+            },
+            {
+              "index": 3,
+              "text": "RESULT",
+              "priority": 3,
+              "template": "cell-gameresult",
+              "weight": 2.5,
+              "emphasized": false,
+              "sortable": "none"
+            },
+            {
+              "index": 4,
+              "text": "HIGH PTS",
+              "priority": 5,
+              "template": "cell-stat",
+              "weight": 2,
+              "emphasized": false,
+              "sortable": "none"
+            },
+            {
+              "index": 5,
+              "text": "HIGH REBS",
+              "priority": 6,
+              "template": "cell-stat",
+              "weight": 2,
+              "emphasized": false,
+              "sortable": "none"
+            },
+            {
+              "index": 6,
+              "text": "HIGH AST",
+              "priority": 7,
+              "template": "cell-stat",
+              "weight": 2,
+              "emphasized": false,
+              "sortable": "none"
+            }
+          ],
+          "isPrimary": true,
+          "color": "1, 229, 229, 229"
+        }
+      ],
+      "rows": [
+        {
+          "columns": [
+            {
+              "index": 0,
+              "text": "2/21",
+              "emphasized": false
+            },
+            {
+              "index": 1,
+              "text": "vs",
+              "emphasized": false
+            },
+            {
+              "index": 2,
+              "text": "Duke",
+              "superscript": "25-2",
+              "imageUrl": "https://b.fssta.com/uploads/application/college/team-logos/Duke.vresize.200.200.medium.2.png",
+              "imageType": "image-logo",
+              "imageAltText": "Duke",
+              "emphasized": false,
+              "alternateImageUrl": "https://b.fssta.com/uploads/application/college/team-logos/Duke-alternate.vresize.200.200.medium.1.png",
+              "leftSuperscript": "3"
+            },
+            {
+              "index": 3,
+              "text": "68-63",
+              "superscript": "L",
+              "emphasized": false,
+              "subType": "loss"
+            },
+            {
+              "index": 4,
+              "text": "Y. Lendeborg",
+              "subtext": "21",
+              "emphasized": false
+            },
+            {
+              "index": 5,
+              "text": "Y. Lendeborg",
+              "subtext": "7",
+              "emphasized": false
+            },
+            {
+              "index": 6,
+              "text": "E. Cadeau",
+              "subtext": "6",
+              "emphasized": false
+            }
+          ],
+          "isCutoff": false,
+          "selected": false,
+          "entityLink": {
+            "webUrl": "/college-basketball/michigan-wolverines-vs-duke-blue-devils-feb-21-2026-game-boxscore-261211",
+            "contentUri": "basketball/cbk/events/261211",
+            "contentType": "event",
+            "layout": {
+              "path": "/layouts?type=layout&subtype=cbkEventLayout",
+              "tokens": {
+                "id": "261211",
+                "eventUri": "basketball/cbk/events/261211",
+                "homeUri": "basketball/cbk/teams/23",
+                "awayUri": "basketball/cbk/teams/87"
+              }
+            },
+            "analyticsSport": "college-basketball",
+            "type": "entity"
+          },
+          "linkList": [
+            {
+              "entityLink": {
+                "title": "DUKE BLUE DEVILS",
+                "webUrl": "/college-basketball/duke-blue-devils-team",
+                "color": "1, 0, 87, 244",
+                "imageUrl": "https://b.fssta.com/uploads/application/college/team-logos/Duke-alternate.vresize.200.200.medium.1.png",
+                "imageType": "image-logo",
+                "imageAltText": "Duke Blue Devils",
+                "contentUri": "basketball/cbk/teams/23",
+                "contentType": "team",
+                "layout": {
+                  "path": "/layouts?type=layout&subtype=teamsLayout&elementId=cbk",
+                  "tokens": {
+                    "id": "23",
+                    "contentUri": "basketball/cbk/teams/23"
+                  }
+                },
+                "analyticsName": "duke-blue-devils",
+                "analyticsSport": "college-basketball",
+                "type": "entity"
+              },
+              "columns": [
+                0,
+                1,
+                2
+              ]
+            },
+            {
+              "entityLink": {
+                "webUrl": "/college-basketball/michigan-wolverines-vs-duke-blue-devils-feb-21-2026-game-boxscore-261211",
+                "contentUri": "basketball/cbk/events/261211",
+                "contentType": "event",
+                "layout": {
+                  "path": "/layouts?type=layout&subtype=cbkEventLayout",
+                  "tokens": {
+                    "id": "261211",
+                    "eventUri": "basketball/cbk/events/261211",
+                    "homeUri": "basketball/cbk/teams/23",
+                    "awayUri": "basketball/cbk/teams/87"
+                  }
+                },
+                "analyticsSport": "college-basketball",
+                "type": "entity"
+              },
+              "columns": [
+                3
+              ]
+            },
+            {
+              "entityLink": {
+                "title": "YAXEL LENDEBORG",
+                "webUrl": "/college-basketball/yaxel-lendeborg-player",
+                "color": "1, 255, 188, 41",
+                "imageUrl": "https://b.fssta.com/uploads/application/college/team-logos/Michigan-alternate.vresize.200.200.medium.1.png",
+                "imageType": "image-logo",
+                "imageAltText": "Michigan Wolverines",
+                "contentUri": "basketball/cbk/athletes/70590",
+                "contentType": "athlete",
+                "layout": {
+                  "path": "/layouts?type=layout&subtype=playersLayout&elementId=cbk",
+                  "tokens": {
+                    "id": "70590",
+                    "contentUri": "basketball/cbk/athletes/70590"
+                  }
+                },
+                "analyticsName": "yaxel-lendeborg",
+                "analyticsSport": "college-basketball",
+                "type": "entity"
+              },
+              "columns": [
+                4,
+                5
+              ]
+            },
+            {
+              "entityLink": {
+                "title": "ELLIOT CADEAU",
+                "webUrl": "/college-basketball/elliot-cadeau-player",
+                "color": "1, 255, 188, 41",
+                "imageUrl": "https://b.fssta.com/uploads/application/college/team-logos/Michigan-alternate.vresize.200.200.medium.1.png",
+                "imageType": "image-logo",
+                "imageAltText": "Michigan Wolverines",
+                "contentUri": "basketball/cbk/athletes/71060",
+                "contentType": "athlete",
+                "layout": {
+                  "path": "/layouts?type=layout&subtype=playersLayout&elementId=cbk",
+                  "tokens": {
+                    "id": "71060",
+                    "contentUri": "basketball/cbk/athletes/71060"
+                  }
+                },
+                "analyticsName": "elliot-cadeau",
+                "analyticsSport": "college-basketball",
+                "type": "entity"
+              },
+              "columns": [
+                6
+              ]
+            }
+          ],
+          "isFaded": false
+        }
+      ]
+    }
+  ],
+  "quickNav": [
+    {
+      "id": "2025-1",
+      "uri": "https://api.foxsports.com/bifrost/v1/cbk/team/87/schedule-segment/2025-1",
+      "webUrl": "/college-basketball/michigan-wolverines-team-schedule?seasonType=Regular%20Season",
+      "title": "Regular Season",
+      "selected": true
+    },
+    {
+      "id": "2025-2",
+      "uri": "https://api.foxsports.com/bifrost/v1/cbk/team/87/schedule-segment/2025-2",
+      "webUrl": "/college-basketball/michigan-wolverines-team-schedule?seasonType=Postseason",
+      "title": "Postseason"
+    }
+  ]
+}

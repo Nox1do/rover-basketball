@@ -1,0 +1,34 @@
+name: CBB EF Score
+
+on:
+  push:
+    paths:
+      - 'CBB EF Score/**'
+      - '.github/workflows/cbb-ef-score.yml'
+  pull_request:
+    paths:
+      - 'CBB EF Score/**'
+      - '.github/workflows/cbb-ef-score.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: CBB EF Score
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: CBB EF Score/package-lock.json
+      - run: npm ci
+      - run: npx playwright install --with-deps firefox
+      - run: npm run check
+      - run: npm test

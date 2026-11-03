@@ -1,0 +1,215 @@
+{
+  "header": {
+    "template": "event-header-team",
+    "id": "266836",
+    "liveStartTime": "2026-11-03T01:50:00Z",
+    "uri": "https://api.foxsports.com/bifrost/v1/cbk/event/266836/data",
+    "eventStatus": 1,
+    "eventTime": "2026-11-03T02:00:00Z",
+    "isTba": false,
+    "tvStation": "PCOCK",
+    "statusLine": "2ND",
+    "statusLine2": "7:28",
+    "venueName": "PeoplesBank Arena",
+    "venueLocation": "Hartford, CT",
+    "analyticsSport": "college-basketball",
+    "analyticsDescription": "gardner-webb-runnin-bulldogs-vs-connecticut-huskies-20261102",
+    "socialStartTime": "2026-11-02T02:00:00Z",
+    "socialStopTime": "2026-11-04T04:00:00Z",
+    "contentType": "event",
+    "contentUri": "basketball/cbk/events/266836",
+    "sportLogoUrl": "https://b.fssta.com/uploads/application/leagues/logos/NCAABasketball.vresize.200.200.medium.4.png",
+    "sportLogoAltText": "College Basketball",
+    "countdownImage": "https://b.fssta.com/uploads/application/college/venues/PlaceholderCBK.vresize.2240.1260.medium.0.jpg",
+    "countdownImageAltText": "Gardner-Webb Runnin' Bulldogs vs. UConn Huskies",
+    "hasStreamPromo": true,
+    "shareText": "FOX Sports: Gardner-Webb Runnin' Bulldogs at UConn Huskies",
+    "oddsStartTime": "2026-11-03T03:44:37Z",
+    "importance": 0,
+    "leagueUri": "basketball/cbk/league/1",
+    "strikeInfo": {
+      "parameters": {
+        "confAway": "basketball/cbk/groups/16",
+        "confHome": "basketball/cbk/groups/14"
+      }
+    },
+    "leftTeam": {
+      "name": "WEBB",
+      "uri": "basketball/cbk/teams/456",
+      "longName": "Gardner-Webb",
+      "stackedNameTop": "Gardner-Webb",
+      "stackedNameBottom": "Runnin' Bulldogs",
+      "logoUrl": "https://b.fssta.com/uploads/application/college/team-logos/Gardner-Webb.vresize.80.80.medium.1.png",
+      "imageType": "image-logo",
+      "imageAltText": "Gardner-Webb Runnin' Bulldogs",
+      "record": "0-0",
+      "score": 37,
+      "isLoser": false,
+      "hasPossession": false,
+      "entityLink": {
+        "title": "GARDNER-WEBB RUNNIN' BULLDOGS",
+        "webUrl": "/college-basketball/gardner-webb-runnin-bulldogs-team",
+        "color": "1, 240, 31, 65",
+        "imageUrl": "https://b.fssta.com/uploads/application/college/team-logos/Gardner-Webb.vresize.200.200.medium.1.png",
+        "imageType": "image-logo",
+        "imageAltText": "Gardner-Webb Runnin' Bulldogs",
+        "contentUri": "basketball/cbk/teams/456",
+        "contentType": "team",
+        "layout": {
+          "path": "/layouts?type=layout&subtype=teamsLayout&elementId=cbk",
+          "tokens": {
+            "id": "456",
+            "contentUri": "basketball/cbk/teams/456"
+          }
+        },
+        "analyticsName": "gardner-webb-runnin-bulldogs",
+        "analyticsSport": "college-basketball",
+        "type": "entity"
+      },
+      "contentType": "team",
+      "contentUri": "basketball/cbk/teams/456",
+      "alternateLogoUrl": "https://b.fssta.com/uploads/application/college/team-logos/Gardner-Webb.vresize.80.80.medium.1.png"
+    },
+    "rightTeam": {
+      "name": "UCONN",
+      "uri": "basketball/cbk/teams/54",
+      "longName": "Connecticut",
+      "stackedNameTop": "UConn",
+      "stackedNameBottom": "Huskies",
+      "logoUrl": "https://b.fssta.com/uploads/application/college/team-logos/Connecticut.vresize.80.80.medium.0.png",
+      "imageType": "image-logo",
+      "imageAltText": "UConn Huskies",
+      "record": "0-0",
+      "score": 70,
+      "isLoser": false,
+      "rank": "4",
+      "hasPossession": false,
+      "entityLink": {
+        "title": "UCONN HUSKIES",
+        "webUrl": "/college-basketball/connecticut-huskies-team",
+        "color": "1, 135, 135, 135",
+        "imageUrl": "https://b.fssta.com/uploads/application/college/team-logos/Connecticut.vresize.200.200.medium.0.png",
+        "imageType": "image-logo",
+        "imageAltText": "UConn Huskies",
+        "contentUri": "basketball/cbk/teams/54",
+        "contentType": "team",
+        "layout": {
+          "path": "/layouts?type=layout&subtype=teamsLayout&elementId=cbk",
+          "tokens": {
+            "id": "54",
+            "contentUri": "basketball/cbk/teams/54"
+          }
+        },
+        "analyticsName": "connecticut-huskies",
+        "analyticsSport": "college-basketball",
+        "type": "entity"
+      },
+      "contentType": "team",
+      "contentUri": "basketball/cbk/teams/54",
+      "alternateLogoUrl": "https://b.fssta.com/uploads/application/college/team-logos/Connecticut.vresize.80.80.medium.0.png"
+    }
+  },
+  "linescore": {
+    "template": "table-linescore",
+    "headers": [
+      {
+        "columns": [
+          {
+            "index": 0,
+            "priority": 1,
+            "template": "cell-text",
+            "weight": 1,
+            "emphasized": false,
+            "sortable": "none",
+            "pinColumn": true
+          },
+          {
+            "index": 1,
+            "text": "1",
+            "priority": 4,
+            "template": "cell-number",
+            "weight": 1,
+            "emphasized": false,
+            "sortable": "none"
+          },
+          {
+            "index": 2,
+            "text": "2",
+            "priority": 3,
+            "template": "cell-number",
+            "weight": 1,
+            "emphasized": false,
+            "sortable": "none"
+          },
+          {
+            "index": 3,
+            "text": "T",
+            "priority": 2,
+            "template": "cell-number",
+            "weight": 1,
+            "emphasized": true,
+            "sortable": "none",
+            "pinColumn": true
+          }
+        ],
+        "isPrimary": true
+      }
+    ],
+    "rows": [
+      {
+        "columns": [
+          {
+            "index": 0,
+            "text": "WEBB",
+            "emphasized": false
+          },
+          {
+            "index": 1,
+            "text": "24",
+            "emphasized": false
+          },
+          {
+            "index": 2,
+            "text": "13",
+            "emphasized": false
+          },
+          {
+            "index": 3,
+            "text": "37",
+            "emphasized": true
+          }
+        ],
+        "isCutoff": false,
+        "selected": false,
+        "isFaded": false
+      },
+      {
+        "columns": [
+          {
+            "index": 0,
+            "text": "UCONN",
+            "emphasized": false
+          },
+          {
+            "index": 1,
+            "text": "43",
+            "emphasized": false
+          },
+          {
+            "index": 2,
+            "text": "27",
+            "emphasized": false
+          },
+          {
+            "index": 3,
+            "text": "70",
+            "emphasized": true
+          }
+        ],
+        "isCutoff": false,
+        "selected": false,
+        "isFaded": false
+      }
+    ]
+  }
+}

@@ -1,0 +1,178 @@
+[
+  {
+    "rover_event_id": "1200199",
+    "away": {
+      "rover_code": "791",
+      "rover_name": "SIU Edwars",
+      "espn_id": "2565",
+      "fox_id": "411"
+    },
+    "home": {
+      "rover_code": "658",
+      "rover_name": "Lipscomb",
+      "espn_id": "288",
+      "fox_id": "731"
+    },
+    "team_mapping_status": "MAPPED_BOTH_PROVIDERS"
+  },
+  {
+    "rover_event_id": "1200411",
+    "away": {
+      "rover_code": "855",
+      "rover_name": "Fair Dick",
+      "espn_id": "161",
+      "fox_id": "200"
+    },
+    "home": {
+      "rover_code": "775",
+      "rover_name": "Butler",
+      "espn_id": "2086",
+      "fox_id": "125"
+    },
+    "team_mapping_status": "MAPPED_BOTH_PROVIDERS"
+  },
+  {
+    "rover_event_id": "1200412",
+    "away": {
+      "rover_code": "786",
+      "rover_name": "Longwood",
+      "espn_id": "2344",
+      "fox_id": "376"
+    },
+    "home": {
+      "rover_code": "277",
+      "rover_name": "Saint Josephs",
+      "espn_id": "2603",
+      "fox_id": "18"
+    },
+    "team_mapping_status": "MAPPED_BOTH_PROVIDERS"
+  },
+  {
+    "rover_event_id": "1200413",
+    "away": {
+      "rover_code": "829",
+      "rover_name": "Maryland Eastern Shore",
+      "espn_id": "2379",
+      "fox_id": "176"
+    },
+    "home": {
+      "rover_code": "705",
+      "rover_name": "High Point",
+      "espn_id": "2272",
+      "fox_id": "79"
+    },
+    "team_mapping_status": "MAPPED_BOTH_PROVIDERS"
+  },
+  {
+    "rover_event_id": "1200414",
+    "away": {
+      "rover_code": "737",
+      "rover_name": "CS North",
+      "espn_id": "2463",
+      "fox_id": "67"
+    },
+    "home": {
+      "rover_code": "843",
+      "rover_name": "Wichita State",
+      "espn_id": "2724",
+      "fox_id": "190"
+    },
+    "team_mapping_status": "MAPPED_BOTH_PROVIDERS"
+  },
+  {
+    "rover_event_id": "1200447",
+    "away": {
+      "rover_code": "922",
+      "rover_name": "Southeastern Louisia",
+      "espn_id": "2545",
+      "fox_id": "267"
+    },
+    "home": {
+      "rover_code": "901",
+      "rover_name": "Auburn",
+      "espn_id": "2",
+      "fox_id": "245"
+    },
+    "team_mapping_status": "MAPPED_BOTH_PROVIDERS"
+  },
+  {
+    "rover_event_id": "1200448",
+    "away": {
+      "rover_code": "980",
+      "rover_name": "Northern Kentucky",
+      "espn_id": "94",
+      "fox_id": "981"
+    },
+    "home": {
+      "rover_code": "772",
+      "rover_name": "South Dakota",
+      "espn_id": "233",
+      "fox_id": "416"
+    },
+    "team_mapping_status": "MAPPED_BOTH_PROVIDERS"
+  },
+  {
+    "rover_event_id": "1200478",
+    "away": {
+      "rover_code": "708",
+      "rover_name": "Radford",
+      "espn_id": "2515",
+      "fox_id": "82"
+    },
+    "home": {
+      "rover_code": "877",
+      "rover_name": "California",
+      "espn_id": "25",
+      "fox_id": "222"
+    },
+    "team_mapping_status": "MAPPED_BOTH_PROVIDERS"
+  },
+  {
+    "rover_event_id": "1200491",
+    "away": {
+      "rover_code": "781",
+      "rover_name": "Milwaukee",
+      "espn_id": "270",
+      "fox_id": "131"
+    },
+    "home": {
+      "rover_code": "967",
+      "rover_name": "Santa Clara",
+      "espn_id": "2541",
+      "fox_id": "310"
+    },
+    "team_mapping_status": "MAPPED_BOTH_PROVIDERS"
+  },
+  {
+    "rover_event_id": "1200492",
+    "away": {
+      "rover_code": "932",
+      "rover_name": "ND State",
+      "espn_id": "2449",
+      "fox_id": "490"
+    },
+    "home": {
+      "rover_code": "581",
+      "rover_name": "St. Marys CA",
+      "espn_id": "2608",
+      "fox_id": "307"
+    },
+    "team_mapping_status": "MAPPED_BOTH_PROVIDERS"
+  },
+  {
+    "rover_event_id": "1200493",
+    "away": {
+      "rover_code": "733",
+      "rover_name": "Queens University",
+      "espn_id": "2511",
+      "fox_id": "403"
+    },
+    "home": {
+      "rover_code": "962",
+      "rover_name": "Loyola Marymount",
+      "espn_id": "2351",
+      "fox_id": "304"
+    },
+    "team_mapping_status": "MAPPED_BOTH_PROVIDERS"
+  }
+]

@@ -1,0 +1,210 @@
+{
+  "header": {
+    "template": "event-header-team",
+    "id": "261211",
+    "uri": "https://api.foxsports.com/bifrost/v1/cbk/event/261211/data",
+    "eventStatus": 3,
+    "eventTime": "2026-02-21T23:30:00Z",
+    "isTba": false,
+    "statusLine": "FINAL",
+    "venueName": "Capital One Arena",
+    "venueLocation": "Washington, DC",
+    "analyticsSport": "college-basketball",
+    "analyticsDescription": "michigan-wolverines-vs-duke-blue-devils-20260221",
+    "socialStartTime": "2026-02-20T23:30:00Z",
+    "socialStopTime": "2026-02-23T01:30:00Z",
+    "contentType": "event",
+    "contentUri": "basketball/cbk/events/261211",
+    "sportLogoUrl": "https://b.fssta.com/uploads/application/leagues/logos/NCAABasketball.vresize.200.200.medium.4.png",
+    "sportLogoAltText": "College Basketball",
+    "shareText": "FOX Sports: Michigan Wolverines vs. Duke Blue Devils",
+    "oddsStartTime": "2026-11-03T03:29:50Z",
+    "importance": 0,
+    "leagueUri": "basketball/cbk/league/1",
+    "strikeInfo": {
+      "parameters": {
+        "confAway": "basketball/cbk/groups/17",
+        "confHome": "basketball/cbk/groups/11"
+      }
+    },
+    "leftTeam": {
+      "name": "MICH",
+      "uri": "basketball/cbk/teams/87",
+      "longName": "Michigan",
+      "stackedNameTop": "Michigan",
+      "stackedNameBottom": "Wolverines",
+      "logoUrl": "https://b.fssta.com/uploads/application/college/team-logos/Michigan.vresize.80.80.medium.2.png",
+      "imageType": "image-logo",
+      "imageAltText": "Michigan Wolverines",
+      "record": "25-2",
+      "score": 63,
+      "isLoser": true,
+      "rank": "1",
+      "hasPossession": false,
+      "entityLink": {
+        "title": "MICHIGAN WOLVERINES",
+        "webUrl": "/college-basketball/michigan-wolverines-team",
+        "color": "1, 255, 188, 41",
+        "imageUrl": "https://b.fssta.com/uploads/application/college/team-logos/Michigan-alternate.vresize.200.200.medium.1.png",
+        "imageType": "image-logo",
+        "imageAltText": "Michigan Wolverines",
+        "contentUri": "basketball/cbk/teams/87",
+        "contentType": "team",
+        "layout": {
+          "path": "/layouts?type=layout&subtype=teamsLayout&elementId=cbk",
+          "tokens": {
+            "id": "87",
+            "contentUri": "basketball/cbk/teams/87"
+          }
+        },
+        "analyticsName": "michigan-wolverines",
+        "analyticsSport": "college-basketball",
+        "type": "entity"
+      },
+      "contentType": "team",
+      "contentUri": "basketball/cbk/teams/87",
+      "alternateLogoUrl": "https://b.fssta.com/uploads/application/college/team-logos/Michigan-alternate.vresize.80.80.medium.1.png"
+    },
+    "rightTeam": {
+      "name": "DUKE",
+      "uri": "basketball/cbk/teams/23",
+      "longName": "Duke",
+      "stackedNameTop": "Duke",
+      "stackedNameBottom": "Blue Devils",
+      "logoUrl": "https://b.fssta.com/uploads/application/college/team-logos/Duke.vresize.80.80.medium.2.png",
+      "imageType": "image-logo",
+      "imageAltText": "Duke Blue Devils",
+      "record": "25-2",
+      "score": 68,
+      "isLoser": false,
+      "rank": "3",
+      "hasPossession": false,
+      "entityLink": {
+        "title": "DUKE BLUE DEVILS",
+        "webUrl": "/college-basketball/duke-blue-devils-team",
+        "color": "1, 0, 87, 244",
+        "imageUrl": "https://b.fssta.com/uploads/application/college/team-logos/Duke-alternate.vresize.200.200.medium.1.png",
+        "imageType": "image-logo",
+        "imageAltText": "Duke Blue Devils",
+        "contentUri": "basketball/cbk/teams/23",
+        "contentType": "team",
+        "layout": {
+          "path": "/layouts?type=layout&subtype=teamsLayout&elementId=cbk",
+          "tokens": {
+            "id": "23",
+            "contentUri": "basketball/cbk/teams/23"
+          }
+        },
+        "analyticsName": "duke-blue-devils",
+        "analyticsSport": "college-basketball",
+        "type": "entity"
+      },
+      "contentType": "team",
+      "contentUri": "basketball/cbk/teams/23",
+      "alternateLogoUrl": "https://b.fssta.com/uploads/application/college/team-logos/Duke-alternate.vresize.80.80.medium.1.png"
+    }
+  },
+  "linescore": {
+    "template": "table-linescore",
+    "headers": [
+      {
+        "columns": [
+          {
+            "index": 0,
+            "priority": 1,
+            "template": "cell-text",
+            "weight": 1,
+            "emphasized": false,
+            "sortable": "none",
+            "pinColumn": true
+          },
+          {
+            "index": 1,
+            "text": "1",
+            "priority": 4,
+            "template": "cell-number",
+            "weight": 1,
+            "emphasized": false,
+            "sortable": "none"
+          },
+          {
+            "index": 2,
+            "text": "2",
+            "priority": 3,
+            "template": "cell-number",
+            "weight": 1,
+            "emphasized": false,
+            "sortable": "none"
+          },
+          {
+            "index": 3,
+            "text": "T",
+            "priority": 2,
+            "template": "cell-number",
+            "weight": 1,
+            "emphasized": true,
+            "sortable": "none",
+            "pinColumn": true
+          }
+        ],
+        "isPrimary": true
+      }
+    ],
+    "rows": [
+      {
+        "columns": [
+          {
+            "index": 0,
+            "text": "MICH",
+            "emphasized": false
+          },
+          {
+            "index": 1,
+            "text": "33",
+            "emphasized": false
+          },
+          {
+            "index": 2,
+            "text": "30",
+            "emphasized": false
+          },
+          {
+            "index": 3,
+            "text": "63",
+            "emphasized": true
+          }
+        ],
+        "isCutoff": false,
+        "selected": false,
+        "isFaded": false
+      },
+      {
+        "columns": [
+          {
+            "index": 0,
+            "text": "DUKE",
+            "emphasized": false
+          },
+          {
+            "index": 1,
+            "text": "35",
+            "emphasized": false
+          },
+          {
+            "index": 2,
+            "text": "33",
+            "emphasized": false
+          },
+          {
+            "index": 3,
+            "text": "68",
+            "emphasized": true
+          }
+        ],
+        "isCutoff": false,
+        "selected": false,
+        "isFaded": false
+      }
+    ]
+  }
+}

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Rs - ESPN CBB LLoader
 // @namespace    https://roversport.net/
-// @version     0.1.12
+// @version     0.1.13
 // @description  CBB LLoader: coloca links ESPN, comprueba horarios y equipos invertidos; no llena resultados.
 // @author       noeg
 // @match        https://www.roversport.lol/adm/es/index.php*
@@ -20,7 +20,7 @@
 (() => {
     "use strict";
 
-    const VERSION = "0.1.12";
+    const VERSION = "0.1.13";
     // Rover usa America/New_York, independientemente de la zona horaria del equipo.
     const ROVER_TIME_ZONE = "America/New_York";
     const TAG = "[CBB LLoader]";
@@ -1205,6 +1205,42 @@
             return sum;
         }, {});
     }
+    // A matching ESPN candidate does not prove the same game when home/away or time disagree.
+    function auditReviewExplanation(report) {
+        if (report?.status !== "NEEDS_REVIEW" || !report.item) return null;
+        const item = report.item;
+        const candidates = [...new Map((item.candidates || [])
+            .filter(event => event?.eventId)
+            .map(event => [String(event.eventId), event])).values()];
+        const candidateIds = candidates.map(event => String(event.eventId));
+        const currentId = clean(report.existingId);
+        const matchesCandidate = Boolean(currentId && candidateIds.includes(currentId));
+        const linkAssessment = matchesCandidate
+            ? "El enlace actual #" + currentId +
+                " coincide con un candidato ESPN, pero la discrepancia impide validarlo automáticamente."
+            : candidateIds.length
+                ? "El enlace actual #" + (currentId || "?") +
+                    " NO coincide con los candidatos ESPN #" + candidateIds.join(", #") +
+                    ". Revisar manualmente; no se reemplaza automáticamente."
+                : "No hay un candidato ESPN comprobable para contrastar con el enlace actual.";
+        let teamsComparison = "";
+        if (item.status.startsWith("REVERSED_PAIR") && candidates.length) {
+            const candidate = candidates[0];
+            teamsComparison = "Rover: visitante " + item.rover.away.roverName +
+                ", local " + item.rover.home.roverName + ". ESPN: visitante " +
+                (candidate.away || "sin nombre") + ", local " +
+                (candidate.home || "sin nombre") + ".";
+        }
+        return {
+            matchupStatus: item.status,
+            reason: reviewReason(item),
+            candidateIds,
+            matchesCandidate,
+            linkAssessment,
+            teamsComparison
+        };
+    }
+
     function renderAudit() {
         const panel = document.getElementById(PANEL_ID);
         const label = panel?.querySelector('[data-role="audit-summary"]');
@@ -1230,8 +1266,24 @@
                     ` · ESPN ${r.existingCompetition}` : "");
             const source = ["OTHER_LINK", "OTHER_ESPN_FORMAT"].includes(r.status) ?
                 ` · origen: ${linkDomainPath(r.existingUrl)}` : "";
-            line.textContent = `SN ${r.item.rover.roverEventId} · ${r.status}${competition} · ESPN anterior #${r.existingId || "?"} · esperado #${r.item.match?.eventId || "sin validar"}${source}` +
+            const review = auditReviewExplanation(r);
+            const reference = r.item.match?.eventId ? "#" + r.item.match.eventId :
+                review?.candidateIds.length ? "candidatos #" + review.candidateIds.join(", #") : "sin validar";
+            line.textContent = `SN ${r.item.rover.roverEventId} · ${r.status}${competition} · ESPN anterior #${r.existingId || "?"} · esperado ${reference}${source}` +
                 (r.error ? ` · ${r.error}` : "");
+            if (review) {
+                for (const detailText of [
+                    "Motivo: " + review.reason,
+                    review.teamsComparison,
+                    review.linkAssessment
+                ]) {
+                    if (!detailText) continue;
+                    const detail = document.createElement("div");
+                    detail.className = "cbbll-review-reason cbbll-audit-reason";
+                    detail.textContent = detailText;
+                    line.appendChild(detail);
+                }
+            }
             list.appendChild(line);
         }
     }
@@ -1775,6 +1827,7 @@
             #${PANEL_ID} .cbbll-review-item { padding:6px 7px; margin-top:5px; background:#fff7ed; border-left:3px solid #f59e0b; border-radius:5px; }
             #${PANEL_ID} .cbbll-review-matchup { color:#17233c; font-size:11px; font-weight:800; }
             #${PANEL_ID} .cbbll-review-reason { margin-top:2px; color:#9a3412; font-size:10px; font-weight:600; }
+            #${PANEL_ID} .cbbll-audit-reason { line-height:1.4; white-space:normal; overflow-wrap:anywhere; }
             #${LAUNCHER_ID} { margin-left:6px; }
         `;
         document.head.appendChild(style);
@@ -1915,7 +1968,12 @@
         getLinkAudit: () => state.linkAudit.map(r => ({ roverEventId: r.item.rover.roverEventId, status: r.status,
             existingId: r.existingId, existingCompetition: r.existingCompetition || "",
             existingSource: linkDomainPath(r.existingUrl),
-            expectedId: r.item.match?.eventId || "", correctable: isCorrectableAudit(r), error: r.error })),
+            expectedId: r.item.match?.eventId || "", correctable: isCorrectableAudit(r),
+            matchupStatus: r.item.status,
+            reviewReason: auditReviewExplanation(r)?.reason || "",
+            candidateIds: auditReviewExplanation(r)?.candidateIds || [],
+            matchesCandidate: auditReviewExplanation(r)?.matchesCandidate ?? false,
+            error: r.error })),
         getUnrecognizedLinks: () => state.linkAudit.filter(r =>
             ["OTHER_LINK", "OTHER_ESPN_FORMAT"].includes(r.status)
         ).map(r => ({
@@ -1949,6 +2007,7 @@
             isTrustedEspnUrl,
             linkDomainPath,
             classifyLink,
+            auditReviewExplanation,
             isCorrectableAudit,
             getCBBRows,
             findRoverRow,

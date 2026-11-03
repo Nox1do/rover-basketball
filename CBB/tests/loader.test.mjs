@@ -27,7 +27,7 @@ function harness({category='BASKETBALL',league='CBB',date='2026-11-02',feed=null
 const h=harness();
 function game(away='2511',home='2737',date='2026-11-02T23:00:00Z',id='401921423') {return {id,date,competitions:[{competitors:[{homeAway:'away',team:{id:away}},{homeAway:'home',team:{id:home}}]}]}}
 function rover(away='733',home='711',time=1080,date='2026-11-02'){return {date,timeMinutes:time,away:{roverCode:away},home:{roverCode:home}}}
-test('version and source CBB are correct',()=>{assert.equal(h.api.version,'0.1.12');assert.match(code,/mens-college-basketball\/scoreboard/);assert.doesNotMatch(code,/football\/college-football|__CFB_LLOADER/)});
+test('version and source CBB are correct',()=>{assert.equal(h.api.version,'0.1.13');assert.match(code,/mens-college-basketball\/scoreboard/);assert.doesNotMatch(code,/football\/college-football|__CFB_LLOADER/)});
 test('all 58 original functions preserved plus four helpers',()=>{assert.ok((code.match(/(?:async\s+)?function\s+\w+/g)||[]).length>=62)});
 test('287 Rover IDs exactly match ESPN crosswalk',()=>{assert.equal(Object.keys(h.qa.teamIds).length,287);for(const [id,data] of Object.entries(mapping))assert.equal(h.qa.teamIds[id],data.espn_id);assert.equal(new Set(Object.values(h.qa.teamIds)).size,287)});
 test('all 150 fixtures have valid away+home team IDs',()=>{const rows=csv.trim().replace(/^\uFEFF/,'').split(/\r?\n/).slice(1);assert.equal(rows.length,150);for(const line of rows){const cols=line.split(',');assert.equal(h.qa.teamIds[cols[1]],cols[3]);assert.equal(h.qa.teamIds[cols[4]],cols[6])}});
@@ -65,7 +65,7 @@ test('singleton prevents duplicate version from scheduling conflicting panel ref
  vm.runInNewContext(code,x.context,{timeout:2500});
  assert.equal(firstIntervalCount,1);
  assert.equal(x.intervals.length,1);
- assert.equal(x.context.__CBB_LLOADER.version,'0.1.12');
+ assert.equal(x.context.__CBB_LLOADER.version,'0.1.13');
 });
 test('Tampermonkey metadata matches only index.php and stays versioned',()=>{
  const lines=code.split(/\r?\n/);
@@ -77,10 +77,10 @@ test('Tampermonkey metadata matches only index.php and stays versioned',()=>{
  const include=lines.find(line=>/^\/\/\s*@include\s+/.test(line));
  assert.match(include,/index\\\.php/);
  assert.doesNotMatch(include,/adm\\\/es\(\?/);
- assert.match(code,/@version\s+0\.1\.12/);
+ assert.match(code,/@version\s+0\.1\.13/);
 });
 
-test('v0.1.12 tests strict parsing and safe classification',()=>{
+test('v0.1.13 tests strict parsing and safe classification',()=>{
  const item={status:'READY',match:{eventId:'401911469'}};
  assert.equal(h.qa.strictEspnId('https://www.espn.com/mens-college-basketball/game/_/gameId/401911469'),'401911469');
  assert.equal(h.qa.strictEspnId('https://bad.example/path/espn.com/mens-college-basketball/game/_/gameId/401911469'),'');
@@ -91,12 +91,12 @@ test('v0.1.12 tests strict parsing and safe classification',()=>{
  assert.equal(h.qa.classifyLink(item,{url:'https://www.foxsports.com/game/123'}),'OTHER_LINK');
  assert.equal(h.qa.classifyLink({status:'REVERSED_PAIR',match:null},{url:'https://www.espn.com/mens-college-basketball/game/_/gameId/401911468'}),'NEEDS_REVIEW');
 });
-test('v0.1.12 requires verification before correcting',async()=>{
+test('v0.1.13 requires verification before correcting',async()=>{
  const x=harness({feed(){return {events:[game()]}}});
  await x.api.analyze();
  await assert.rejects(x.api.correctLinks(),/Verificar enlaces/);
 });
-test('v0.1.12 includes separate read-only audit and post-save confirmation/notification',()=>{
+test('v0.1.13 includes separate read-only audit and post-save confirmation/notification',()=>{
  assert.equal(typeof h.api.verifyLinks,'function');
  assert.equal(typeof h.api.correctLinks,'function');
  assert.match(code,/data-action="audit">Verificar enlaces/);
@@ -176,30 +176,30 @@ test('changed ESPN link after audit is not overwritten, no notification',async()
  assert.equal(x.saves,0);assert.equal(x.notifications.length,0);
 });
 
-test('v0.1.12 refreshes displayed version after old UI text is modified',()=>{
+test('v0.1.13 refreshes displayed version after old UI text is modified',()=>{
  const x=harness();
  const label=x.controls.get('.cbbll-version');
- assert.equal(label.textContent,'v0.1.12');
+ assert.equal(label.textContent,'v0.1.13');
  label.textContent='v0.1.0';
  x.intervals[0]();
- assert.equal(label.textContent,'v0.1.12');
- assert.equal(x.api.uiDiagnostics().label,'v0.1.12');
+ assert.equal(label.textContent,'v0.1.13');
+ assert.equal(x.api.uiDiagnostics().label,'v0.1.13');
  assert.equal(x.api.uiDiagnostics().panelId,'cbb-lloader-panel-v2');
 });
-test('v0.1.12 detects legacy UI and blocks all link writes',async()=>{
+test('v0.1.13 detects legacy UI and blocks all link writes',async()=>{
  const x=harness({feed(){return {events:[game()]}}});
  const original=x.context.document.getElementById.bind(x.context.document);
  x.context.document.getElementById=id=>id==='cbb-lloader-panel'?{id}:original(id);
  await x.api.analyze();
  assert.equal(x.api.uiDiagnostics().legacyCollision,true);
- assert.equal(x.api.uiDiagnostics().label,'v0.1.12');
+ assert.equal(x.api.uiDiagnostics().label,'v0.1.13');
  await assert.rejects(x.api.load({limit:1}),/otra versi.n/i);
  await assert.rejects(x.api.correctLinks(),/otra versi.n/i);
  x.intervals[0]();
  assert.equal(x.controls.get('[data-action="load"]').disabled,true);
  assert.equal(x.controls.get('[data-role="legacy-warning"]').hidden,false);
 });
-test('v0.1.12 uses separate IDs while retaining the ESPN link auditor',()=>{
+test('v0.1.13 uses separate IDs while retaining the ESPN link auditor',()=>{
  assert.match(code,/const PANEL_ID = "cbb-lloader-panel-v2"/);
  assert.match(code,/const LEGACY_PANEL_ID = "cbb-lloader-panel"/);
  assert.match(code,/function requireSingleLoader\(/);
@@ -723,4 +723,67 @@ test('unsupported ESPN URL remains review only and button stays disabled',async(
  assert.equal(x.controls.get('[data-action="fix"]').disabled,true);
  await x.api.correctLinks();
  assert.equal(x.saves,0);
+});
+
+test('Grambling vs Northern Illinois reversed orientation gives actionable NEEDS_REVIEW',()=>{
+ const item={status:'REVERSED_PAIR',
+  rover:{roverEventId:'1194835',date:'2026-11-02',time:'3:00 AM',
+    away:{roverCode:'1',roverName:'Grambling'},home:{roverCode:'2',roverName:'Northern Illinois'}},
+  candidates:[{eventId:'401920912',away:'Northern Illinois Huskies',home:'Grambling Tigers'}],
+  timeCandidates:[{eventId:'401920912',date:'2026-11-02',time:'3:00 AM'}]};
+ const x=h.qa.auditReviewExplanation({status:'NEEDS_REVIEW',item,existingId:'401920912'});
+ assert.match(x.reason,/LOCALÍA INVERTIDA/);
+ assert.match(x.reason,/Rover 3:00 AM/);
+ assert.match(x.reason,/ESPN 3:00 AM/);
+ assert.match(x.teamsComparison,/visitante Grambling, local Northern Illinois/);
+ assert.match(x.teamsComparison,/visitante Northern Illinois Huskies, local Grambling Tigers/);
+ assert.deepEqual(x.candidateIds,['401920912']);
+ assert.equal(x.matchesCandidate,true);
+ assert.match(x.linkAssessment,/coincide con un candidato ESPN/);
+});
+test('NEEDS_REVIEW identifies both time and orientation mismatches',()=>{
+ const item={status:'REVERSED_PAIR_TIME_MISMATCH',
+  rover:{date:'2026-11-02',time:'3:00 AM',
+   away:{roverCode:'1',roverName:'A'},home:{roverCode:'2',roverName:'B'}},
+  candidates:[{eventId:'400123456',away:'B',home:'A'}],
+  timeCandidates:[{eventId:'400123456',date:'2026-11-02',time:'3:30 AM'}]};
+ const x=h.qa.auditReviewExplanation({status:'NEEDS_REVIEW',item,existingId:'400123456'});
+ assert.match(x.reason,/LOCALÍA INVERTIDA Y HORA DIFERENTE/);
+ assert.match(x.reason,/Rover 3:00 AM/);
+ assert.match(x.reason,/ESPN 3:30 AM/);
+ assert.equal(x.matchesCandidate,true);
+});
+test('different actual URL than ESPN candidate must be highlighted but never auto-fixed',()=>{
+ const item={status:'TIME_MISMATCH',
+  rover:{date:'2026-11-02',time:'8:00 PM',
+   away:{roverCode:'1',roverName:'A'},home:{roverCode:'2',roverName:'B'}},
+  candidates:[{eventId:'401234567',away:'A',home:'B'}],
+  timeCandidates:[{eventId:'401234567',date:'2026-11-02',time:'8:30 PM'}]};
+ const r={status:'NEEDS_REVIEW',item,existingId:'401900000'};
+ const x=h.qa.auditReviewExplanation(r);
+ assert.match(x.reason,/HORA DIFERENTE/);
+ assert.equal(x.matchesCandidate,false);
+ assert.match(x.linkAssessment,/NO coincide/);
+ assert.match(x.linkAssessment,/401234567/);
+ assert.equal(h.qa.isCorrectableAudit({...r,existingCompetition:'mens-college-basketball'}),false);
+});
+test('missing ESPN candidate is explained and not auto-correctable',()=>{
+ const item={status:'NOT_FOUND',
+  rover:{date:'2026-11-02',time:'8:00 PM',
+   away:{roverCode:'1',roverName:'A'},home:{roverCode:'2',roverName:'B'}},
+  candidates:[],timeCandidates:[]};
+ const x=h.qa.auditReviewExplanation({status:'NEEDS_REVIEW',item,existingId:'401222222'});
+ assert.match(x.reason,/No se encontró una coincidencia exacta/);
+ assert.deepEqual(x.candidateIds,[]);
+ assert.match(x.linkAssessment,/No hay un candidato ESPN comprobable/);
+});
+test('audit detail renderer does not alter classifications or correction permissions',()=>{
+ const item={status:'READY',match:{eventId:'401921423'}};
+ assert.equal(h.qa.auditReviewExplanation({status:'CORRECT',item,existingId:'401921423'}),null);
+ assert.equal(h.qa.auditReviewExplanation({status:'WRONG_ESPN',item,existingId:'401921422'}),null);
+ const incomplete={status:'NO_ESPN_TIME',
+  rover:{time:'8:00 PM',away:{roverCode:'1'},home:{roverCode:'2'}},timeCandidates:[]};
+ assert.equal(h.qa.auditReviewExplanation({status:'NEEDS_REVIEW',item:incomplete}).matchupStatus,'NO_ESPN_TIME');
+ assert.match(code,/detail\.className = "cbbll-review-reason cbbll-audit-reason"/);
+ assert.match(code,/detail\.textContent = detailText/);
 });

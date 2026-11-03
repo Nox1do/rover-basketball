@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+## [0.1.13] - 2026-11-03
+
+- Auditoría de enlaces: explica cada estado `NEEDS_REVIEW` usando el motivo concreto que ya calcula el motor de análisis.
+- Para eventos invertidos compara visitante/local de Rover con visitante/local de ESPN. Para horas diferentes indica ambas horas.
+- Muestra `gameId` candidatos cuando hay referencia ESPN, distingue URL actual coincidente con candidato de URL que apunta a otro `gameId`, sin afirmar que un candidato sea una coincidencia exacta.
+- Añade los campos de solo lectura `matchupStatus`, `reviewReason`, `candidateIds`, `matchesCandidate` a `getLinkAudit()`.
+- Sin cambios en la elegibilidad ni lógica del botón `Corregir incorrectos`, ni en la apertura/guardado de modales.
+- Pruebas de Grambling–Northern Illinois, localía y hora diferentes, enlaces no coincidentes y ausencia de candidatos ESPN.
+
+
 ## [0.1.12] - 2026-11-03
 
 - Ampliada auditoría ESPN a `boxscore`, `matchup`, `playbyplay` y `game?gameId=` además de `game/_/gameId=`.

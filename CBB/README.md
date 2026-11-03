@@ -1,6 +1,6 @@
 # CBB LLoader — NCAA Men's Basketball
 
-Versión estable **0.1.11** (primera versión 0.1.0) basada en el archivo aportado `userscript - cfb lloader-0.1.6.user.js`.
+Versión estable **0.1.12** (primera versión 0.1.0) basada en el archivo aportado `userscript - cfb lloader-0.1.6.user.js`.
 
 Este script **vincula enlaces de partidos de ESPN con la tabla de eventos de Rover**. No llena puntajes ni resultados del juego. **Exclusivamente vincula partidos ESPN, compara la hora y verifica si los equipos están invertidos.** Las 58 funciones del CFB LLoader fueron transferidas y adaptadas; se añadieron cuatro funciones auxiliares para CBB.
 
@@ -89,3 +89,9 @@ Se incorporan 11 equipos nuevos y 11 partidos nuevos (SN 1200199, 1200411, 12004
 ## Detección ESPN de otra competición (v0.1.11)
 
 El auditor reconoce enlaces de la NCAA **femenina** (`womens-college-basketball`) en `www.espn.com` y `espndeportes.espn.com`, incluido `https://espndeportes.espn.com/womens-college-basketball/game/_/gameId/401920019`. Los clasifica como `WRONG_COMPETITION`, no `OTHER_LINK`, y enseña el ID antiguo y el ID masculino esperado. **Corregir incorrectos** se habilita únicamente si la auditoría termina, el evento tiene estado `READY` y una coincidencia masculina exacta por equipos, visitante/local, fecha y hora. Se verifica que el enlace anterior no haya cambiado, se realiza un único guardado y se reabre el editor para comprobar la persistencia. Enlaces externos, partidos invertidos y sin coincidencia exacta continúan protegidos. La notificación de reemplazo distingue ESPN femenino y masculino.
+
+## Auditoría extendida de enlaces ESPN (v0.1.12)
+
+El auditor distingue `WRONG_COMPETITION` (página de juego ESPN de otra competición con ID verificable), `OTHER_ESPN_FORMAT` (dominio oficial ESPN, pero formato de enlace no interpretado), y `OTHER_LINK` (proveedor externo o URL desconocida). Reconoce `game`, `boxscore`, `matchup`, `playbyplay` con `/_/gameId/` y la ruta directa `game?gameId=`, tanto de `www.espn.com` como de `espndeportes.espn.com`. Los enlaces a partidos válidos del mismo `gameId` y NCAA masculina no aparecen falsamente como incorrectos. Una competición diferente solo puede corregirse si los equipos, visitante/local, fecha y hora coinciden exactamente; la URL antigua se relee, se guarda una vez y se reabre para confirmar. Enlaces externos y formatos desconocidos no son autocorregibles.
+
+Para identificar formatos restantes sin exponer tokens, tras **Verificar enlaces**, ejecutar en la consola de Firefox `console.table(__CBB_LLOADER.getUnrecognizedLinks())`. Muestra SN, categoría, dominio/ruta sin query y ESPN esperado.

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Rs - ESPN CBB LLoader
 // @namespace    https://roversport.net/
-// @version     0.1.11
+// @version     0.1.12
 // @description  CBB LLoader: coloca links ESPN, comprueba horarios y equipos invertidos; no llena resultados.
 // @author       noeg
 // @match        https://www.roversport.lol/adm/es/index.php*
@@ -20,7 +20,7 @@
 (() => {
     "use strict";
 
-    const VERSION = "0.1.11";
+    const VERSION = "0.1.12";
     // Rover usa America/New_York, independientemente de la zona horaria del equipo.
     const ROVER_TIME_ZONE = "America/New_York";
     const TAG = "[CBB LLoader]";
@@ -1147,14 +1147,30 @@
     }
 
 
-    // Strict ESPN-host parser. Localized espndeportes links are ESPN too.
-    // Never accept "evil.espn.com.example", a different provider, or a
-    // football/NBA URL as a college basketball game.
+    // Official ESPN hosts and documented ESPN game-page shapes only.
+    // ESPN also publishes /boxscore/_/gameId/... in addition to /game/.
+    const ESPN_HOST_PATTERN = /^https?:\/\/(?:(?:www|espndeportes)\.)?espn\.com(?:[/:?#]|$)/i;
+    function isTrustedEspnUrl(url) {
+        return ESPN_HOST_PATTERN.test(clean(url));
+    }
     function espnGameInfo(url) {
+        if (!isTrustedEspnUrl(url)) return null;
         const match = clean(url).match(
-            /^https?:\/\/(?:(?:www|espndeportes)\.)?espn\.com\/(mens-college-basketball|womens-college-basketball)\/game\/_\/gameId\/(\d+)(?=[/?#]|$)/i
+            /^https?:\/\/(?:(?:www|espndeportes)\.)?espn\.com\/([a-z0-9-]+)\/(game|boxscore|matchup|playbyplay)\/_\/gameId\/(\d+)(?=[/?#]|$)/i
         );
-        return match ? { competition: match[1].toLowerCase(), eventId: match[2] } : null;
+        if (match) return { competition: match[1].toLowerCase(), eventId: match[3] };
+        // ESPN's older direct /game?gameId=... URLs are valid game references
+        // but only when the league and endpoint are both explicit.
+        const legacy = clean(url).match(
+            /^https?:\/\/(?:(?:www|espndeportes)\.)?espn\.com\/([a-z0-9-]+)\/game\/?\?[^#\s]*\bgameId=(\d+)(?:[&#]|$)/i
+        );
+        return legacy ? { competition: legacy[1].toLowerCase(), eventId: legacy[2] } : null;
+    }
+    function linkDomainPath(url) {
+        // Deliberately omit query and fragment; these may contain user tokens.
+        const found = clean(url).match(/^https?:\/\/([^/?#\s]+)(\/[^?#\s]*)?/i);
+        if (!found) return "URL no reconocible";
+        return (found[1].toLowerCase() + (found[2] || "/")).slice(0, 180);
     }
     function strictEspnId(url) {
         const info = espnGameInfo(url);
@@ -1163,7 +1179,7 @@
     function classifyLink(item, current) {
         if (!current?.url) return "EMPTY";
         const info = espnGameInfo(current.url);
-        if (!info) return "OTHER_LINK";
+        if (!info) return isTrustedEspnUrl(current.url) ? "OTHER_ESPN_FORMAT" : "OTHER_LINK";
         // An ESPN women's basketball link is never a valid men's basketball
         // link, even when its numeric gameId accidentally matches.
         if (info.competition !== "mens-college-basketball") return "WRONG_COMPETITION";
@@ -1196,7 +1212,8 @@
         const list = panel?.querySelector('[data-role="audit-list"]');
         if (!label || !details || !list) return;
         const c = auditTotals();
-        const review = (c.OTHER_LINK || 0) + (c.NEEDS_REVIEW || 0) + (c.CONFLICT || 0) + (c.ERROR || 0);
+        const review = (c.OTHER_LINK || 0) + (c.OTHER_ESPN_FORMAT || 0) +
+            (c.NEEDS_REVIEW || 0) + (c.CONFLICT || 0) + (c.ERROR || 0);
         const wrong = (c.WRONG_ESPN || 0) + (c.WRONG_COMPETITION || 0);
         label.textContent = state.linkAudit.length ?
             `Links: ${c.CORRECT || 0} correctos · ${wrong} incorrectos (${c.WRONG_COMPETITION || 0} de otra competición) · ${c.CORRECTED || 0} corregidos · ${c.EMPTY || 0} vacíos · ${review} revisión` : "";
@@ -1209,14 +1226,18 @@
             const line = document.createElement("div");
             line.className = "cbbll-review-item";
             const competition = r.existingCompetition === "womens-college-basketball" ?
-                " · ESPN femenino" : "";
-            line.textContent = `SN ${r.item.rover.roverEventId} · ${r.status}${competition} · ESPN anterior #${r.existingId || "?"} · esperado #${r.item.match?.eventId || "sin validar"}` +
+                " · ESPN femenino" : (r.existingCompetition && r.existingCompetition !== "mens-college-basketball" ?
+                    ` · ESPN ${r.existingCompetition}` : "");
+            const source = ["OTHER_LINK", "OTHER_ESPN_FORMAT"].includes(r.status) ?
+                ` · origen: ${linkDomainPath(r.existingUrl)}` : "";
+            line.textContent = `SN ${r.item.rover.roverEventId} · ${r.status}${competition} · ESPN anterior #${r.existingId || "?"} · esperado #${r.item.match?.eventId || "sin validar"}${source}` +
                 (r.error ? ` · ${r.error}` : "");
             list.appendChild(line);
         }
     }
     function notifyCorrection(item, oldId, newId, oldCompetition = "mens-college-basketball") {
-        const origin = oldCompetition === "womens-college-basketball" ? "ESPN femenino" : "ESPN";
+        const origin = oldCompetition === "womens-college-basketball" ?
+            "ESPN femenino" : (oldCompetition === "mens-college-basketball" ? "ESPN" : `ESPN ${oldCompetition}`);
         const text = `SN ${item.rover.roverEventId}: ${origin} #${oldId} → ESPN masculino #${newId}`;
         log(`Enlace corregido y comprobado: ${text}`);
         try {
@@ -1893,7 +1914,15 @@
         correctLinks: correctExistingLinks,
         getLinkAudit: () => state.linkAudit.map(r => ({ roverEventId: r.item.rover.roverEventId, status: r.status,
             existingId: r.existingId, existingCompetition: r.existingCompetition || "",
+            existingSource: linkDomainPath(r.existingUrl),
             expectedId: r.item.match?.eventId || "", correctable: isCorrectableAudit(r), error: r.error })),
+        getUnrecognizedLinks: () => state.linkAudit.filter(r =>
+            ["OTHER_LINK", "OTHER_ESPN_FORMAT"].includes(r.status)
+        ).map(r => ({
+            SN: r.item.rover.roverEventId, estado: r.status,
+            origen: linkDomainPath(r.existingUrl),
+            ESPN_esperado: r.item.match?.eventId || "sin validar"
+        })),
         getPlan: () => state.plan,
         getSummary: planSummary,
         getLog: () => [...state.log],
@@ -1917,6 +1946,8 @@
             resultsUrlLabel,
             strictEspnId,
             espnGameInfo,
+            isTrustedEspnUrl,
+            linkDomainPath,
             classifyLink,
             isCorrectableAudit,
             getCBBRows,

@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+## [0.1.12] - 2026-11-03
+
+- Ampliada auditoría ESPN a `boxscore`, `matchup`, `playbyplay` y `game?gameId=` además de `game/_/gameId=`.
+- Reconoce URLs de partidos ESPN de otras competiciones con un `gameId` válido como `WRONG_COMPETITION` y permite corrección solo con partido NCAA masculino exacto y auditoría completa.
+- Separa `OTHER_ESPN_FORMAT` de `OTHER_LINK` para no confundir enlaces oficiales no reconocidos con proveedores externos.
+- Añade dominio y ruta sanitizados a la auditoría visual; API `getUnrecognizedLinks()` agrupa entradas desconocidas sin publicar parámetros ni fragmentos de URL.
+- Conserva una sola escritura, la comprobación de URL antigua y la confirmación posterior; nunca corrige proveedores externos ni enlaces ESPN sin partido verificable.
+- Pruebas de falsos positivos, rutas alternativas, dominios suplantados, tokens omitidos y reemplazo de otras competiciones.
+
+
 ## [0.1.11] - 2026-11-03
 
 - Detecta el enlace de ESPN NCAA femenino como `WRONG_COMPETITION` en lugar de `OTHER_LINK`, incluidos enlaces localizados de `espndeportes.espn.com`.

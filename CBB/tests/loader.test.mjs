@@ -27,7 +27,7 @@ function harness({category='BASKETBALL',league='CBB',date='2026-11-02',feed=null
 const h=harness();
 function game(away='2511',home='2737',date='2026-11-02T23:00:00Z',id='401921423') {return {id,date,competitions:[{competitors:[{homeAway:'away',team:{id:away}},{homeAway:'home',team:{id:home}}]}]}}
 function rover(away='733',home='711',time=1080,date='2026-11-02'){return {date,timeMinutes:time,away:{roverCode:away},home:{roverCode:home}}}
-test('version and source CBB are correct',()=>{assert.equal(h.api.version,'0.1.10');assert.match(code,/mens-college-basketball\/scoreboard/);assert.doesNotMatch(code,/football\/college-football|__CFB_LLOADER/)});
+test('version and source CBB are correct',()=>{assert.equal(h.api.version,'0.1.11');assert.match(code,/mens-college-basketball\/scoreboard/);assert.doesNotMatch(code,/football\/college-football|__CFB_LLOADER/)});
 test('all 58 original functions preserved plus four helpers',()=>{assert.ok((code.match(/(?:async\s+)?function\s+\w+/g)||[]).length>=62)});
 test('287 Rover IDs exactly match ESPN crosswalk',()=>{assert.equal(Object.keys(h.qa.teamIds).length,287);for(const [id,data] of Object.entries(mapping))assert.equal(h.qa.teamIds[id],data.espn_id);assert.equal(new Set(Object.values(h.qa.teamIds)).size,287)});
 test('all 150 fixtures have valid away+home team IDs',()=>{const rows=csv.trim().replace(/^\uFEFF/,'').split(/\r?\n/).slice(1);assert.equal(rows.length,150);for(const line of rows){const cols=line.split(',');assert.equal(h.qa.teamIds[cols[1]],cols[3]);assert.equal(h.qa.teamIds[cols[4]],cols[6])}});
@@ -65,7 +65,7 @@ test('singleton prevents duplicate version from scheduling conflicting panel ref
  vm.runInNewContext(code,x.context,{timeout:2500});
  assert.equal(firstIntervalCount,1);
  assert.equal(x.intervals.length,1);
- assert.equal(x.context.__CBB_LLOADER.version,'0.1.10');
+ assert.equal(x.context.__CBB_LLOADER.version,'0.1.11');
 });
 test('Tampermonkey metadata matches only index.php and stays versioned',()=>{
  const lines=code.split(/\r?\n/);
@@ -77,10 +77,10 @@ test('Tampermonkey metadata matches only index.php and stays versioned',()=>{
  const include=lines.find(line=>/^\/\/\s*@include\s+/.test(line));
  assert.match(include,/index\\\.php/);
  assert.doesNotMatch(include,/adm\\\/es\(\?/);
- assert.match(code,/@version\s+0\.1\.10/);
+ assert.match(code,/@version\s+0\.1\.11/);
 });
 
-test('v0.1.10 tests strict parsing and safe classification',()=>{
+test('v0.1.11 tests strict parsing and safe classification',()=>{
  const item={status:'READY',match:{eventId:'401911469'}};
  assert.equal(h.qa.strictEspnId('https://www.espn.com/mens-college-basketball/game/_/gameId/401911469'),'401911469');
  assert.equal(h.qa.strictEspnId('https://bad.example/path/espn.com/mens-college-basketball/game/_/gameId/401911469'),'');
@@ -91,12 +91,12 @@ test('v0.1.10 tests strict parsing and safe classification',()=>{
  assert.equal(h.qa.classifyLink(item,{url:'https://www.foxsports.com/game/123'}),'OTHER_LINK');
  assert.equal(h.qa.classifyLink({status:'REVERSED_PAIR',match:null},{url:'https://www.espn.com/mens-college-basketball/game/_/gameId/401911468'}),'NEEDS_REVIEW');
 });
-test('v0.1.10 requires verification before correcting',async()=>{
+test('v0.1.11 requires verification before correcting',async()=>{
  const x=harness({feed(){return {events:[game()]}}});
  await x.api.analyze();
  await assert.rejects(x.api.correctLinks(),/Verificar enlaces/);
 });
-test('v0.1.10 includes separate read-only audit and post-save confirmation/notification',()=>{
+test('v0.1.11 includes separate read-only audit and post-save confirmation/notification',()=>{
  assert.equal(typeof h.api.verifyLinks,'function');
  assert.equal(typeof h.api.correctLinks,'function');
  assert.match(code,/data-action="audit">Verificar enlaces/);
@@ -138,7 +138,7 @@ function editableHarness(originalUrl) {
   ctx.HTMLInputElement=class {};
   ctx.GM_notification=opts=>notifications.push(opts);
   return {api:x.api,get stored(){return stored},set stored(value){stored=value},
-    get saves(){return saves},get opens(){return opens},notifications};
+    get saves(){return saves},get opens(){return opens},notifications,controls:x.controls};
 }
 
 test('audit read-only, correction verifies reopening, sends one Tampermonkey notification',async()=>{
@@ -176,30 +176,30 @@ test('changed ESPN link after audit is not overwritten, no notification',async()
  assert.equal(x.saves,0);assert.equal(x.notifications.length,0);
 });
 
-test('v0.1.10 refreshes displayed version after old UI text is modified',()=>{
+test('v0.1.11 refreshes displayed version after old UI text is modified',()=>{
  const x=harness();
  const label=x.controls.get('.cbbll-version');
- assert.equal(label.textContent,'v0.1.10');
+ assert.equal(label.textContent,'v0.1.11');
  label.textContent='v0.1.0';
  x.intervals[0]();
- assert.equal(label.textContent,'v0.1.10');
- assert.equal(x.api.uiDiagnostics().label,'v0.1.10');
+ assert.equal(label.textContent,'v0.1.11');
+ assert.equal(x.api.uiDiagnostics().label,'v0.1.11');
  assert.equal(x.api.uiDiagnostics().panelId,'cbb-lloader-panel-v2');
 });
-test('v0.1.10 detects legacy UI and blocks all link writes',async()=>{
+test('v0.1.11 detects legacy UI and blocks all link writes',async()=>{
  const x=harness({feed(){return {events:[game()]}}});
  const original=x.context.document.getElementById.bind(x.context.document);
  x.context.document.getElementById=id=>id==='cbb-lloader-panel'?{id}:original(id);
  await x.api.analyze();
  assert.equal(x.api.uiDiagnostics().legacyCollision,true);
- assert.equal(x.api.uiDiagnostics().label,'v0.1.10');
+ assert.equal(x.api.uiDiagnostics().label,'v0.1.11');
  await assert.rejects(x.api.load({limit:1}),/otra versi.n/i);
  await assert.rejects(x.api.correctLinks(),/otra versi.n/i);
  x.intervals[0]();
  assert.equal(x.controls.get('[data-action="load"]').disabled,true);
  assert.equal(x.controls.get('[data-role="legacy-warning"]').hidden,false);
 });
-test('v0.1.10 uses separate IDs while retaining the ESPN link auditor',()=>{
+test('v0.1.11 uses separate IDs while retaining the ESPN link auditor',()=>{
  assert.match(code,/const PANEL_ID = "cbb-lloader-panel-v2"/);
  assert.match(code,/const LEGACY_PANEL_ID = "cbb-lloader-panel"/);
  assert.match(code,/function requireSingleLoader\(/);
@@ -583,4 +583,79 @@ test('new SIU Edwardsville pairing detects correct and reversed ESPN localia',()
  assert.equal(h.qa.teamIds['932'],'2449');
  assert.equal(h.qa.teamIds['922'],'2545');
  assert.equal(h.qa.teamIds['737'],'2463');
+});
+
+test('espndeportes ESPN womens Western Illinois URL is recognized as wrong competition',()=>{
+ const supplied='https://espndeportes.espn.com/womens-college-basketball/game/_/gameId/401920019';
+ assert.deepEqual(h.qa.espnGameInfo(supplied),{competition:'womens-college-basketball',eventId:'401920019'});
+ assert.equal(h.qa.strictEspnId(supplied),'');
+ assert.equal(h.qa.classifyLink({status:'READY',match:{eventId:'401999111'}},{url:supplied}),'WRONG_COMPETITION');
+ assert.equal(h.qa.classifyLink({status:'NOT_FOUND',match:null},{url:supplied}),'WRONG_COMPETITION');
+ assert.equal(h.qa.isCorrectableAudit({status:'WRONG_COMPETITION',existingId:'401920019',existingCompetition:'womens-college-basketball',
+  item:{status:'READY',match:{eventId:'401999111'}}}),true);
+});
+test('ESPN localized mens URLs are valid and spoof/other providers stay blocked',()=>{
+ const item={status:'READY',match:{eventId:'401921423'}};
+ assert.equal(h.qa.strictEspnId('https://espndeportes.espn.com/mens-college-basketball/game/_/gameId/401921423'),'401921423');
+ assert.equal(h.qa.classifyLink(item,{url:'https://espndeportes.espn.com/mens-college-basketball/game/_/gameId/401921423'}),'CORRECT');
+ for(const url of [
+  'https://evil.espn.com.example/womens-college-basketball/game/_/gameId/401920019',
+  'https://www.espn.com.evil.org/womens-college-basketball/game/_/gameId/401920019',
+  'https://www.foxsports.com/college-basketball/game/401920019',
+  'https://www.espn.com/college-football/game/_/gameId/401920019'
+ ])assert.equal(h.qa.classifyLink(item,{url}),'OTHER_LINK');
+});
+test('womens ESPN wrong competition is audited read-only and fixed exactly once with confirmation',async()=>{
+ const url='https://espndeportes.espn.com/womens-college-basketball/game/_/gameId/401920019';
+ const x=editableHarness(url);
+ const audited=await x.api.verifyLinks();
+ assert.equal(audited[0].status,'WRONG_COMPETITION');
+ assert.equal(audited[0].existingId,'401920019');
+ assert.equal(audited[0].existingCompetition,'womens-college-basketball');
+ assert.equal(x.api.getLinkAudit()[0].correctable,true);
+ assert.equal(x.controls.get('[data-action="fix"]').disabled,false);
+ assert.equal(x.saves,0);assert.equal(x.notifications.length,0);
+ const corrected=await x.api.correctLinks();
+ assert.equal(corrected[0].status,'CORRECTED');
+ assert.equal(x.stored,'https://www.espn.com/mens-college-basketball/game/_/gameId/401921423');
+ assert.equal(x.saves,1);assert.equal(x.opens,3);assert.equal(x.notifications.length,1);
+ assert.equal(x.api.getLinkAudit()[0].existingCompetition,'mens-college-basketball');
+ assert.match(x.notifications[0].text,/ESPN femenino.*401920019.*ESPN masculino.*401921423/);
+});
+test('women link without exact mens matchup is reported but not correctable',()=>{
+ const r={status:'WRONG_COMPETITION',existingId:'401920019',existingCompetition:'womens-college-basketball',
+  item:{status:'REVERSED_PAIR',match:null}};
+ assert.equal(h.qa.isCorrectableAudit(r),false);
+ r.item.status='TIME_MISMATCH';
+ assert.equal(h.qa.isCorrectableAudit(r),false);
+ r.item.status='READY';r.item.match={eventId:'401921423'};
+ assert.equal(h.qa.isCorrectableAudit(r),true);
+ r.existingCompetition='';
+ assert.equal(h.qa.isCorrectableAudit(r),false);
+});
+test('changed womens ESPN link after auditing is not overwritten',async()=>{
+ const x=editableHarness('https://espndeportes.espn.com/womens-college-basketball/game/_/gameId/401920019');
+ await x.api.verifyLinks();
+ x.stored='https://espndeportes.espn.com/womens-college-basketball/game/_/gameId/401920020';
+ const result=await x.api.correctLinks();
+ assert.equal(result[0].status,'ERROR');
+ assert.match(result[0].error,/cambiado/i);
+ assert.equal(x.saves,0);
+ assert.equal(x.notifications.length,0);
+});
+test('other providers remain unchanged when auditing and correcting womens links',async()=>{
+ const x=editableHarness('https://www.foxsports.com/college-basketball/game/2026');
+ const audited=await x.api.verifyLinks();
+ assert.equal(audited[0].status,'OTHER_LINK');
+ assert.equal(x.api.getLinkAudit()[0].correctable,false);
+ assert.equal(x.controls.get('[data-action="fix"]').disabled,true);
+ await x.api.correctLinks();
+ assert.equal(x.saves,0);
+});
+
+test('ESPN www womens URL with query parameters is recognized and never considered mens',()=>{
+ const url='https://www.espn.com/womens-college-basketball/game/_/gameId/401920019?platform=es';
+ assert.deepEqual(h.qa.espnGameInfo(url),{competition:'womens-college-basketball',eventId:'401920019'});
+ assert.equal(h.qa.strictEspnId(url),'');
+ assert.equal(h.qa.classifyLink({status:'READY',match:{eventId:'401921423'}},{url}),'WRONG_COMPETITION');
 });

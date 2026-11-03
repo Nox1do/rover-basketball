@@ -2,6 +2,15 @@
 
 ## [Unreleased]
 
+## [0.1.11] - 2026-11-03
+
+- Detecta el enlace de ESPN NCAA femenino como `WRONG_COMPETITION` en lugar de `OTHER_LINK`, incluidos enlaces localizados de `espndeportes.espn.com`.
+- `Verificar enlaces` identifica gameId y competición del link existente sin editar; el panel presenta los errores de competición separadamente.
+- `Corregir incorrectos` incluye enlaces femeninos únicamente si hay un juego masculino ESPN exacto y verificado; conserva los bloqueos de coincidencias invertidas, diferencias de horario y proveedores ajenos.
+- Protecciones al corregir: relectura del enlace original, coincidencia estricta de competición e ID, un guardado, reapertura y comprobación, notificación con deporte original y destino.
+- Pruebas de integración del caso `401920019`, host internacional, URL maliciosa, ausencia de coincidencia y cambios concurrentes del enlace.
+
+
 ## [0.1.10] - 2026-11-03
 
 - Se incorporan 11 enfrentamientos y sus 11 nuevos equipos Rover verificados con el catálogo NCAA CBB de ESPN.

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Rs - ESPN CBB LLoader
 // @namespace    https://roversport.net/
-// @version     0.1.10
+// @version     0.1.11
 // @description  CBB LLoader: coloca links ESPN, comprueba horarios y equipos invertidos; no llena resultados.
 // @author       noeg
 // @match        https://www.roversport.lol/adm/es/index.php*
@@ -20,7 +20,7 @@
 (() => {
     "use strict";
 
-    const VERSION = "0.1.10";
+    const VERSION = "0.1.11";
     // Rover usa America/New_York, independientemente de la zona horaria del equipo.
     const ROVER_TIME_ZONE = "America/New_York";
     const TAG = "[CBB LLoader]";
@@ -803,7 +803,7 @@
         load.disabled = busy || !active || exactCount === 0 || hasLegacyCollision();
         load.textContent = exactCount ? `Cargar ${exactCount} enlaces` : "Cargar enlaces";
         if (audit) audit.disabled = busy || !active;
-        const pending = state.linkAudit.filter(r => r.status === "WRONG_ESPN").length;
+        const pending = state.linkAudit.filter(isCorrectableAudit).length;
         if (fix) {
             fix.disabled = busy || !active || hasLegacyCollision() || !pending || !state.auditSignature || state.auditSignature !== state.planSignature;
             fix.textContent = pending ? `Corregir ${pending} incorrectos` : "Corregir incorrectos";
@@ -1147,17 +1147,33 @@
     }
 
 
-    // Strict host/path parser: never treat another provider or football URL as ESPN CBB.
+    // Strict ESPN-host parser. Localized espndeportes links are ESPN too.
+    // Never accept "evil.espn.com.example", a different provider, or a
+    // football/NBA URL as a college basketball game.
+    function espnGameInfo(url) {
+        const match = clean(url).match(
+            /^https?:\/\/(?:(?:www|espndeportes)\.)?espn\.com\/(mens-college-basketball|womens-college-basketball)\/game\/_\/gameId\/(\d+)(?=[/?#]|$)/i
+        );
+        return match ? { competition: match[1].toLowerCase(), eventId: match[2] } : null;
+    }
     function strictEspnId(url) {
-        const match = clean(url).match(/^https?:\/\/(?:www\.)?espn\.com\/mens-college-basketball\/game\/_\/gameId\/(\d+)(?=[/?#]|$)/i);
-        return match?.[1] || "";
+        const info = espnGameInfo(url);
+        return info?.competition === "mens-college-basketball" ? info.eventId : "";
     }
     function classifyLink(item, current) {
         if (!current?.url) return "EMPTY";
-        const eventId = strictEspnId(current.url);
-        if (!eventId) return "OTHER_LINK";
+        const info = espnGameInfo(current.url);
+        if (!info) return "OTHER_LINK";
+        // An ESPN women's basketball link is never a valid men's basketball
+        // link, even when its numeric gameId accidentally matches.
+        if (info.competition !== "mens-college-basketball") return "WRONG_COMPETITION";
         if (item.status !== "READY" || !item.match?.eventId) return "NEEDS_REVIEW";
-        return eventId === String(item.match.eventId) ? "CORRECT" : "WRONG_ESPN";
+        return info.eventId === String(item.match.eventId) ? "CORRECT" : "WRONG_ESPN";
+    }
+    function isCorrectableAudit(report) {
+        return Boolean(report && ["WRONG_ESPN", "WRONG_COMPETITION"].includes(report.status) &&
+            report.item?.status === "READY" && report.item.match?.eventId &&
+            report.existingId && report.existingCompetition);
     }
     function inspectLink(modal) {
         const field = findUrlField(modal);
@@ -1181,8 +1197,9 @@
         if (!label || !details || !list) return;
         const c = auditTotals();
         const review = (c.OTHER_LINK || 0) + (c.NEEDS_REVIEW || 0) + (c.CONFLICT || 0) + (c.ERROR || 0);
+        const wrong = (c.WRONG_ESPN || 0) + (c.WRONG_COMPETITION || 0);
         label.textContent = state.linkAudit.length ?
-            `Links: ${c.CORRECT || 0} correctos · ${c.WRONG_ESPN || 0} incorrectos · ${c.CORRECTED || 0} corregidos · ${c.EMPTY || 0} vacíos · ${review} revisión` : "";
+            `Links: ${c.CORRECT || 0} correctos · ${wrong} incorrectos (${c.WRONG_COMPETITION || 0} de otra competición) · ${c.CORRECTED || 0} corregidos · ${c.EMPTY || 0} vacíos · ${review} revisión` : "";
         const items = state.linkAudit.filter(r => !["CORRECT", "EMPTY"].includes(r.status));
         details.hidden = items.length === 0;
         details.open = items.length > 0;
@@ -1191,13 +1208,16 @@
         for (const r of items) {
             const line = document.createElement("div");
             line.className = "cbbll-review-item";
-            line.textContent = `SN ${r.item.rover.roverEventId} · ${r.status} · ESPN anterior #${r.existingId || "?"} · esperado #${r.item.match?.eventId || "sin validar"}` +
+            const competition = r.existingCompetition === "womens-college-basketball" ?
+                " · ESPN femenino" : "";
+            line.textContent = `SN ${r.item.rover.roverEventId} · ${r.status}${competition} · ESPN anterior #${r.existingId || "?"} · esperado #${r.item.match?.eventId || "sin validar"}` +
                 (r.error ? ` · ${r.error}` : "");
             list.appendChild(line);
         }
     }
-    function notifyCorrection(item, oldId, newId) {
-        const text = `SN ${item.rover.roverEventId}: ESPN #${oldId} → #${newId}`;
+    function notifyCorrection(item, oldId, newId, oldCompetition = "mens-college-basketball") {
+        const origin = oldCompetition === "womens-college-basketball" ? "ESPN femenino" : "ESPN";
+        const text = `SN ${item.rover.roverEventId}: ${origin} #${oldId} → ESPN masculino #${newId}`;
         log(`Enlace corregido y comprobado: ${text}`);
         try {
             if (typeof GM_notification === "function") {
@@ -1461,7 +1481,7 @@
                 if (state.stopRequested) break;
                 requireAuditedTable();
                 let modal = null;
-                const result = { item, status: "ERROR", existingUrl: "", existingId: "", error: "" };
+                const result = { item, status: "ERROR", existingUrl: "", existingId: "", existingCompetition: "", error: "" };
                 try {
                     modal = await openEditor(item);
                     await sleep(180);
@@ -1469,10 +1489,14 @@
                     validateModalEvent(item, modal);
                     const data = inspectLink(modal);
                     result.existingUrl = data.current?.url || "";
-                    result.existingId = strictEspnId(result.existingUrl);
+                    const oldInfo = espnGameInfo(result.existingUrl);
+                    result.existingId = oldInfo?.eventId || "";
+                    result.existingCompetition = oldInfo?.competition || "";
                     result.status = data.conflict ? "CONFLICT" : classifyLink(item, data.current);
-                    if (result.status === "WRONG_ESPN")
-                        log(`SN ${item.rover.roverEventId}: link #${result.existingId} incorrecto; corresponde #${item.match.eventId}`, "warn");
+                    if (isCorrectableAudit(result))
+                        log(`SN ${item.rover.roverEventId}: enlace ESPN ${result.existingCompetition} #${result.existingId} incorrecto; corresponde ESPN masculino #${item.match.eventId}`, "warn");
+                    else if (result.status === "WRONG_COMPETITION")
+                        log(`SN ${item.rover.roverEventId}: enlace femenino #${result.existingId} detectado, pero el partido masculino no tiene coincidencia exacta; revisión manual.`, "warn");
                 } catch (error) {
                     result.error = clean(error?.message || error);
                     log(`Auditoría SN ${item.rover.roverEventId}: ${result.error}`, "error");
@@ -1487,7 +1511,7 @@
             completed = !state.stopRequested && state.linkAudit.length === state.plan.length;
             if (completed) state.auditSignature = state.planSignature;
             const totals = auditTotals();
-            log(`Verificación: ${totals.CORRECT || 0} correctos, ${totals.WRONG_ESPN || 0} incorrectos, ${totals.EMPTY || 0} vacíos.`);
+            log(`Verificación: ${totals.CORRECT || 0} correctos, ${(totals.WRONG_ESPN || 0) + (totals.WRONG_COMPETITION || 0)} incorrectos (${totals.WRONG_COMPETITION || 0} de otra competición), ${totals.EMPTY || 0} vacíos.`);
             return state.linkAudit;
         } finally {
             if (!completed) state.auditSignature = "";
@@ -1503,8 +1527,7 @@
         requireAuditedTable();
         if (!state.auditSignature || state.auditSignature !== state.planSignature)
             throw new Error("Primero pulsa Verificar enlaces y completa la auditoría.");
-        const wrong = state.linkAudit.filter(r =>
-            r.status === "WRONG_ESPN" && r.item.status === "READY" && r.existingId && r.item.match?.eventId);
+        const wrong = state.linkAudit.filter(isCorrectableAudit);
         if (!wrong.length) { log("No hay enlaces ESPN incorrectos para corregir."); return state.linkAudit; }
         state.phase = "correcting";
         state.stopRequested = false;
@@ -1514,7 +1537,8 @@
             for (let idx = 0; idx < wrong.length; idx++) {
                 if (state.stopRequested) break;
                 requireAuditedTable();
-                const r = wrong[idx], item = r.item, oldId = r.existingId;
+                const r = wrong[idx], item = r.item, oldId = r.existingId,
+                    oldCompetition = r.existingCompetition;
                 let modal = null;
                 try {
                     modal = await openEditor(item);
@@ -1522,8 +1546,10 @@
                     modal = currentModal() || modal;
                     validateModalEvent(item, modal);
                     const old = inspectLink(modal);
+                    const stillExisting = espnGameInfo(old.current?.url);
                     if (old.conflict || !old.field || !old.current ||
-                        strictEspnId(old.current.url) !== r.existingId ||
+                        stillExisting?.eventId !== r.existingId ||
+                        stillExisting?.competition !== r.existingCompetition ||
                         clean(old.current.url) !== clean(r.existingUrl))
                         throw new Error("Enlace cambiado desde auditoría; no se reemplazó.");
                     writeUrlField(old.field, item.url);
@@ -1546,7 +1572,8 @@
                     r.status = "CORRECTED";
                     r.existingId = String(item.match.eventId);
                     r.existingUrl = confirmed.current.url;
-                    notifyCorrection(item, oldId, r.existingId);
+                    r.existingCompetition = "mens-college-basketball";
+                    notifyCorrection(item, oldId, r.existingId, oldCompetition);
                 } catch (error) {
                     r.status = "ERROR";
                     r.error = clean(error?.message || error);
@@ -1864,7 +1891,9 @@
         stop,
         verifyLinks: verifyExistingLinks,
         correctLinks: correctExistingLinks,
-        getLinkAudit: () => state.linkAudit.map(r => ({ roverEventId: r.item.rover.roverEventId, status: r.status, existingId: r.existingId, expectedId: r.item.match?.eventId || "", error: r.error })),
+        getLinkAudit: () => state.linkAudit.map(r => ({ roverEventId: r.item.rover.roverEventId, status: r.status,
+            existingId: r.existingId, existingCompetition: r.existingCompetition || "",
+            expectedId: r.item.match?.eventId || "", correctable: isCorrectableAudit(r), error: r.error })),
         getPlan: () => state.plan,
         getSummary: planSummary,
         getLog: () => [...state.log],
@@ -1887,7 +1916,9 @@
             modalUrlDiagnostic,
             resultsUrlLabel,
             strictEspnId,
+            espnGameInfo,
             classifyLink,
+            isCorrectableAudit,
             getCBBRows,
             findRoverRow,
             isPlanContextSafe,

@@ -1,5 +1,9 @@
 # Cambios
 
+## 0.0.6 — 2026-11-03
+
+Q1 y Q3 se rellenan con `0` para ambos equipos al confirmar descanso, recuperar H1 durante H2 o confirmar el final. H1 sigue en Q2 y H2 en Q4. Las pruebas unitarias y de Firefox verifican los ceros en CLASSIC y RV2.
+
 ## 0.0.5 — 2026-11-03
 
 Publicación en `Nox1do/rover-basketball`, carpeta `CBB EF Score`. Instalación y actualizaciones de Tampermonkey mediante rutas Raw estables: `.meta.js` para comprobar la versión y `.user.js` para descargarla. Se añade `scripts/release.mjs` para sincronizar código, mapa, versión, distribución e histórico, junto con comprobaciones automáticas de GitHub Actions y pruebas del publicador.

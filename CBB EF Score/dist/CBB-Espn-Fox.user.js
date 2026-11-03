@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         CBB Espn-Fox
 // @namespace    https://roversport.net/
-// @version      0.0.5
+// @version      0.0.6
 // @description  NCAA masculino: ESPN + validación FOX; H1→Q2, H2→Q4, OT y Final. Firefox/Tampermonkey.
 // @author       noeg
 // @match        https://www.roversport.net/adm/es/*
@@ -22,7 +22,7 @@
 (() => {
     "use strict";
 
-    const VERSION = "0.0.5";
+    const VERSION = "0.0.6";
     const TAG = "[CBB Espn-Fox]";
 
     /*
@@ -3667,7 +3667,7 @@
         const detection = halftimeDetectionDetails(game);
         console.table(gameConsoleRows(game));
         console.table([detection]);
-        return { game, detection, mapping: "H1 → Q2; H2 → Q4; Q1/Q3 vacíos" };
+        return { game, detection, mapping: "H1 → Q2; H2 → Q4; Q1/Q3 = 0" };
     }
 
     // ============================================================
@@ -4874,7 +4874,7 @@
                 scoreFields.push({ id: `${eventId}${side}${suffix}Basq`, label: `${side} ${label}`, value });
             }
             for (const quarter of ["Q1", "Q3"]) {
-                clearFields.push({ id: `${eventId}${side}${quarter}Basq`, label: `${side} ${quarter}` });
+                scoreFields.push({ id: `${eventId}${side}${quarter}Basq`, label: `${side} ${quarter}`, value: 0 });
             }
         }
         return { eventId, statusValue: "3", statusId: `${eventId}-Estado`, editedId: `${eventId}-Edited`,
@@ -4892,7 +4892,10 @@
             const h1 = firstHalfTotal(team);
             scoreFields.push({ id: `${eventId}${side}Q2Basq`, label: `${side} H1`, value: h1 },
                 { id: `${eventId}${side}TOTBasq`, label: `${side} F/H1`, value: h1 });
-            for (const suffix of ["Q1", "Q3", "Q4", "OT"]) {
+            for (const quarter of ["Q1", "Q3"]) {
+                scoreFields.push({ id: `${eventId}${side}${quarter}Basq`, label: `${side} ${quarter}`, value: 0 });
+            }
+            for (const suffix of ["Q4", "OT"]) {
                 clearFields.push({ id: `${eventId}${side}${suffix}Basq`, label: `${side} ${suffix}` });
             }
         }

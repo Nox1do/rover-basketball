@@ -6,8 +6,8 @@ El usuario pidió la arquitectura de CFB FOX adaptada a NCAA masculina, con los 
 
 - Firefox + Tampermonkey; Rover clásico y adaptador RV2 heredado.
 - CATEGORY BASKETBALL / LEAGUE CBB. No activarse en NBA, IBB ni football.
-- H1 → Q2, H2 → Q4. Q1 y Q3 vacíos. Suma OT → OT. Total → TOT.
-- En descanso y recuperación de H1 durante H2: Q2 y TOT reciben H1; Q1/Q3/Q4/OT se vacían; estado 2. Nunca degradar un evento ya en estado 3.
+- H1 → Q2, H2 → Q4. Q1 y Q3 reciben 0. Suma OT → OT. Total → TOT.
+- En descanso y recuperación de H1 durante H2: Q2 y TOT reciben H1; Q1/Q3 reciben 0 y Q4/OT se vacían; estado 2. Nunca degradar un evento ya en estado 3.
 - Final: las dos mitades, OT y total coinciden en ambas fuentes; estado 3. Marcar Edited=1 cuando cambie algún dato.
 - ESPN es primario; FOX debe confirmar identidad, fecha, fase y parciales antes de comenzar a escribir.
 - No escribir si falta un control o cambia el evento/contexto durante la consulta. No enviar POST ni pulsar Guardar/Procesar. Los eventos input/change se conservan del CFB original.

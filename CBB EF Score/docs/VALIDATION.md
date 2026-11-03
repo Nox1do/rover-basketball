@@ -1,4 +1,4 @@
-# Validación 0.0.5
+# Validación 0.0.6
 
 ## Ejecución
 
@@ -10,7 +10,7 @@ Las pruebas iniciales se ejecutaron contra CFB antes de implementar la adaptaci�
 
 ## Cobertura
 
-Mitades semánticas y Q2/Q4; ausencia de Q1/Q3; descanso y recuperación durante H2; final; OT y 2OT detallado/agregado; falta de parciales y ceros; totales inconsistentes; equipos invertidos; fuente retrasada/indisponible/distinta; fecha diferente o ausente; cancelado/pospuesto/suspendido; cambio de liga o editor mientras hay HTTP; destino incompleto; no degradación de Final a H1; inactividad en NBA; calendarios y DST; peticiones GET y cancelación del submit de formulario desde el botón ↻.
+Mitades semánticas y Q2/Q4; ceros en Q1/Q3; descanso y recuperación durante H2; final; OT y 2OT detallado/agregado; falta de parciales y ceros; totales inconsistentes; equipos invertidos; fuente retrasada/indisponible/distinta; fecha diferente o ausente; cancelado/pospuesto/suspendido; cambio de liga o editor mientras hay HTTP; destino incompleto; no degradación de Final a H1; inactividad en NBA; calendarios y DST; peticiones GET y cancelación del submit de formulario desde el botón ↻.
 
 ## Revisión independiente
 
@@ -37,3 +37,7 @@ California Baptist cambia de código Rover 19210 a 984 por indicación del usuar
 Se conserva el motor de resultados de 0.0.4; solo cambia su VERSION de ejecución. Se añaden rutas estables de actualización Tampermonkey, distribuciones JS/TXT, metadata, versiones históricas y un publicador que sincroniza VERSION, package, lockfile, encabezado y mapa embebido. El workflow de GitHub ejecuta integridad y pruebas en Node 22 y Firefox.
 
 La revisión del publicador detectó y corrigió tres casos: rutas con espacios en Firefox, metadata vacía que podía consumir la línea siguiente y lockfiles incompatibles que podían consumir una versión antes de fallar. Las regresiones se comprobaron fallar antes de la corrección y el conjunto final pasa 75/75. El publicador rechaza versiones repetidas, snapshots existentes y notas ausentes antes de escribir.
+
+## Ceros en Q1/Q3 — 0.0.6
+
+Por indicación del usuario, Q1 y Q3 reciben 0 en ambos equipos, tanto al final como en descanso y recuperación de H1. Se observaron fallar los dos casos unitarios con la versión anterior antes de cambiar el llenado. Firefox comprueba el valor de los cuatro controles en CLASSIC y RV2, y en las consultas H1/H2.

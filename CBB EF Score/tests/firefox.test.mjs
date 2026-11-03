@@ -91,7 +91,7 @@ test('Firefox CLASSIC: full automatic match, update button, Q2/Q4 and Edited eve
   await page.waitForFunction(()=>document.getElementById('1195994-Estado').value==='3');
   const v=await values(page);
   assert.equal(v['1195994T1Q2Basq'],'33');assert.equal(v['1195994T1Q4Basq'],'30');assert.equal(v['1195994T2Q2Basq'],'35');assert.equal(v['1195994T2Q4Basq'],'33');
-  assert.equal(v['1195994T1Q1Basq'],'');assert.equal(v['1195994T1Q3Basq'],'');assert.equal(v['1195994T1OTBasq'],'0');assert.equal(v['1195994T1TOTBasq'],'63');assert.equal(v['1195994-Edited'],'1');
+  for(const side of ['T1','T2'])for(const suffix of ['Q1','Q3'])assert.equal(v[`1195994${side}${suffix}Basq`],'0');assert.equal(v['1195994T1OTBasq'],'0');assert.equal(v['1195994T1TOTBasq'],'63');assert.equal(v['1195994-Edited'],'1');
   assert.equal(await page.evaluate(()=>window.fieldEvents.some(([id,type])=>id==='1195994T1Q2Basq'&&type==='change')),true);
   assert.equal(await page.evaluate(()=>window.submitEvents),0);
   assert.ok(requests.every(x=>x.method==='GET'));assert.deepEqual(errors,[]);
@@ -99,13 +99,18 @@ test('Firefox CLASSIC: full automatic match, update button, Q2/Q4 and Edited eve
 test('Firefox RV2: selection and editor identities allow the same Q2/Q4 plan',async t=>{
   const {page,errors}=await setup(t,{rv2:true});
   const result=await page.evaluate(()=>window.__CBB_ESPN_FOX.updateLinkedResult());
-  assert.equal(result.applied,true);const v=await values(page);assert.equal(v['1195994T1Q2Basq'],'33');assert.equal(v['1195994T1Q4Basq'],'30');assert.deepEqual(errors,[]);
+  assert.equal(result.applied,true);const v=await values(page);
+  for(const side of ['T1','T2'])for(const suffix of ['Q1','Q3'])assert.equal(v[`1195994${side}${suffix}Basq`],'0');
+  assert.equal(v['1195994T1Q2Basq'],'33');assert.equal(v['1195994T1Q4Basq'],'30');assert.deepEqual(errors,[]);
 });
 for(const phase of ['HALFTIME','H2'])test(`Firefox ${phase}: only confirmed H1 enters Q2 and total`,async t=>{
   const {page,errors}=await setup(t,{phase});const result=await page.evaluate(()=>window.__CBB_ESPN_FOX.updateLinkedResult());
   assert.equal(result.applied,true);const v=await values(page);
   assert.equal(v['1195994-Estado'],'2');assert.equal(v['1195994T1Q2Basq'],'33');assert.equal(v['1195994T1TOTBasq'],'33');
-  for(const s of ['Q1','Q3','Q4','OT'])assert.equal(v[`1195994T1${s}Basq`],'');assert.deepEqual(errors,[]);
+  for(const side of ['T1','T2']){
+    for(const suffix of ['Q1','Q3'])assert.equal(v[`1195994${side}${suffix}Basq`],'0');
+    for(const suffix of ['Q4','OT'])assert.equal(v[`1195994${side}${suffix}Basq`],'');
+  }assert.deepEqual(errors,[]);
 });
 test('Firefox source mismatch leaves every field untouched',async t=>{
   const {page}=await setup(t,{mismatch:true});const before=await values(page);

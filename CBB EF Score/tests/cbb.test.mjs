@@ -108,20 +108,20 @@ test('real FOX final agrees with ESPN by IDs and both halves',()=>{
   assert.equal(f.foxEvent.left.h1,33);assert.equal(f.foxEvent.left.h2,30);
   assert.equal(q.verifyFoxResult(g,'FINAL',f).ok,true);
 });
-test('Rover final writes H1 to Q2, H2 to Q4, total and overtime; clears Q1/Q3',()=>{
+test('Rover final writes H1 to Q2, H2 to Q4, total and overtime; zeroes Q1/Q3',()=>{
   const {q}=load();const p=q.buildRoverResultPlan(realGame(q));
   assert.deepEqual(clone(p.scoreFields.map(x=>[x.id,x.value])),[
-    ['1195994T1Q2Basq',33],['1195994T1Q4Basq',30],['1195994T1OTBasq',0],['1195994T1TOTBasq',63],
-    ['1195994T2Q2Basq',35],['1195994T2Q4Basq',33],['1195994T2OTBasq',0],['1195994T2TOTBasq',68]]);
-  assert.deepEqual(clone(p.clearFields.map(x=>x.id)),['1195994T1Q1Basq','1195994T1Q3Basq','1195994T2Q1Basq','1195994T2Q3Basq']);
+    ['1195994T1Q2Basq',33],['1195994T1Q4Basq',30],['1195994T1OTBasq',0],['1195994T1TOTBasq',63],['1195994T1Q1Basq',0],['1195994T1Q3Basq',0],
+    ['1195994T2Q2Basq',35],['1195994T2Q4Basq',33],['1195994T2OTBasq',0],['1195994T2TOTBasq',68],['1195994T2Q1Basq',0],['1195994T2Q3Basq',0]]);
+  assert.deepEqual(clone(p.clearFields),[]);
   assert.equal(p.statusValue,'3');assert.equal(p.editedId,'1195994-Edited');
 });
-test('halftime writes Q2 plus H1 total, clears all other periods and OT',()=>{
+test('halftime writes Q2 plus H1 total, zeroes Q1/Q3 and clears Q4/OT',()=>{
   const {q}=load();const g=halfGame(q);assert.equal(q.isHalftimeGame(g),true);
   assert.equal(q.validateWritableGamePhase(g,'HALFTIME').ok,true);
   const p=q.buildRoverHalftimePlan(g);
-  assert.deepEqual(clone(p.scoreFields.map(x=>[x.id,x.value])),[['1195994T1Q2Basq',33],['1195994T1TOTBasq',33],['1195994T2Q2Basq',35],['1195994T2TOTBasq',35]]);
-  assert.equal(p.clearFields.length,8);assert.equal(p.statusValue,'2');
+  assert.deepEqual(clone(p.scoreFields.map(x=>[x.id,x.value])),[['1195994T1Q2Basq',33],['1195994T1TOTBasq',33],['1195994T1Q1Basq',0],['1195994T1Q3Basq',0],['1195994T2Q2Basq',35],['1195994T2TOTBasq',35],['1195994T2Q1Basq',0],['1195994T2Q3Basq',0]]);
+  assert.deepEqual(clone(p.clearFields.map(x=>x.id)),['1195994T1Q4Basq','1195994T1OTBasq','1195994T2Q4Basq','1195994T2OTBasq']);assert.equal(p.statusValue,'2');
   assert.equal(p.clearFields.some(x=>/Q2Basq/.test(x.id)),false);
 });
 test('H1 recovery during second half uses first-half partial instead of live total',()=>{

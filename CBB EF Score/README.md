@@ -1,4 +1,4 @@
-# CBB Espn-Fox 0.0.5
+# CBB Espn-Fox 0.0.6
 
 Userscript para Firefox + Tampermonkey que adapta CFB FOX 1.0.13 a NCAA masculina. ESPN aporta los resultados y FOX los confirma antes de llenar el editor Rover. Incluye 287 equipos Rover con equivalencias ESPN y FOX propias de basketball.
 
@@ -18,13 +18,13 @@ El vínculo manual sigue obligado a superar la comprobación de equipos, fecha y
 |---|---|
 | Primera mitad (H1) | Q2 |
 | Segunda mitad (H2) | Q4 |
-| Q1 y Q3 | Vacías |
+| Q1 y Q3 | 0 |
 | Suma de prórrogas | OT |
 | Resultado total | F / TOT |
 
-En el descanso se coloca H1 en Q2 y en el total, se vacían Q1/Q3/Q4/OT y se selecciona **H1 COMPLETADO** (`2`). Si se consulta durante H2, puede recuperar H1 usando su parcial, sin confundirlo con el marcador actual. No degrada un Rover ya finalizado a H1.
+En el descanso se coloca H1 en Q2 y en el total, Q1/Q3 reciben 0, se vacían Q4/OT y se selecciona **H1 COMPLETADO** (`2`). Si se consulta durante H2, puede recuperar H1 usando su parcial, sin confundirlo con el marcador actual. No degrada un Rover ya finalizado a H1.
 
-Al final se rellenan Q2, Q4, OT y TOT; Q1/Q3 quedan vacíos y el estado pasa a **FINALIZADO** (`3`). `Edited` pasa a `1` cuando hay cambios. Los datos se asignan a T1/T2 por ID de equipo, también si la localía difiere entre proveedores.
+Al final se rellenan Q2, Q4, OT y TOT; Q1/Q3 reciben 0 y el estado pasa a **FINALIZADO** (`3`). `Edited` pasa a `1` cuando hay cambios. Los datos se asignan a T1/T2 por ID de equipo, también si la localía difiere entre proveedores.
 
 ## Validaciones
 
@@ -74,8 +74,8 @@ La ruta estable es `dist/CBB-Espn-Fox.user.js`; `dist/CBB-Espn-Fox.meta.js` anun
 Para publicar cambios futuros:
 
 1. Edita `src/CBB-Espn-Fox.user.js` y, para equipos, `data/cbb-rover-espn-fox-team-map.json`.
-2. Añade una entrada `## 0.0.6` (o la siguiente versión) en `CHANGELOG.md`.
-3. Ejecuta `npm run release -- 0.0.6 --dry-run` y luego `npm run release -- 0.0.6`. El publicador regenera el mapa embebido y sincroniza versión, código, dist, metadata y snapshot histórico; nunca sobrescribe una versión archivada.
+2. Añade una entrada `## 0.0.7` (o la siguiente versión) en `CHANGELOG.md`.
+3. Ejecuta `npm run release -- 0.0.7 --dry-run` y luego `npm run release -- 0.0.7`. El publicador regenera el mapa embebido y sincroniza versión, código, dist, metadata y snapshot histórico; nunca sobrescribe una versión archivada.
 4. Ejecuta `npm run check` y `npm test`, y confirma los cambios en GitHub.
 
 `VERSION`, `package.json`, `package-lock.json`, el encabezado y la constante VERSION quedan sincronizados. `versions/` conserva las versiones históricas, incluidas 0.0.1–0.0.4. GitHub Actions comprueba integridad de la publicación y ejecuta las pruebas en Node 22 y Firefox al recibir cambios de esta carpeta. Las copias de `dist/` se generan mediante el publicador; la fuente editable está en `src/`.

@@ -1,6 +1,6 @@
 # CBB LLoader — NCAA Men's Basketball
 
-Versión estable **0.1.13** (primera versión 0.1.0) basada en el archivo aportado `userscript - cfb lloader-0.1.6.user.js`.
+Versión estable **0.1.14** (primera versión 0.1.0) basada en el archivo aportado `userscript - cfb lloader-0.1.6.user.js`.
 
 Este script **vincula enlaces de partidos de ESPN con la tabla de eventos de Rover**. No llena puntajes ni resultados del juego. **Exclusivamente vincula partidos ESPN, compara la hora y verifica si los equipos están invertidos.** Las 58 funciones del CFB LLoader fueron transferidas y adaptadas; se añadieron cuatro funciones auxiliares para CBB.
 
@@ -96,8 +96,12 @@ El auditor distingue `WRONG_COMPETITION` (página de juego ESPN de otra competic
 
 Para identificar formatos restantes sin exponer tokens, tras **Verificar enlaces**, ejecutar en la consola de Firefox `console.table(__CBB_LLOADER.getUnrecognizedLinks())`. Muestra SN, categoría, dominio/ruta sin query y ESPN esperado.
 
-## Explicaciones de NEEDS_REVIEW (v0.1.13)
+## Explicaciones de NEEDS_REVIEW (v0.1.14)
 
 En **Verificar enlaces**, cada `NEEDS_REVIEW` ahora incluye el motivo concreto calculado por el motor de análisis (localía invertida, hora diferente, ambas, falta de hora, múltiples coincidencias, equipo sin equivalencia ESPN o partido no encontrado). Cuando hay candidatos ESPN, muestra sus `gameId`, el orden de local/visitante en casos invertidos y si la URL actual coincide con un candidato. **La coincidencia con un candidato no valida automáticamente el partido**; las diferencias de localía y horario siguen impidiendo reemplazos automáticos.
 
 Para consultar los diagnósticos sin modificar enlaces: `console.table(__CBB_LLOADER.getLinkAudit().filter(r => r.status === 'NEEDS_REVIEW'))`. Campos adicionales: `matchupStatus`, `reviewReason`, `candidateIds`, `matchesCandidate`. El ejemplo Grambling @ Northern Illinois con ESPN `401920912` se explica como localía invertida, aun con horas iguales.
+
+## Encuentros del 5 de noviembre de 2026 — 0.1.14
+
+Se incorporan 19 códigos Rover con equivalencias ESPN para cubrir 43 emparejamientos proporcionados por el usuario. El mapeo pasa a 306 equipos y el archivo de referencia a 193 encuentros. El listado no incluye horarios ni gameId: el loader los verifica por fecha, minuto y localía antes de escribir enlaces.

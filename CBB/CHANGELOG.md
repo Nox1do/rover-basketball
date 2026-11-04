@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+## [0.1.14] - 2026-11-04
+
+- Se añaden 19 identificadores Rover↔ESPN para los partidos del 5 de noviembre de 2026 (306 equipos en total).
+- Se añaden 43 emparejamientos de referencia, para un total de 193.
+- Se amplían pruebas del mapa y emparejamientos. La lógica de verificación de fechas, horas, localía y guardado permanece intacta.
+
+
 ## [0.1.13] - 2026-11-03
 
 - Auditoría de enlaces: explica cada estado `NEEDS_REVIEW` usando el motivo concreto que ya calcula el motor de análisis.

@@ -1,6 +1,6 @@
 # CBB LLoader — NCAA Men's Basketball
 
-Versión estable **0.1.14** (primera versión 0.1.0) basada en el archivo aportado `userscript - cfb lloader-0.1.6.user.js`.
+Versión estable **0.1.15** (primera versión 0.1.0) basada en el archivo aportado `userscript - cfb lloader-0.1.6.user.js`.
 
 Este script **vincula enlaces de partidos de ESPN con la tabla de eventos de Rover**. No llena puntajes ni resultados del juego. **Exclusivamente vincula partidos ESPN, compara la hora y verifica si los equipos están invertidos.** Las 58 funciones del CFB LLoader fueron transferidas y adaptadas; se añadieron cuatro funciones auxiliares para CBB.
 
@@ -105,3 +105,11 @@ Para consultar los diagnósticos sin modificar enlaces: `console.table(__CBB_LLO
 ## Encuentros del 5 de noviembre de 2026 — 0.1.14
 
 Se incorporan 19 códigos Rover con equivalencias ESPN para cubrir 43 emparejamientos proporcionados por el usuario. El mapeo pasa a 306 equipos y el archivo de referencia a 193 encuentros. El listado no incluye horarios ni gameId: el loader los verifica por fecha, minuto y localía antes de escribir enlaces.
+
+## Incorporaciones v0.1.15 — 6 noviembre 2026
+
+Se incorporan 20 códigos Rover ↔ ESPN faltantes reportados por `NEEDS_REVIEW`, aumentando la cobertura de 306 a **326 equipos**. Se preservan los 193 emparejamientos de referencia previos, los horarios y la escritura segura. No se agregan emparejamientos sin disponer de ambos códigos Rover.
+
+**Colorado @ San Diego State (SN 1204502)** no es un caso de equivalencias faltantes: ambos equipos están identificados (Colorado `724→38`, SDSU `848→21`); el diagnóstico `LOCALÍA INVERTIDA` requiere revisión de cuál equipo figura como local en cada fuente. No se intercambia localía ni se enlaza automáticamente.
+
+Los rivales Bradley, Fresno State y UT Rio Grande Valley no se añadieron porque en la lista recibida no se proporcionaron sus códigos Rover.

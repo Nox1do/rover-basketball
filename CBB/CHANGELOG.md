@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+## [0.1.15] - 2026-11-06
+
+- Añadidas 20 equivalencias Rover↔ESPN solicitadas tras errores `AWAY/HOME sin equivalencia ESPN`, elevando el catálogo a 326 equipos.
+- Se conservan los 193 emparejamientos de referencia anteriores y el mecanismo de comparación segura.
+- Colorado–San Diego State permanece en `LOCALÍA INVERTIDA`; no se altera ni fuerza la coincidencia.
+- Nuevas pruebas de los 20 códigos y regresión de las identidades de Colorado y San Diego State.
+
+
 ## [0.1.14] - 2026-11-04
 
 - Se añaden 19 identificadores Rover↔ESPN para los partidos del 5 de noviembre de 2026 (306 equipos en total).

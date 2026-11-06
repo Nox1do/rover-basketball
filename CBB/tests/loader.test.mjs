@@ -27,9 +27,9 @@ function harness({category='BASKETBALL',league='CBB',date='2026-11-02',feed=null
 const h=harness();
 function game(away='2511',home='2737',date='2026-11-02T23:00:00Z',id='401921423') {return {id,date,competitions:[{competitors:[{homeAway:'away',team:{id:away}},{homeAway:'home',team:{id:home}}]}]}}
 function rover(away='733',home='711',time=1080,date='2026-11-02'){return {date,timeMinutes:time,away:{roverCode:away},home:{roverCode:home}}}
-test('version and source CBB are correct',()=>{assert.equal(h.api.version,'0.1.14');assert.match(code,/mens-college-basketball\/scoreboard/);assert.doesNotMatch(code,/football\/college-football|__CFB_LLOADER/)});
+test('version and source CBB are correct',()=>{assert.equal(h.api.version,'0.1.15');assert.match(code,/mens-college-basketball\/scoreboard/);assert.doesNotMatch(code,/football\/college-football|__CFB_LLOADER/)});
 test('all 58 original functions preserved plus four helpers',()=>{assert.ok((code.match(/(?:async\s+)?function\s+\w+/g)||[]).length>=62)});
-test('306 Rover IDs exactly match ESPN crosswalk',()=>{assert.equal(Object.keys(h.qa.teamIds).length,306);for(const [id,data] of Object.entries(mapping))assert.equal(h.qa.teamIds[id],data.espn_id);assert.equal(new Set(Object.values(h.qa.teamIds)).size,306)});
+test('326 Rover IDs exactly match ESPN crosswalk',()=>{assert.equal(Object.keys(h.qa.teamIds).length,326);for(const [id,data] of Object.entries(mapping))assert.equal(h.qa.teamIds[id],data.espn_id);assert.equal(new Set(Object.values(h.qa.teamIds)).size,326)});
 test('all 193 fixtures have valid away+home team IDs',()=>{const rows=csv.trim().replace(/^\uFEFF/,'').split(/\r?\n/).slice(1);assert.equal(rows.length,193);for(const line of rows){const cols=line.split(',');assert.equal(h.qa.teamIds[cols[1]],cols[3]);assert.equal(h.qa.teamIds[cols[4]],cols[6])}});
 test('exception cases Queens Southern Indiana Lindenwood and long names',()=>{for(const [a,b] of [['733','2511'],['179','88'],['133','2815'],['856','112358'],['925','357'],['300','2837']])assert.equal(h.qa.teamIds[a],b)});
 test('NCAA season rollover',()=>{assert.equal(h.qa.basketballSeasonYear('2026-11-02'),'2027');assert.equal(h.qa.basketballSeasonYear('2027-03-30'),'2027');assert.equal(h.qa.basketballSeasonYear('2027-11-02'),'2028')});
@@ -65,7 +65,7 @@ test('singleton prevents duplicate version from scheduling conflicting panel ref
  vm.runInNewContext(code,x.context,{timeout:2500});
  assert.equal(firstIntervalCount,1);
  assert.equal(x.intervals.length,1);
- assert.equal(x.context.__CBB_LLOADER.version,'0.1.14');
+ assert.equal(x.context.__CBB_LLOADER.version,'0.1.15');
 });
 test('Tampermonkey metadata matches only index.php and stays versioned',()=>{
  const lines=code.split(/\r?\n/);
@@ -80,7 +80,7 @@ test('Tampermonkey metadata matches only index.php and stays versioned',()=>{
  assert.match(code,/@version\s+0\.1\.13/);
 });
 
-test('v0.1.14 tests strict parsing and safe classification',()=>{
+test('v0.1.15 tests strict parsing and safe classification',()=>{
  const item={status:'READY',match:{eventId:'401911469'}};
  assert.equal(h.qa.strictEspnId('https://www.espn.com/mens-college-basketball/game/_/gameId/401911469'),'401911469');
  assert.equal(h.qa.strictEspnId('https://bad.example/path/espn.com/mens-college-basketball/game/_/gameId/401911469'),'');
@@ -91,12 +91,12 @@ test('v0.1.14 tests strict parsing and safe classification',()=>{
  assert.equal(h.qa.classifyLink(item,{url:'https://www.foxsports.com/game/123'}),'OTHER_LINK');
  assert.equal(h.qa.classifyLink({status:'REVERSED_PAIR',match:null},{url:'https://www.espn.com/mens-college-basketball/game/_/gameId/401911468'}),'NEEDS_REVIEW');
 });
-test('v0.1.14 requires verification before correcting',async()=>{
+test('v0.1.15 requires verification before correcting',async()=>{
  const x=harness({feed(){return {events:[game()]}}});
  await x.api.analyze();
  await assert.rejects(x.api.correctLinks(),/Verificar enlaces/);
 });
-test('v0.1.14 includes separate read-only audit and post-save confirmation/notification',()=>{
+test('v0.1.15 includes separate read-only audit and post-save confirmation/notification',()=>{
  assert.equal(typeof h.api.verifyLinks,'function');
  assert.equal(typeof h.api.correctLinks,'function');
  assert.match(code,/data-action="audit">Verificar enlaces/);
@@ -176,30 +176,30 @@ test('changed ESPN link after audit is not overwritten, no notification',async()
  assert.equal(x.saves,0);assert.equal(x.notifications.length,0);
 });
 
-test('v0.1.14 refreshes displayed version after old UI text is modified',()=>{
+test('v0.1.15 refreshes displayed version after old UI text is modified',()=>{
  const x=harness();
  const label=x.controls.get('.cbbll-version');
- assert.equal(label.textContent,'v0.1.14');
+ assert.equal(label.textContent,'v0.1.15');
  label.textContent='v0.1.0';
  x.intervals[0]();
- assert.equal(label.textContent,'v0.1.14');
- assert.equal(x.api.uiDiagnostics().label,'v0.1.14');
+ assert.equal(label.textContent,'v0.1.15');
+ assert.equal(x.api.uiDiagnostics().label,'v0.1.15');
  assert.equal(x.api.uiDiagnostics().panelId,'cbb-lloader-panel-v2');
 });
-test('v0.1.14 detects legacy UI and blocks all link writes',async()=>{
+test('v0.1.15 detects legacy UI and blocks all link writes',async()=>{
  const x=harness({feed(){return {events:[game()]}}});
  const original=x.context.document.getElementById.bind(x.context.document);
  x.context.document.getElementById=id=>id==='cbb-lloader-panel'?{id}:original(id);
  await x.api.analyze();
  assert.equal(x.api.uiDiagnostics().legacyCollision,true);
- assert.equal(x.api.uiDiagnostics().label,'v0.1.14');
+ assert.equal(x.api.uiDiagnostics().label,'v0.1.15');
  await assert.rejects(x.api.load({limit:1}),/otra versi.n/i);
  await assert.rejects(x.api.correctLinks(),/otra versi.n/i);
  x.intervals[0]();
  assert.equal(x.controls.get('[data-action="load"]').disabled,true);
  assert.equal(x.controls.get('[data-role="legacy-warning"]').hidden,false);
 });
-test('v0.1.14 uses separate IDs while retaining the ESPN link auditor',()=>{
+test('v0.1.15 uses separate IDs while retaining the ESPN link auditor',()=>{
  assert.match(code,/const PANEL_ID = "cbb-lloader-panel-v2"/);
  assert.match(code,/const LEGACY_PANEL_ID = "cbb-lloader-panel"/);
  assert.match(code,/function requireSingleLoader\(/);
@@ -217,7 +217,7 @@ test('20 requested new pairings exist, new and existing team mappings unchanged'
  ['824','2154','650','259'],['827','2261','644','59'],
  ['889','107','670','227'],['662','56','996','2579'],
  ['930','2870','665','2184'],['923','2534','899','333'],
- ['745','2182','649','258'],['935','2571','727','2306'],
+ ['745','2182','649','258'],['935','2571','727','2326'],
  ['940','2011','774','245'],['788','2443','902','99'],
  ['776','325','728','142'],['658','288','714','2294'],
  ['942','2029','900','8'],['660','2454','19210','2856'],
@@ -574,7 +574,7 @@ test('eleven new teams are unique; eleven existing mapping IDs remain unchanged'
  const existing={'658':'288','855':'161','775':'2086','829':'2379','705':'2272','980':'94','708':'2515','781':'270','967':'2541','581':'2608','733':'2511'};
  for(const [code,id] of Object.entries({...newTeams,...existing}))
   assert.equal(h.qa.teamIds[code],id);
- assert.equal(new Set(Object.values(h.qa.teamIds)).size,306);
+ assert.equal(new Set(Object.values(h.qa.teamIds)).size,326);
 });
 test('new SIU Edwardsville pairing detects correct and reversed ESPN localia',()=>{
  const gameESPN=h.qa.parseEspnEvent(game('2565','288','2026-11-03T22:00:00Z','401999994'),'TEST');
@@ -793,5 +793,21 @@ test('Nov 5 2026 matchups have consistent mapping',()=>{
  const rows=csv.trim().split(/\r?\n/).slice(-43);
  assert.equal(rows.length,43);
  for(const line of rows){const c=line.split(',');assert.equal(h.qa.teamIds[c[1]],c[3]);assert.equal(h.qa.teamIds[c[4]],c[6]);}
- assert.equal(new Set(Object.values(h.qa.teamIds)).size,306);
+ assert.equal(new Set(Object.values(h.qa.teamIds)).size,326);
+});
+
+// Regressions for the 20 missing Rover team codes reported with NEEDS_REVIEW.
+test('20 new team identities are mapped without ESPN ID collisions',()=>{
+ const expected=[["831","2448"],["750","350"],["918","2320"],["979","2437"],["905","2535"],["743","2540"],["931","85"],["975","166"],["841","2460"],["946","2504"],["830","2415"],["769","2277"],["742","27"],["837","339"],["739","279"],["773","3084"],["700","16"],["699","2502"],["970","28"],["741","300"]];
+ assert.equal(expected.length,20);
+ for(const [roverId,espnId] of expected){
+   assert.equal(h.qa.teamIds[roverId],espnId);
+   assert.equal(mapping[roverId].espn_id,espnId);
+ }
+ assert.equal(Object.keys(h.qa.teamIds).length,326);
+ assert.equal(new Set(Object.values(h.qa.teamIds)).size,326);
+});
+test('Colorado and SDSU identifiers remain unchanged after mapping update',()=>{
+ assert.equal(h.qa.teamIds['724'],'38');
+ assert.equal(h.qa.teamIds['848'],'21');
 });

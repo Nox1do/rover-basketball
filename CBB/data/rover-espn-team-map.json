@@ -306,6 +306,16 @@
     "espn_id": "2464",
     "espn_name": "Northern Arizona Lumberjacks"
   },
+  "699": {
+    "rover_name": "Portland State",
+    "espn_id": "2502",
+    "espn_name": "Portland State Vikings"
+  },
+  "700": {
+    "rover_name": "Sacramento State",
+    "espn_id": "16",
+    "espn_name": "Sacramento State Hornets"
+  },
   "701": {
     "rover_name": "Weber State",
     "espn_id": "2692"
@@ -464,9 +474,29 @@
     "rover_name": "Long Be St",
     "espn_id": "299"
   },
+  "739": {
+    "rover_name": "Pacific",
+    "espn_id": "279",
+    "espn_name": "Pacific Tigers"
+  },
   "740": {
     "rover_name": "UC Davis",
     "espn_id": "302"
+  },
+  "741": {
+    "rover_name": "UC Irvine",
+    "espn_id": "300",
+    "espn_name": "UC Irvine Anteaters"
+  },
+  "742": {
+    "rover_name": "UC Riverside",
+    "espn_id": "27",
+    "espn_name": "UC Riverside Highlanders"
+  },
+  "743": {
+    "rover_name": "UC Santa",
+    "espn_id": "2540",
+    "espn_name": "UC Santa Barbara Gauchos"
   },
   "745": {
     "rover_name": "Drexel",
@@ -488,6 +518,11 @@
   "749": {
     "rover_name": "James Madison",
     "espn_id": "256"
+  },
+  "750": {
+    "rover_name": "NC-Wilming",
+    "espn_id": "350",
+    "espn_name": "UNC Wilmington Seahawks"
   },
   "751": {
     "rover_name": "Northeastern",
@@ -549,6 +584,11 @@
     "rover_name": "Chicago State",
     "espn_id": "2130"
   },
+  "769": {
+    "rover_name": "Houston Christian",
+    "espn_id": "2277",
+    "espn_name": "Houston Christian Huskies"
+  },
   "770": {
     "rover_name": "NJIT Highlanders",
     "espn_id": "2885"
@@ -561,6 +601,11 @@
     "rover_name": "South Dakota",
     "espn_id": "233",
     "espn_name": "South Dakota Coyotes"
+  },
+  "773": {
+    "rover_name": "Utah Valley",
+    "espn_id": "3084",
+    "espn_name": "Utah Valley Wolverines"
   },
   "774": {
     "rover_name": "Texas A&M",
@@ -771,9 +816,24 @@
     "rover_name": "Maryland Eastern Shore",
     "espn_id": "2379"
   },
+  "830": {
+    "rover_name": "Morgan State",
+    "espn_id": "2415",
+    "espn_name": "Morgan State Bears"
+  },
+  "831": {
+    "rover_name": "N. Carolina A&T",
+    "espn_id": "2448",
+    "espn_name": "North Carolina A&T Aggies"
+  },
   "835": {
     "rover_name": "Creighton",
     "espn_id": "156"
+  },
+  "837": {
+    "rover_name": "Evansville Aces",
+    "espn_id": "339",
+    "espn_name": "Evansville Purple Aces"
   },
   "838": {
     "rover_name": "Illinois State",
@@ -782,6 +842,11 @@
   "839": {
     "rover_name": "Indiana St",
     "espn_id": "282"
+  },
+  "841": {
+    "rover_name": "Northern Iowa",
+    "espn_id": "2460",
+    "espn_name": "Northern Iowa Panthers"
   },
   "843": {
     "rover_name": "Wichita State",
@@ -1015,6 +1080,11 @@
     "rover_name": "Mississippi State",
     "espn_id": "344"
   },
+  "905": {
+    "rover_name": "Samford",
+    "espn_id": "2535",
+    "espn_name": "Samford Bulldogs"
+  },
   "906": {
     "rover_name": "Appalachian State",
     "espn_id": "2026"
@@ -1056,6 +1126,11 @@
     "rover_name": "Central Arkansas",
     "espn_id": "2110"
   },
+  "918": {
+    "rover_name": "Lamar",
+    "espn_id": "2320",
+    "espn_name": "Lamar Cardinals"
+  },
   "919": {
     "rover_name": "McNeese State",
     "espn_id": "2377"
@@ -1090,6 +1165,11 @@
     "rover_name": "Purdue Fort Wayne",
     "espn_id": "2870",
     "espn_name": "Purdue Fort Wayne Mastodons"
+  },
+  "931": {
+    "rover_name": "IUPUI",
+    "espn_id": "85",
+    "espn_name": "IU Indianapolis Jaguars"
   },
   "932": {
     "rover_name": "ND State",
@@ -1138,6 +1218,11 @@
   "944": {
     "rover_name": "Jackson State",
     "espn_id": "2296"
+  },
+  "946": {
+    "rover_name": "Prairie View A&M",
+    "espn_id": "2504",
+    "espn_name": "Prairie View A&M Panthers"
   },
   "947": {
     "rover_name": "Southern",
@@ -1208,6 +1293,11 @@
     "rover_name": "Santa Clara",
     "espn_id": "2541"
   },
+  "970": {
+    "rover_name": "UC San Diego",
+    "espn_id": "28",
+    "espn_name": "UC San Diego Tritons"
+  },
   "971": {
     "rover_name": "Hawaii",
     "espn_id": "62",
@@ -1221,6 +1311,11 @@
     "rover_name": "Nevada",
     "espn_id": "2440"
   },
+  "975": {
+    "rover_name": "New Mexico State",
+    "espn_id": "166",
+    "espn_name": "New Mexico State Aggies"
+  },
   "976": {
     "rover_name": "San Jose",
     "espn_id": "23"
@@ -1228,6 +1323,11 @@
   "977": {
     "rover_name": "Utah State",
     "espn_id": "328"
+  },
+  "979": {
+    "rover_name": "Omaha",
+    "espn_id": "2437",
+    "espn_name": "Omaha Mavericks"
   },
   "980": {
     "rover_name": "Northern Kentucky",

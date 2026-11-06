@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+## [0.1.16] - 2026-11-06
+
+- Añadidos los mapeos 982→292 (UT Rio Grande Valley), 834→71 (Bradley) y 134→28 (UC San Diego).
+- Corregida la identidad Rover 970: Fresno State→ESPN 278, anteriormente atribuida a UC San Diego.
+- Incorporados 48 emparejamientos de referencia; 329 equipos y 241 encuentros registrados.
+- Pruebas de regresión para los códigos corregidos y los 48 cruces; sin cambios en las salvaguardas de enlace.
+
+
 ## [0.1.15] - 2026-11-06
 
 - Añadidas 20 equivalencias Rover↔ESPN solicitadas tras errores `AWAY/HOME sin equivalencia ESPN`, elevando el catálogo a 326 equipos.

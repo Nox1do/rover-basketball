@@ -4,6 +4,11 @@
     "espn_id": "2815",
     "espn_name": "Lindenwood Lions"
   },
+  "134": {
+    "rover_name": "UC San Diego",
+    "espn_id": "28",
+    "espn_name": "UC San Diego Tritons"
+  },
   "135": {
     "rover_name": "Utah Tech",
     "espn_id": "3101"
@@ -826,6 +831,11 @@
     "espn_id": "2448",
     "espn_name": "North Carolina A&T Aggies"
   },
+  "834": {
+    "rover_name": "Bradley",
+    "espn_id": "71",
+    "espn_name": "Bradley Braves"
+  },
   "835": {
     "rover_name": "Creighton",
     "espn_id": "156"
@@ -1294,9 +1304,9 @@
     "espn_id": "2541"
   },
   "970": {
-    "rover_name": "UC San Diego",
-    "espn_id": "28",
-    "espn_name": "UC San Diego Tritons"
+    "rover_name": "Fresno State",
+    "espn_id": "278",
+    "espn_name": "Fresno State Bulldogs"
   },
   "971": {
     "rover_name": "Hawaii",
@@ -1336,6 +1346,11 @@
   "981": {
     "rover_name": "Lafayette",
     "espn_id": "322"
+  },
+  "982": {
+    "rover_name": "UT Rio Grande Valley",
+    "espn_id": "292",
+    "espn_name": "UT Rio Grande Valley Vaqueros"
   },
   "983": {
     "rover_name": "MASS Lowel",

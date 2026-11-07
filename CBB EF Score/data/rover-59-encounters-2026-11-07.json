@@ -1,0 +1,641 @@
+{
+  "source": "User supplied second Rover table",
+  "received_date": "2026-11-07",
+  "encounters": [
+    [
+      {
+        "rover_code": "669",
+        "rover_name": "Massachusetts"
+      },
+      {
+        "rover_code": "640",
+        "rover_name": "Boston College"
+      }
+    ],
+    [
+      {
+        "rover_code": "942",
+        "rover_name": "Arkansas Pine Bluff"
+      },
+      {
+        "rover_code": "723",
+        "rover_name": "Baylor"
+      }
+    ],
+    [
+      {
+        "rover_code": "751",
+        "rover_name": "Northeastern"
+      },
+      {
+        "rover_code": "649",
+        "rover_name": "Virginia"
+      }
+    ],
+    [
+      {
+        "rover_code": "10641",
+        "rover_name": "West Florida"
+      },
+      {
+        "rover_code": "950",
+        "rover_name": "Florida Internationa"
+      }
+    ],
+    [
+      {
+        "rover_code": "693",
+        "rover_name": "Eastern Washington"
+      },
+      {
+        "rover_code": "878",
+        "rover_name": "Oregon"
+      }
+    ],
+    [
+      {
+        "rover_code": "782",
+        "rover_name": "Valparaiso"
+      },
+      {
+        "rover_code": "721",
+        "rover_name": "Purdue"
+      }
+    ],
+    [
+      {
+        "rover_code": "784",
+        "rover_name": "Youngst St"
+      },
+      {
+        "rover_code": "719",
+        "rover_name": "Ohio State"
+      }
+    ],
+    [
+      {
+        "rover_code": "896",
+        "rover_name": "South Carolina St"
+      },
+      {
+        "rover_code": "661",
+        "rover_name": "USC Upstate"
+      }
+    ],
+    [
+      {
+        "rover_code": "749",
+        "rover_name": "James Madison"
+      },
+      {
+        "rover_code": "895",
+        "rover_name": "Kentucky"
+      }
+    ],
+    [
+      {
+        "rover_code": "819",
+        "rover_name": "Eastern Michigan"
+      },
+      {
+        "rover_code": "676",
+        "rover_name": "Xavier"
+      }
+    ],
+    [
+      {
+        "rover_code": "728",
+        "rover_name": "Missouri"
+      },
+      {
+        "rover_code": "674",
+        "rover_name": "Saint Louis"
+      }
+    ],
+    [
+      {
+        "rover_code": "954",
+        "rover_name": "Troy"
+      },
+      {
+        "rover_code": "643",
+        "rover_name": "Florida State"
+      }
+    ],
+    [
+      {
+        "rover_code": "804",
+        "rover_name": "Loyola Maryland"
+      },
+      {
+        "rover_code": "858",
+        "rover_name": "Mount St. Marys"
+      }
+    ],
+    [
+      {
+        "rover_code": "707",
+        "rover_name": "Presbyterian"
+      },
+      {
+        "rover_code": "894",
+        "rover_name": "Georgia"
+      }
+    ],
+    [
+      {
+        "rover_code": "633",
+        "rover_name": "Boston University"
+      },
+      {
+        "rover_code": "793",
+        "rover_name": "Brown Bears"
+      }
+    ],
+    [
+      {
+        "rover_code": "839",
+        "rover_name": "Indiana St"
+      },
+      {
+        "rover_code": "817",
+        "rover_name": "Ball State"
+      }
+    ],
+    [
+      {
+        "rover_code": "915",
+        "rover_name": "Georgia Southern"
+      },
+      {
+        "rover_code": "644",
+        "rover_name": "Georgia Tech"
+      }
+    ],
+    [
+      {
+        "rover_code": "916",
+        "rover_name": "Wofford"
+      },
+      {
+        "rover_code": "648",
+        "rover_name": "North Carolina"
+      }
+    ],
+    [
+      {
+        "rover_code": "909",
+        "rover_name": "UNC Greensboro"
+      },
+      {
+        "rover_code": "908",
+        "rover_name": "Elon Phoenix"
+      }
+    ],
+    [
+      {
+        "rover_code": "800",
+        "rover_name": "Yale"
+      },
+      {
+        "rover_code": "766",
+        "rover_name": "UCF"
+      }
+    ],
+    [
+      {
+        "rover_code": "889",
+        "rover_name": "Holy Cross"
+      },
+      {
+        "rover_code": "691",
+        "rover_name": "Villanova"
+      }
+    ],
+    [
+      {
+        "rover_code": "885",
+        "rover_name": "American University"
+      },
+      {
+        "rover_code": "641",
+        "rover_name": "Clemson"
+      }
+    ],
+    [
+      {
+        "rover_code": "662",
+        "rover_name": "Stetson"
+      },
+      {
+        "rover_code": "692",
+        "rover_name": "West Virginia"
+      }
+    ],
+    [
+      {
+        "rover_code": "824",
+        "rover_name": "Coppin State"
+      },
+      {
+        "rover_code": "746",
+        "rover_name": "George Mason"
+      }
+    ],
+    [
+      {
+        "rover_code": "654",
+        "rover_name": "East Tenn St"
+      },
+      {
+        "rover_code": "647",
+        "rover_name": "NC State"
+      }
+    ],
+    [
+      {
+        "rover_code": "865",
+        "rover_name": "Austin Peay"
+      },
+      {
+        "rover_code": "657",
+        "rover_name": "Kennesaw State"
+      }
+    ],
+    [
+      {
+        "rover_code": "285",
+        "rover_name": "New Haven"
+      },
+      {
+        "rover_code": "686",
+        "rover_name": "Rutgers"
+      }
+    ],
+    [
+      {
+        "rover_code": "956",
+        "rover_name": "Arkansas State"
+      },
+      {
+        "rover_code": "899",
+        "rover_name": "Alabama"
+      }
+    ],
+    [
+      {
+        "rover_code": "744",
+        "rover_name": "Delaware"
+      },
+      {
+        "rover_code": "722",
+        "rover_name": "Wisconsin"
+      }
+    ],
+    [
+      {
+        "rover_code": "951",
+        "rover_name": "Florida Atlantic"
+      },
+      {
+        "rover_code": "783",
+        "rover_name": "Wright State"
+      }
+    ],
+    [
+      {
+        "rover_code": "920",
+        "rover_name": "Nicholls"
+      },
+      {
+        "rover_code": "765",
+        "rover_name": "UAB"
+      }
+    ],
+    [
+      {
+        "rover_code": "777",
+        "rover_name": "Detroit"
+      },
+      {
+        "rover_code": "682",
+        "rover_name": "Marquette"
+      }
+    ],
+    [
+      {
+        "rover_code": "762",
+        "rover_name": "Southern Miss"
+      },
+      {
+        "rover_code": "725",
+        "rover_name": "Iowa State"
+      }
+    ],
+    [
+      {
+        "rover_code": "925",
+        "rover_name": "Texas Corpus"
+      },
+      {
+        "rover_code": "959",
+        "rover_name": "Louisiana"
+      }
+    ],
+    [
+      {
+        "rover_code": "980",
+        "rover_name": "Northern Kentucky"
+      },
+      {
+        "rover_code": "774",
+        "rover_name": "Texas A&M"
+      }
+    ],
+    [
+      {
+        "rover_code": "948",
+        "rover_name": "Texas Southern"
+      },
+      {
+        "rover_code": "902",
+        "rover_name": "LSU"
+      }
+    ],
+    [
+      {
+        "rover_code": "945",
+        "rover_name": "Mississippi Valley S"
+      },
+      {
+        "rover_code": "730",
+        "rover_name": "Oklahoma"
+      }
+    ],
+    [
+      {
+        "rover_code": "715",
+        "rover_name": "Michigan"
+      },
+      {
+        "rover_code": "678",
+        "rover_name": "Connecticut"
+      }
+    ],
+    [
+      {
+        "rover_code": "637",
+        "rover_name": "Stony Brook"
+      },
+      {
+        "rover_code": "718",
+        "rover_name": "Northwestern"
+      }
+    ],
+    [
+      {
+        "rover_code": "947",
+        "rover_name": "Southern"
+      },
+      {
+        "rover_code": "849",
+        "rover_name": "TCU"
+      }
+    ],
+    [
+      {
+        "rover_code": "176",
+        "rover_name": "St. Thomas-Minnesota"
+      },
+      {
+        "rover_code": "717",
+        "rover_name": "Minnesota"
+      }
+    ],
+    [
+      {
+        "rover_code": "860",
+        "rover_name": "Robert Morris"
+      },
+      {
+        "rover_code": "779",
+        "rover_name": "Illinois (UIC)"
+      }
+    ],
+    [
+      {
+        "rover_code": "842",
+        "rover_name": "Southern Illinois"
+      },
+      {
+        "rover_code": "937",
+        "rover_name": "Kansas City"
+      }
+    ],
+    [
+      {
+        "rover_code": "694",
+        "rover_name": "Idaho State"
+      },
+      {
+        "rover_code": "852",
+        "rover_name": "Wyoming"
+      }
+    ],
+    [
+      {
+        "rover_code": "866",
+        "rover_name": "Eastern Illinois"
+      },
+      {
+        "rover_code": "714",
+        "rover_name": "Iowa"
+      }
+    ],
+    [
+      {
+        "rover_code": "917",
+        "rover_name": "Central Arkansas"
+      },
+      {
+        "rover_code": "903",
+        "rover_name": "Ole Miss"
+      }
+    ],
+    [
+      {
+        "rover_code": "952",
+        "rover_name": "Middle Tenn"
+      },
+      {
+        "rover_code": "726",
+        "rover_name": "Kansas"
+      }
+    ],
+    [
+      {
+        "rover_code": "979",
+        "rover_name": "Omaha"
+      },
+      {
+        "rover_code": "845",
+        "rover_name": "BYU"
+      }
+    ],
+    [
+      {
+        "rover_code": "737",
+        "rover_name": "CS North"
+      },
+      {
+        "rover_code": "727",
+        "rover_name": "Kansas State"
+      }
+    ],
+    [
+      {
+        "rover_code": "864",
+        "rover_name": "Wagner"
+      },
+      {
+        "rover_code": "646",
+        "rover_name": "Miami (FL)"
+      }
+    ],
+    [
+      {
+        "rover_code": "733",
+        "rover_name": "Queens University"
+      },
+      {
+        "rover_code": "731",
+        "rover_name": "Oklahoma State"
+      }
+    ],
+    [
+      {
+        "rover_code": "698",
+        "rover_name": "North Colorado"
+      },
+      {
+        "rover_code": "876",
+        "rover_name": "Arizona St"
+      }
+    ],
+    [
+      {
+        "rover_code": "972",
+        "rover_name": "Idaho"
+      },
+      {
+        "rover_code": "846",
+        "rover_name": "Colorado State"
+      }
+    ],
+    [
+      {
+        "rover_code": "386",
+        "rover_name": "Tarleton State"
+      },
+      {
+        "rover_code": "965",
+        "rover_name": "San Diego"
+      }
+    ],
+    [
+      {
+        "rover_code": "984",
+        "rover_name": "California Baptist"
+      },
+      {
+        "rover_code": "879",
+        "rover_name": "Oregon State"
+      }
+    ],
+    [
+      {
+        "rover_code": "964",
+        "rover_name": "Portland"
+      },
+      {
+        "rover_code": "927",
+        "rover_name": "UT Arlington"
+      }
+    ],
+    [
+      {
+        "rover_code": "933",
+        "rover_name": "Oakland"
+      },
+      {
+        "rover_code": "880",
+        "rover_name": "Stanford"
+      }
+    ],
+    [
+      {
+        "rover_code": "932",
+        "rover_name": "ND State"
+      },
+      {
+        "rover_code": "966",
+        "rover_name": "San Francisco"
+      }
+    ],
+    [
+      {
+        "rover_code": "660",
+        "rover_name": "North Florida"
+      },
+      {
+        "rover_code": "881",
+        "rover_name": "UCLA"
+      }
+    ]
+  ],
+  "added_codes": [
+    "10641",
+    "950",
+    "896",
+    "909",
+    "691",
+    "865",
+    "657",
+    "686",
+    "744",
+    "920",
+    "777",
+    "762",
+    "945",
+    "637",
+    "779",
+    "842",
+    "852",
+    "952",
+    "698",
+    "972",
+    "386",
+    "965",
+    "964",
+    "927"
+  ],
+  "excluded_non_ncaa_encounters": [
+    [
+      "13551 Zalgiris",
+      "11555 F Besiktas"
+    ],
+    [
+      "16387 Crvena Zvezda",
+      "16954 Olympiacos"
+    ],
+    [
+      "16177 BC Dubai",
+      "11252 Virtus Bologna"
+    ],
+    [
+      "12413 Maccabi Tel Aviv",
+      "19587 Partizan"
+    ]
+  ],
+  "exclusion_reason": "International club basketball; outside NCAA CBB scope"
+}

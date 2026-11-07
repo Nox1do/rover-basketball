@@ -1,5 +1,38 @@
 # Cambios
 
+## 0.0.8 — 2026-11-07
+
+Segunda lista del usuario: 59 encuentros NCAA y 118 equipos distintos. 94 ya estaban incluidos y se añaden los 24 restantes, con ID y nombre confirmados en ESPN y FOX CBK. El mapa queda en 335 equipos. West Florida se incorpora con Rover 10641, ESPN 2697 y FOX 441.
+
+| Rover | Nombre Rover | ESPN | FOX |
+|---|---|---|---|
+| 10641 | West Florida | 2697 | 441 |
+| 950 | Florida Internationa | 2229 | 293 |
+| 896 | South Carolina St | 2569 | 180 |
+| 909 | UNC Greensboro | 2430 | 258 |
+| 691 | Villanova | 222 | 58 |
+| 865 | Austin Peay | 2046 | 211 |
+| 657 | Kennesaw State | 338 | 858 |
+| 686 | Rutgers | 164 | 63 |
+| 744 | Delaware | 48 | 2 |
+| 920 | Nicholls | 2447 | 264 |
+| 777 | Detroit | 2174 | 127 |
+| 762 | Southern Miss | 2572 | 116 |
+| 945 | Mississippi Valley S | 2400 | 278 |
+| 637 | Stony Brook | 2619 | 136 |
+| 779 | Illinois (UIC) | 82 | 128 |
+| 842 | Southern Illinois | 79 | 188 |
+| 852 | Wyoming | 2751 | 198 |
+| 952 | Middle Tenn | 2393 | 295 |
+| 698 | North Colorado | 2458 | 395 |
+| 972 | Idaho | 70 | 98 |
+| 386 | Tarleton State | 2627 | 432 |
+| 965 | San Diego | 301 | 308 |
+| 964 | Portland | 2501 | 306 |
+| 927 | UT Arlington | 250 | 270 |
+
+Los 311 registros anteriores y el motor de resultados se conservan íntegros. Los cuatro encuentros finales entre clubes internacionales se registran como excluidos del alcance NCAA en `data/rover-59-encounters-2026-11-07.json`. La fecha identifica la recepción de la lista, no la fecha de los partidos.
+
 ## 0.0.7 — 2026-11-07
 
 Revisión de los 92 equipos de los 46 encuentros aportados por el usuario: 68 ya estaban y se añaden los 24 restantes. El mapa queda en 311 equipos. Los IDs y nombres de cada equipo nuevo se verificaron en el endpoint oficial de equipos ESPN y el header de equipos FOX CBK. IUPUI corresponde a IU Indianapolis / IU Indy (ESPN 85, FOX 283); Houston Christian conserva su identidad propia (ESPN 2277, FOX 662).

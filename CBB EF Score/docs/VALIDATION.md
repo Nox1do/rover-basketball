@@ -1,4 +1,4 @@
-# Validación 0.0.7
+# Validación 0.0.8
 
 ## Ejecución
 
@@ -45,3 +45,7 @@ Por indicación del usuario, Q1 y Q3 reciben 0 en ambos equipos, tanto al final 
 ## Ampliación 0.0.7
 
 La lista del usuario contiene 46 encuentros y 92 equipos distintos: 68 ya incluidos y 24 nuevos. Se verificaron 48 respuestas oficiales, una ESPN y una FOX CBK por equipo nuevo, comprobando ID y nombre. El mapa JSON y CSV queda en 311 registros, sin alterar ninguno de los 287 anteriores. La publicación regenera el mapa embebido; el código de resultados permanece idéntico a 0.0.6 salvo VERSION.
+
+## Ampliación 0.0.8
+
+Segunda lista: 118 equipos NCAA en 59 encuentros, 94 existentes y 24 nuevos. Se verificaron 48 respuestas oficiales de equipos ESPN y headers FOX CBK, comprobando ID y nombre. Se conservan los 311 registros anteriores. El mapa JSON, CSV y embebido queda en 335 equipos; el motor de resultados permanece idéntico a 0.0.7 salvo VERSION. Los cuatro encuentros internacionales quedan fuera del mapa NCAA.

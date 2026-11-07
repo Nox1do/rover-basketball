@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         CBB Espn-Fox
 // @namespace    https://roversport.net/
-// @version      0.0.7
+// @version      0.0.8
 // @description  NCAA masculino: ESPN + validación FOX; H1→Q2, H2→Q4, OT y Final. Firefox/Tampermonkey.
 // @author       noeg
 // @match        https://www.roversport.net/adm/es/*
@@ -22,7 +22,7 @@
 (() => {
     "use strict";
 
-    const VERSION = "0.0.7";
+    const VERSION = "0.0.8";
     const TAG = "[CBB Espn-Fox]";
 
     /*
@@ -57,6 +57,7 @@
         "300": {"rover_name":"East Texas A&M C","espn_id":"2837","espn_name":"East Texas A&M Lions","fox_id":"854","fox_name":"East Texas A&M Lions"},
         "381": {"rover_name":"West Georgia","espn_id":"2698","espn_name":"West Georgia Wolves","fox_id":"442","fox_name":"West Georgia Wolves"},
         "382": {"rover_name":"Mercyhurst","espn_id":"2385","espn_name":"Mercyhurst Lakers","fox_id":"459","fox_name":"Mercyhurst Lakers"},
+        "386": {"rover_name":"Tarleton State","espn_id":"2627","espn_name":"Tarleton State Texans","fox_id":"432","fox_name":"Tarleton State Texans"},
         "388": {"rover_name":"Bellarmine","espn_id":"91","espn_name":"Bellarmine Knights","fox_id":"908","fox_name":"Bellarmine Knights"},
         "400": {"rover_name":"Florida Gulf Coast","espn_id":"526","espn_name":"Florida Gulf Coast Eagles","fox_id":"892","fox_name":"Florida Gulf Coast Eagles"},
         "581": {"rover_name":"St. Marys CA","espn_id":"2608","espn_name":"Saint Mary's Gaels","fox_id":"307","fox_name":"Saint Mary's Gaels"},
@@ -64,6 +65,7 @@
         "633": {"rover_name":"Boston University","espn_id":"104","espn_name":"Boston University Terriers","fox_id":"1","fox_name":"Boston University Terriers"},
         "635": {"rover_name":"Maine","espn_id":"311","espn_name":"Maine Black Bears","fox_id":"6","fox_name":"Maine Black Bears"},
         "636": {"rover_name":"New Hampshire","espn_id":"160","espn_name":"New Hampshire Wildcats","fox_id":"7","fox_name":"New Hampshire Wildcats"},
+        "637": {"rover_name":"Stony Brook","espn_id":"2619","espn_name":"Stony Brook Seawolves","fox_id":"136","fox_name":"Stony Brook Seawolves"},
         "638": {"rover_name":"UMBC","espn_id":"2378","espn_name":"UMBC Retrievers","fox_id":"202","fox_name":"UMBC Retrievers"},
         "639": {"rover_name":"Vermont","espn_id":"261","espn_name":"Vermont Catamounts","fox_id":"10","fox_name":"Vermont Catamounts"},
         "640": {"rover_name":"Boston College","espn_id":"103","espn_name":"Boston College Eagles","fox_id":"53","fox_name":"Boston College Eagles"},
@@ -81,6 +83,7 @@
         "652": {"rover_name":"Belmont","espn_id":"2057","espn_name":"Belmont Bruins","fox_id":"134","fox_name":"Belmont Bruins"},
         "653": {"rover_name":"Campbell","espn_id":"2097","espn_name":"Campbell Fighting Camels","fox_id":"31","fox_name":"Campbell Fighting Camels"},
         "654": {"rover_name":"East Tenn St","espn_id":"2193","espn_name":"East Tennessee State Buccaneers","fox_id":"257","fox_name":"East Tennessee State Buccaneers"},
+        "657": {"rover_name":"Kennesaw State","espn_id":"338","espn_name":"Kennesaw State Owls","fox_id":"858","fox_name":"Kennesaw State Owls"},
         "658": {"rover_name":"Lipscomb","espn_id":"288","espn_name":"Lipscomb Bisons","fox_id":"731","fox_name":"Lipscomb Bisons"},
         "659": {"rover_name":"Mercer","espn_id":"2382","espn_name":"Mercer Bears","fox_id":"37","fox_name":"Mercer Bears"},
         "660": {"rover_name":"North Florida","espn_id":"2454","espn_name":"North Florida Ospreys","fox_id":"394","fox_name":"North Florida Ospreys"},
@@ -106,16 +109,19 @@
         "682": {"rover_name":"Marquette","espn_id":"269","espn_name":"Marquette Golden Eagles","fox_id":"122","fox_name":"Marquette Golden Eagles"},
         "684": {"rover_name":"Pittsburgh","espn_id":"221","espn_name":"Pittsburgh Panthers","fox_id":"62","fox_name":"Pittsburgh Panthers"},
         "685": {"rover_name":"Providence","espn_id":"2507","espn_name":"Providence Friars","fox_id":"56","fox_name":"Providence Friars"},
+        "686": {"rover_name":"Rutgers","espn_id":"164","espn_name":"Rutgers Scarlet Knights","fox_id":"63","fox_name":"Rutgers Scarlet Knights"},
         "687": {"rover_name":"Seton Hall","espn_id":"2550","espn_name":"Seton Hall Pirates","fox_id":"64","fox_name":"Seton Hall Pirates"},
         "688": {"rover_name":"South Florida","espn_id":"58","espn_name":"South Florida Bulls","fox_id":"115","fox_name":"South Florida Bulls"},
         "689": {"rover_name":"St. Johns","espn_id":"2599","espn_name":"St. John's Red Storm","fox_id":"57","fox_name":"St. John's Red Storm"},
         "690": {"rover_name":"Syracuse","espn_id":"183","espn_name":"Syracuse Orange","fox_id":"65","fox_name":"Syracuse Orange"},
+        "691": {"rover_name":"Villanova","espn_id":"222","espn_name":"Villanova Wildcats","fox_id":"58","fox_name":"Villanova Wildcats"},
         "692": {"rover_name":"West Virginia","espn_id":"277","espn_name":"West Virginia Mountaineers","fox_id":"66","fox_name":"West Virginia Mountaineers"},
         "693": {"rover_name":"Eastern Washington","espn_id":"331","espn_name":"Eastern Washington Eagles","fox_id":"68","fox_name":"Eastern Washington Eagles"},
         "694": {"rover_name":"Idaho State","espn_id":"304","espn_name":"Idaho State Bengals","fox_id":"69","fox_name":"Idaho State Bengals"},
         "695": {"rover_name":"Montana","espn_id":"149","espn_name":"Montana Grizzlies","fox_id":"70","fox_name":"Montana Grizzlies"},
         "696": {"rover_name":"Montana State","espn_id":"147","espn_name":"Montana State Bobcats","fox_id":"71","fox_name":"Montana State Bobcats"},
         "697": {"rover_name":"Northern Arizona","espn_id":"2464","espn_name":"Northern Arizona Lumberjacks","fox_id":"72","fox_name":"Northern Arizona Lumberjacks"},
+        "698": {"rover_name":"North Colorado","espn_id":"2458","espn_name":"Northern Colorado Bears","fox_id":"395","fox_name":"Northern Colorado Bears"},
         "699": {"rover_name":"Portland State","espn_id":"2502","espn_name":"Portland State Vikings","fox_id":"73","fox_name":"Portland State Vikings"},
         "700": {"rover_name":"Sacramento State","espn_id":"16","espn_name":"Sacramento State Hornets","fox_id":"74","fox_name":"Sacramento State Hornets"},
         "701": {"rover_name":"Weber State","espn_id":"2692","espn_name":"Weber State Wildcats","fox_id":"75","fox_name":"Weber State Wildcats"},
@@ -160,6 +166,7 @@
         "741": {"rover_name":"UC Irvine","espn_id":"300","espn_name":"UC Irvine Anteaters","fox_id":"101","fox_name":"UC Irvine Anteaters"},
         "742": {"rover_name":"UC Riverside","espn_id":"27","espn_name":"UC Riverside Highlanders","fox_id":"476","fox_name":"UC Riverside Highlanders"},
         "743": {"rover_name":"UC Santa Barbara","espn_id":"2540","espn_name":"UC Santa Barbara Gauchos","fox_id":"102","fox_name":"UC Santa Barbara Gauchos"},
+        "744": {"rover_name":"Delaware","espn_id":"48","espn_name":"Delaware Blue Hens","fox_id":"2","fox_name":"Delaware Fightin' Blue Hens"},
         "745": {"rover_name":"Drexel","espn_id":"2182","espn_name":"Drexel Dragons","fox_id":"3","fox_name":"Drexel Dragons"},
         "746": {"rover_name":"George Mason","espn_id":"2244","espn_name":"George Mason Patriots","fox_id":"106","fox_name":"George Mason Patriots"},
         "747": {"rover_name":"Georgia State","espn_id":"2247","espn_name":"Georgia State Panthers","fox_id":"34","fox_name":"Georgia State Panthers"},
@@ -173,6 +180,7 @@
         "757": {"rover_name":"Houston","espn_id":"248","espn_name":"Houston Cougars","fox_id":"113","fox_name":"Houston Cougars"},
         "758": {"rover_name":"Marshall","espn_id":"276","espn_name":"Marshall Thundering Herd","fox_id":"161","fox_name":"Marshall Thundering Herd"},
         "759": {"rover_name":"Memphis Tigers","espn_id":"235","espn_name":"Memphis Tigers","fox_id":"114","fox_name":"Memphis Tigers"},
+        "762": {"rover_name":"Southern Miss","espn_id":"2572","espn_name":"Southern Miss Golden Eagles","fox_id":"116","fox_name":"Southern Miss Golden Eagles"},
         "763": {"rover_name":"Tulane","espn_id":"2655","espn_name":"Tulane Green Wave","fox_id":"117","fox_name":"Tulane Green Wave"},
         "765": {"rover_name":"UAB","espn_id":"5","espn_name":"UAB Blazers","fox_id":"118","fox_name":"UAB Blazers"},
         "766": {"rover_name":"UCF","espn_id":"2116","espn_name":"UCF Knights","fox_id":"32","fox_name":"UCF Knights"},
@@ -186,6 +194,8 @@
         "774": {"rover_name":"Texas A&M","espn_id":"245","espn_name":"Texas A&M Aggies","fox_id":"51","fox_name":"Texas A&M Aggies"},
         "775": {"rover_name":"Butler","espn_id":"2086","espn_name":"Butler Bulldogs","fox_id":"125","fox_name":"Butler Bulldogs"},
         "776": {"rover_name":"Cleveland State","espn_id":"325","espn_name":"Cleveland State Vikings","fox_id":"126","fox_name":"Cleveland State Vikings"},
+        "777": {"rover_name":"Detroit","espn_id":"2174","espn_name":"Detroit Mercy Titans","fox_id":"127","fox_name":"Detroit Mercy Titans"},
+        "779": {"rover_name":"Illinois (UIC)","espn_id":"82","espn_name":"UIC Flames","fox_id":"128","fox_name":"UIC Flames"},
         "780": {"rover_name":"Loyola Chicago","espn_id":"2350","espn_name":"Loyola Chicago Ramblers","fox_id":"129","fox_name":"Loyola Chicago Ramblers"},
         "781": {"rover_name":"Milwaukee","espn_id":"270","espn_name":"Milwaukee Panthers","fox_id":"131","fox_name":"Milwaukee Panthers"},
         "782": {"rover_name":"Valparaiso","espn_id":"2674","espn_name":"Valparaiso Beacons","fox_id":"288","fox_name":"Valparaiso Beacons"},
@@ -235,6 +245,7 @@
         "838": {"rover_name":"Illinois State","espn_id":"2287","espn_name":"Illinois State Redbirds","fox_id":"185","fox_name":"Illinois State Redbirds"},
         "839": {"rover_name":"Indiana St","espn_id":"282","espn_name":"Indiana State Sycamores","fox_id":"186","fox_name":"Indiana State Sycamores"},
         "841": {"rover_name":"Northern Iowa","espn_id":"2460","espn_name":"Northern Iowa Panthers","fox_id":"187","fox_name":"Northern Iowa Panthers"},
+        "842": {"rover_name":"Southern Illinois","espn_id":"79","espn_name":"Southern Illinois Salukis","fox_id":"188","fox_name":"Southern Illinois Salukis"},
         "843": {"rover_name":"Wichita State","espn_id":"2724","espn_name":"Wichita State Shockers","fox_id":"190","fox_name":"Wichita State Shockers"},
         "844": {"rover_name":"Air Force","espn_id":"2005","espn_name":"Air Force Falcons","fox_id":"191","fox_name":"Air Force Falcons"},
         "845": {"rover_name":"BYU","espn_id":"252","espn_name":"BYU Cougars","fox_id":"192","fox_name":"BYU Cougars"},
@@ -244,6 +255,7 @@
         "849": {"rover_name":"TCU","espn_id":"2628","espn_name":"TCU Horned Frogs","fox_id":"317","fox_name":"TCU Horned Frogs"},
         "850": {"rover_name":"UNLV","espn_id":"2439","espn_name":"UNLV Rebels","fox_id":"196","fox_name":"UNLV Runnin' Rebels"},
         "851": {"rover_name":"Utah","espn_id":"254","espn_name":"Utah Utes","fox_id":"197","fox_name":"Utah Runnin' Utes"},
+        "852": {"rover_name":"Wyoming","espn_id":"2751","espn_name":"Wyoming Cowboys","fox_id":"198","fox_name":"Wyoming Cowboys"},
         "853": {"rover_name":"Bryant","espn_id":"2803","espn_name":"Bryant Bulldogs","fox_id":"820","fox_name":"Bryant Bulldogs"},
         "854": {"rover_name":"Central Connecticut","espn_id":"2115","espn_name":"Central Connecticut Blue Devils","fox_id":"199","fox_name":"Central Connecticut State Blue Devils"},
         "855": {"rover_name":"Fair Dick","espn_id":"161","espn_name":"Fairleigh Dickinson Knights","fox_id":"200","fox_name":"FDU Knights"},
@@ -253,6 +265,7 @@
         "859": {"rover_name":"Quinnipiac","espn_id":"2514","espn_name":"Quinnipiac Bobcats","fox_id":"205","fox_name":"Quinnipiac Bobcats"},
         "860": {"rover_name":"Robert Morris","espn_id":"2523","espn_name":"Robert Morris Colonials","fox_id":"206","fox_name":"Robert Morris Colonials"},
         "864": {"rover_name":"Wagner","espn_id":"2681","espn_name":"Wagner Seahawks","fox_id":"210","fox_name":"Wagner Seahawks"},
+        "865": {"rover_name":"Austin Peay","espn_id":"2046","espn_name":"Austin Peay Governors","fox_id":"211","fox_name":"Austin Peay Governors"},
         "866": {"rover_name":"Eastern Illinois","espn_id":"2197","espn_name":"Eastern Illinois Panthers","fox_id":"212","fox_name":"Eastern Illinois Panthers"},
         "869": {"rover_name":"Morehead State","espn_id":"2413","espn_name":"Morehead State Eagles","fox_id":"214","fox_name":"Morehead State Eagles"},
         "870": {"rover_name":"Murray State","espn_id":"93","espn_name":"Murray State Racers","fox_id":"215","fox_name":"Murray State Racers"},
@@ -280,6 +293,7 @@
         "893": {"rover_name":"Florida","espn_id":"57","espn_name":"Florida Gators","fox_id":"237","fox_name":"Florida Gators"},
         "894": {"rover_name":"Georgia","espn_id":"61","espn_name":"Georgia Bulldogs","fox_id":"238","fox_name":"Georgia Bulldogs"},
         "895": {"rover_name":"Kentucky","espn_id":"96","espn_name":"Kentucky Wildcats","fox_id":"239","fox_name":"Kentucky Wildcats"},
+        "896": {"rover_name":"South Carolina St","espn_id":"2569","espn_name":"South Carolina State Bulldogs","fox_id":"180","fox_name":"South Carolina State Bulldogs"},
         "897": {"rover_name":"Tennessee","espn_id":"2633","espn_name":"Tennessee Volunteers","fox_id":"241","fox_name":"Tennessee Volunteers"},
         "898": {"rover_name":"Vanderbilt","espn_id":"238","espn_name":"Vanderbilt Commodores","fox_id":"242","fox_name":"Vanderbilt Commodores"},
         "899": {"rover_name":"Alabama","espn_id":"333","espn_name":"Alabama Crimson Tide","fox_id":"243","fox_name":"Alabama Crimson Tide"},
@@ -292,6 +306,7 @@
         "906": {"rover_name":"Appalachian State","espn_id":"2026","espn_name":"App State Mountaineers","fox_id":"255","fox_name":"Appalachian State Mountaineers"},
         "907": {"rover_name":"Chattanooga","espn_id":"236","espn_name":"Chattanooga Mocs","fox_id":"250","fox_name":"Chattanooga Mocs"},
         "908": {"rover_name":"Elon Phoenix","espn_id":"2210","espn_name":"Elon Phoenix","fox_id":"78","fox_name":"Elon Phoenix"},
+        "909": {"rover_name":"UNC Greensboro","espn_id":"2430","espn_name":"UNC Greensboro Spartans","fox_id":"258","fox_name":"UNC Greensboro Spartans"},
         "910": {"rover_name":"Western Carolina","espn_id":"2717","espn_name":"Western Carolina Catamounts","fox_id":"260","fox_name":"Western Carolina Catamounts"},
         "911": {"rover_name":"The Citadel","espn_id":"2643","espn_name":"The Citadel Bulldogs","fox_id":"251","fox_name":"The Citadel Bulldogs"},
         "913": {"rover_name":"Davidson","espn_id":"2166","espn_name":"Davidson Wildcats","fox_id":"256","fox_name":"Davidson Wildcats"},
@@ -301,11 +316,13 @@
         "917": {"rover_name":"Central Arkansas","espn_id":"2110","espn_name":"Central Arkansas Bears","fox_id":"465","fox_name":"Central Arkansas Bears"},
         "918": {"rover_name":"Lamar","espn_id":"2320","espn_name":"Lamar Cardinals","fox_id":"261","fox_name":"Lamar Cardinals"},
         "919": {"rover_name":"McNeese State","espn_id":"2377","espn_name":"McNeese Cowboys","fox_id":"263","fox_name":"McNeese Cowboys"},
+        "920": {"rover_name":"Nicholls","espn_id":"2447","espn_name":"Nicholls Colonels","fox_id":"264","fox_name":"Nicholls State Colonels"},
         "921": {"rover_name":"Northwestern State","espn_id":"2466","espn_name":"Northwestern State Demons","fox_id":"265","fox_name":"Northwestern State Demons"},
         "922": {"rover_name":"Southeastern Louisia","espn_id":"2545","espn_name":"SE Louisiana Lions","fox_id":"267","fox_name":"Southeastern Louisiana Lions"},
         "923": {"rover_name":"Sam Houston State","espn_id":"2534","espn_name":"Sam Houston Bearkats","fox_id":"266","fox_name":"Sam Houston Bearkats"},
         "925": {"rover_name":"Texas Corpus","espn_id":"357","espn_name":"Texas A&M-Corpus Christi Islanders","fox_id":"137","fox_name":"Texas A&M-Corpus Christi Islanders"},
         "926": {"rover_name":"Texas State","espn_id":"326","espn_name":"Texas State Bobcats","fox_id":"268","fox_name":"Texas State Bobcats"},
+        "927": {"rover_name":"UT Arlington","espn_id":"250","espn_name":"UT Arlington Mavericks","fox_id":"270","fox_name":"UT Arlington Mavericks"},
         "928": {"rover_name":"UTSA Roadrunners","espn_id":"2636","espn_name":"UTSA Roadrunners","fox_id":"271","fox_name":"UTSA Roadrunners"},
         "930": {"rover_name":"Purdue Fort Wayne","espn_id":"2870","espn_name":"Purdue Fort Wayne Mastodons","fox_id":"463","fox_name":"Purdue Fort Wayne Mastodons"},
         "931": {"rover_name":"IUPUI","espn_id":"85","espn_name":"IU Indianapolis Jaguars","fox_id":"283","fox_name":"IU Indy Jaguars"},
@@ -320,11 +337,14 @@
         "942": {"rover_name":"Arkansas Pine Bluff","espn_id":"2029","espn_name":"Arkansas-Pine Bluff Golden Lions","fox_id":"275","fox_name":"Arkansas-Pine Bluff Golden Lions"},
         "943": {"rover_name":"Grambling","espn_id":"2755","espn_name":"Grambling Tigers","fox_id":"276","fox_name":"Grambling State Tigers"},
         "944": {"rover_name":"Jackson State","espn_id":"2296","espn_name":"Jackson State Tigers","fox_id":"277","fox_name":"Jackson State Tigers"},
+        "945": {"rover_name":"Mississippi Valley S","espn_id":"2400","espn_name":"Mississippi Valley State Delta Devils","fox_id":"278","fox_name":"Mississippi Valley State Delta Devils"},
         "946": {"rover_name":"Prairie View A&M","espn_id":"2504","espn_name":"Prairie View A&M Panthers","fox_id":"279","fox_name":"Prairie View A&M Panthers"},
         "947": {"rover_name":"Southern","espn_id":"2582","espn_name":"Southern Jaguars","fox_id":"280","fox_name":"Southern University Jaguars"},
         "948": {"rover_name":"Texas Southern","espn_id":"2640","espn_name":"Texas Southern Tigers","fox_id":"281","fox_name":"Texas Southern Tigers"},
         "949": {"rover_name":"Western Kentucky","espn_id":"98","espn_name":"Western Kentucky Hilltoppers","fox_id":"296","fox_name":"Western Kentucky Hilltoppers"},
+        "950": {"rover_name":"Florida Internationa","espn_id":"2229","espn_name":"Florida International Panthers","fox_id":"293","fox_name":"Florida International Panthers"},
         "951": {"rover_name":"Florida Atlantic","espn_id":"2226","espn_name":"Florida Atlantic Owls","fox_id":"33","fox_name":"Florida Atlantic Owls"},
+        "952": {"rover_name":"Middle Tenn","espn_id":"2393","espn_name":"Middle Tennessee Blue Raiders","fox_id":"295","fox_name":"Middle Tennessee Blue Raiders"},
         "953": {"rover_name":"South Alabama","espn_id":"6","espn_name":"South Alabama Jaguars","fox_id":"302","fox_name":"South Alabama Jaguars"},
         "954": {"rover_name":"Troy","espn_id":"2653","espn_name":"Troy Trojans","fox_id":"40","fox_name":"Troy Trojans"},
         "955": {"rover_name":"Little Rock","espn_id":"2031","espn_name":"Little Rock Trojans","fox_id":"292","fox_name":"Little Rock Trojans"},
@@ -335,10 +355,13 @@
         "961": {"rover_name":"Gonzaga","espn_id":"2250","espn_name":"Gonzaga Bulldogs","fox_id":"303","fox_name":"Gonzaga Bulldogs"},
         "962": {"rover_name":"Loyola Marymount","espn_id":"2351","espn_name":"Loyola Marymount Lions","fox_id":"304","fox_name":"Loyola Marymount Lions"},
         "963": {"rover_name":"Pepperdine","espn_id":"2492","espn_name":"Pepperdine Waves","fox_id":"305","fox_name":"Pepperdine Waves"},
+        "964": {"rover_name":"Portland","espn_id":"2501","espn_name":"Portland Pilots","fox_id":"306","fox_name":"Portland Pilots"},
+        "965": {"rover_name":"San Diego","espn_id":"301","espn_name":"San Diego Toreros","fox_id":"308","fox_name":"San Diego Toreros"},
         "966": {"rover_name":"San Francisco","espn_id":"2539","espn_name":"San Francisco Dons","fox_id":"309","fox_name":"San Francisco Dons"},
         "967": {"rover_name":"Santa Clara","espn_id":"2541","espn_name":"Santa Clara Broncos","fox_id":"310","fox_name":"Santa Clara Broncos"},
         "970": {"rover_name":"Fresno State","espn_id":"278","espn_name":"Fresno State Bulldogs","fox_id":"311","fox_name":"Fresno State Bulldogs"},
         "971": {"rover_name":"Hawaii","espn_id":"62","espn_name":"Hawai'i Rainbow Warriors","fox_id":"312","fox_name":"Hawai'i Rainbow Warriors"},
+        "972": {"rover_name":"Idaho","espn_id":"70","espn_name":"Idaho Vandals","fox_id":"98","fox_name":"Idaho Vandals"},
         "973": {"rover_name":"Louisiana Tech","espn_id":"2348","espn_name":"Louisiana Tech Bulldogs","fox_id":"294","fox_name":"Louisiana Tech Bulldogs"},
         "974": {"rover_name":"Nevada","espn_id":"2440","espn_name":"Nevada Wolf Pack","fox_id":"313","fox_name":"Nevada Wolf Pack"},
         "975": {"rover_name":"New Mexico State","espn_id":"166","espn_name":"New Mexico State Aggies","fox_id":"299","fox_name":"New Mexico State Aggies"},
@@ -355,7 +378,8 @@
         "996": {"rover_name":"South Carolina","espn_id":"2579","espn_name":"South Carolina Gamecocks","fox_id":"240","fox_name":"South Carolina Gamecocks"},
         "997": {"rover_name":"Temple","espn_id":"218","espn_name":"Temple Owls","fox_id":"19","fox_name":"Temple Owls"},
         "998": {"rover_name":"SMU","espn_id":"2567","espn_name":"SMU Mustangs","fox_id":"316","fox_name":"SMU Mustangs"},
-        "999": {"rover_name":"Merrimack","espn_id":"2771","espn_name":"Merrimack Warriors","fox_id":"972","fox_name":"Merrimack Warriors"}
+        "999": {"rover_name":"Merrimack","espn_id":"2771","espn_name":"Merrimack Warriors","fox_id":"972","fox_name":"Merrimack Warriors"},
+        "10641": {"rover_name":"West Florida","espn_id":"2697","espn_name":"West Florida Argonauts","fox_id":"441","fox_name":"West Florida Argonauts"}
     };
 
     const clean = value =>

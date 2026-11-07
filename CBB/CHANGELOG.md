@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+## [0.1.17] - 2026-11-07
+
+- Incorporadas seis identidades Rover↔ESPN faltantes: Boise State, Drake, Norfolk State, William & Mary, CSU Bakersfield y UT Arlington.
+- Añadidos 29 emparejamientos de referencia. Total: 335 equipos y 270 encuentros.
+- Pruebas de regresión para nuevas identidades y 29 cruces. Sin cambios en la lógica de hora, localía y corrección segura de enlaces.
+
+
 ## [0.1.16] - 2026-11-06
 
 - Añadidos los mapeos 982→292 (UT Rio Grande Valley), 834→71 (Bradley) y 134→28 (UC San Diego).

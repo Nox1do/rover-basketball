@@ -545,6 +545,11 @@
     "rover_name": "VCU",
     "espn_id": "2670"
   },
+  "755": {
+    "rover_name": "William & Mary",
+    "espn_id": "2729",
+    "espn_name": "William & Mary Tribe"
+  },
   "756": {
     "rover_name": "East Carolina",
     "espn_id": "151"
@@ -649,6 +654,11 @@
   "784": {
     "rover_name": "Youngst St",
     "espn_id": "2754"
+  },
+  "785": {
+    "rover_name": "CS Bakersfield",
+    "espn_id": "2934",
+    "espn_name": "Cal State Bakersfield Roadrunners"
   },
   "786": {
     "rover_name": "Longwood",
@@ -831,6 +841,11 @@
     "espn_id": "2448",
     "espn_name": "North Carolina A&T Aggies"
   },
+  "832": {
+    "rover_name": "Norfolk State",
+    "espn_id": "2450",
+    "espn_name": "Norfolk State Spartans"
+  },
   "834": {
     "rover_name": "Bradley",
     "espn_id": "71",
@@ -839,6 +854,11 @@
   "835": {
     "rover_name": "Creighton",
     "espn_id": "156"
+  },
+  "836": {
+    "rover_name": "Drake",
+    "espn_id": "2181",
+    "espn_name": "Drake Bulldogs"
   },
   "837": {
     "rover_name": "Evansville Aces",
@@ -1167,6 +1187,11 @@
     "rover_name": "Texas State",
     "espn_id": "326"
   },
+  "927": {
+    "rover_name": "UT Arlington",
+    "espn_id": "250",
+    "espn_name": "UT Arlington Mavericks"
+  },
   "928": {
     "rover_name": "UTSA Roadrunners",
     "espn_id": "2636"
@@ -1302,6 +1327,11 @@
   "967": {
     "rover_name": "Santa Clara",
     "espn_id": "2541"
+  },
+  "969": {
+    "rover_name": "Boise State",
+    "espn_id": "68",
+    "espn_name": "Boise State Broncos"
   },
   "970": {
     "rover_name": "Fresno State",

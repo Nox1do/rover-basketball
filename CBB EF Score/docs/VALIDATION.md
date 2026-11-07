@@ -1,4 +1,4 @@
-# Validación 0.0.6
+# Validación 0.0.7
 
 ## Ejecución
 
@@ -41,3 +41,7 @@ La revisión del publicador detectó y corrigió tres casos: rutas con espacios 
 ## Ceros en Q1/Q3 — 0.0.6
 
 Por indicación del usuario, Q1 y Q3 reciben 0 en ambos equipos, tanto al final como en descanso y recuperación de H1. Se observaron fallar los dos casos unitarios con la versión anterior antes de cambiar el llenado. Firefox comprueba el valor de los cuatro controles en CLASSIC y RV2, y en las consultas H1/H2.
+
+## Ampliación 0.0.7
+
+La lista del usuario contiene 46 encuentros y 92 equipos distintos: 68 ya incluidos y 24 nuevos. Se verificaron 48 respuestas oficiales, una ESPN y una FOX CBK por equipo nuevo, comprobando ID y nombre. El mapa JSON y CSV queda en 311 registros, sin alterar ninguno de los 287 anteriores. La publicación regenera el mapa embebido; el código de resultados permanece idéntico a 0.0.6 salvo VERSION.

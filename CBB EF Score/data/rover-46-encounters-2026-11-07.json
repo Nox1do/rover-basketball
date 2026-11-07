@@ -1,0 +1,492 @@
+{
+  "source": "User supplied Rover table",
+  "received_date": "2026-11-07",
+  "encounters": [
+    [
+      {
+        "rover_code": "869",
+        "rover_name": "Morehead State"
+      },
+      {
+        "rover_code": "681",
+        "rover_name": "Louisville"
+      }
+    ],
+    [
+      {
+        "rover_code": "771",
+        "rover_name": "North Dakota"
+      },
+      {
+        "rover_code": "711",
+        "rover_name": "Winthrop"
+      }
+    ],
+    [
+      {
+        "rover_code": "831",
+        "rover_name": "N. Carolina A&T"
+      },
+      {
+        "rover_code": "816",
+        "rover_name": "Ohio"
+      }
+    ],
+    [
+      {
+        "rover_code": "750",
+        "rover_name": "UNC Wilmington"
+      },
+      {
+        "rover_code": "756",
+        "rover_name": "East Carolina"
+      }
+    ],
+    [
+      {
+        "rover_code": "821",
+        "rover_name": "Toledo"
+      },
+      {
+        "rover_code": "758",
+        "rover_name": "Marshall"
+      }
+    ],
+    [
+      {
+        "rover_code": "888",
+        "rover_name": "Colgate"
+      },
+      {
+        "rover_code": "745",
+        "rover_name": "Drexel"
+      }
+    ],
+    [
+      {
+        "rover_code": "736",
+        "rover_name": "Fullerton"
+      },
+      {
+        "rover_code": "772",
+        "rover_name": "South Dakota"
+      }
+    ],
+    [
+      {
+        "rover_code": "918",
+        "rover_name": "Lamar"
+      },
+      {
+        "rover_code": "988",
+        "rover_name": "Abilene Christian"
+      }
+    ],
+    [
+      {
+        "rover_code": "738",
+        "rover_name": "Long Beach State"
+      },
+      {
+        "rover_code": "696",
+        "rover_name": "Montana State"
+      }
+    ],
+    [
+      {
+        "rover_code": "754",
+        "rover_name": "VCU"
+      },
+      {
+        "rover_code": "759",
+        "rover_name": "Memphis"
+      }
+    ],
+    [
+      {
+        "rover_code": "787",
+        "rover_name": "North Carolina Central"
+      },
+      {
+        "rover_code": "786",
+        "rover_name": "Longwood"
+      }
+    ],
+    [
+      {
+        "rover_code": "856",
+        "rover_name": "LIU Brooklyn"
+      },
+      {
+        "rover_code": "668",
+        "rover_name": "La Salle"
+      }
+    ],
+    [
+      {
+        "rover_code": "933",
+        "rover_name": "Oakland"
+      },
+      {
+        "rover_code": "743",
+        "rover_name": "UC Santa Barbara"
+      }
+    ],
+    [
+      {
+        "rover_code": "979",
+        "rover_name": "Omaha"
+      },
+      {
+        "rover_code": "977",
+        "rover_name": "Utah State"
+      }
+    ],
+    [
+      {
+        "rover_code": "981",
+        "rover_name": "Lafayette"
+      },
+      {
+        "rover_code": "277",
+        "rover_name": "Saint Josephs"
+      }
+    ],
+    [
+      {
+        "rover_code": "857",
+        "rover_name": "Monmouth"
+      },
+      {
+        "rover_code": "670",
+        "rover_name": "Rhode Island"
+      }
+    ],
+    [
+      {
+        "rover_code": "905",
+        "rover_name": "Samford"
+      },
+      {
+        "rover_code": "850",
+        "rover_name": "UNLV"
+      }
+    ],
+    [
+      {
+        "rover_code": "388",
+        "rover_name": "Bellarmine"
+      },
+      {
+        "rover_code": "815",
+        "rover_name": "Miami (OH)"
+      }
+    ],
+    [
+      {
+        "rover_code": "884",
+        "rover_name": "Washington State"
+      },
+      {
+        "rover_code": "705",
+        "rover_name": "High Point"
+      }
+    ],
+    [
+      {
+        "rover_code": "874",
+        "rover_name": "UT Martin"
+      },
+      {
+        "rover_code": "931",
+        "rover_name": "IUPUI"
+      }
+    ],
+    [
+      {
+        "rover_code": "710",
+        "rover_name": "VMI"
+      },
+      {
+        "rover_code": "928",
+        "rover_name": "UTSA Roadrunners"
+      }
+    ],
+    [
+      {
+        "rover_code": "841",
+        "rover_name": "Northern Iowa"
+      },
+      {
+        "rover_code": "914",
+        "rover_name": "Furman"
+      }
+    ],
+    [
+      {
+        "rover_code": "791",
+        "rover_name": "SIU Edwars"
+      },
+      {
+        "rover_code": "658",
+        "rover_name": "Lipscomb"
+      }
+    ],
+    [
+      {
+        "rover_code": "752",
+        "rover_name": "Old Dominion"
+      },
+      {
+        "rover_code": "887",
+        "rover_name": "Bucknell"
+      }
+    ],
+    [
+      {
+        "rover_code": "975",
+        "rover_name": "New Mexico State"
+      },
+      {
+        "rover_code": "961",
+        "rover_name": "Gonzaga"
+      }
+    ],
+    [
+      {
+        "rover_code": "910",
+        "rover_name": "Western Carolina"
+      },
+      {
+        "rover_code": "709",
+        "rover_name": "UNC Asheville"
+      }
+    ],
+    [
+      {
+        "rover_code": "946",
+        "rover_name": "Prairie View A&M"
+      },
+      {
+        "rover_code": "982",
+        "rover_name": "UT Rio Grande Valley"
+      }
+    ],
+    [
+      {
+        "rover_code": "697",
+        "rover_name": "Northern Arizona"
+      },
+      {
+        "rover_code": "847",
+        "rover_name": "New Mexico"
+      }
+    ],
+    [
+      {
+        "rover_code": "827",
+        "rover_name": "Hampton"
+      },
+      {
+        "rover_code": "667",
+        "rover_name": "George Washington"
+      }
+    ],
+    [
+      {
+        "rover_code": "830",
+        "rover_name": "Morgan State"
+      },
+      {
+        "rover_code": "807",
+        "rover_name": "Niagara"
+      }
+    ],
+    [
+      {
+        "rover_code": "769",
+        "rover_name": "Houston Christian"
+      },
+      {
+        "rover_code": "938",
+        "rover_name": "Western Illinois"
+      }
+    ],
+    [
+      {
+        "rover_code": "820",
+        "rover_name": "Northern Illinois"
+      },
+      {
+        "rover_code": "664",
+        "rover_name": "Dayton"
+      }
+    ],
+    [
+      {
+        "rover_code": "659",
+        "rover_name": "Mercer"
+      },
+      {
+        "rover_code": "913",
+        "rover_name": "Davidson"
+      }
+    ],
+    [
+      {
+        "rover_code": "673",
+        "rover_name": "St. Bonaventure"
+      },
+      {
+        "rover_code": "801",
+        "rover_name": "Canisius"
+      }
+    ],
+    [
+      {
+        "rover_code": "685",
+        "rover_name": "Providence"
+      },
+      {
+        "rover_code": "729",
+        "rover_name": "Nebraska"
+      }
+    ],
+    [
+      {
+        "rover_code": "645",
+        "rover_name": "Maryland"
+      },
+      {
+        "rover_code": "680",
+        "rover_name": "Georgetown"
+      }
+    ],
+    [
+      {
+        "rover_code": "957",
+        "rover_name": "Denver"
+      },
+      {
+        "rover_code": "742",
+        "rover_name": "UC Riverside"
+      }
+    ],
+    [
+      {
+        "rover_code": "739",
+        "rover_name": "Pacific"
+      },
+      {
+        "rover_code": "834",
+        "rover_name": "Bradley"
+      }
+    ],
+    [
+      {
+        "rover_code": "922",
+        "rover_name": "Southeastern Louisiana"
+      },
+      {
+        "rover_code": "955",
+        "rover_name": "Little Rock"
+      }
+    ],
+    [
+      {
+        "rover_code": "823",
+        "rover_name": "Bethune"
+      },
+      {
+        "rover_code": "890",
+        "rover_name": "Grand Canyon"
+      }
+    ],
+    [
+      {
+        "rover_code": "921",
+        "rover_name": "Northwestern State"
+      },
+      {
+        "rover_code": "870",
+        "rover_name": "Murray State"
+      }
+    ],
+    [
+      {
+        "rover_code": "773",
+        "rover_name": "Utah Valley"
+      },
+      {
+        "rover_code": "701",
+        "rover_name": "Weber State"
+      }
+    ],
+    [
+      {
+        "rover_code": "970",
+        "rover_name": "Fresno State"
+      },
+      {
+        "rover_code": "134",
+        "rover_name": "UC San Diego"
+      }
+    ],
+    [
+      {
+        "rover_code": "700",
+        "rover_name": "Sacramento State"
+      },
+      {
+        "rover_code": "967",
+        "rover_name": "Santa Clara"
+      }
+    ],
+    [
+      {
+        "rover_code": "699",
+        "rover_name": "Portland State"
+      },
+      {
+        "rover_code": "790",
+        "rover_name": "Seattle U"
+      }
+    ],
+    [
+      {
+        "rover_code": "976",
+        "rover_name": "San Jose"
+      },
+      {
+        "rover_code": "741",
+        "rover_name": "UC Irvine"
+      }
+    ]
+  ],
+  "added_codes": [
+    "831",
+    "750",
+    "918",
+    "743",
+    "979",
+    "905",
+    "931",
+    "710",
+    "841",
+    "975",
+    "946",
+    "982",
+    "830",
+    "769",
+    "659",
+    "742",
+    "739",
+    "834",
+    "773",
+    "970",
+    "134",
+    "700",
+    "699",
+    "741"
+  ]
+}

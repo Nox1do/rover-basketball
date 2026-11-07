@@ -1,5 +1,38 @@
 # Cambios
 
+## 0.0.7 — 2026-11-07
+
+Revisión de los 92 equipos de los 46 encuentros aportados por el usuario: 68 ya estaban y se añaden los 24 restantes. El mapa queda en 311 equipos. Los IDs y nombres de cada equipo nuevo se verificaron en el endpoint oficial de equipos ESPN y el header de equipos FOX CBK. IUPUI corresponde a IU Indianapolis / IU Indy (ESPN 85, FOX 283); Houston Christian conserva su identidad propia (ESPN 2277, FOX 662).
+
+| Rover | Nombre Rover | ESPN | FOX |
+|---|---|---|---|
+| 831 | N. Carolina A&T | 2448 | 179 |
+| 750 | UNC Wilmington | 350 | 108 |
+| 918 | Lamar | 2320 | 261 |
+| 743 | UC Santa Barbara | 2540 | 102 |
+| 979 | Omaha | 2437 | 826 |
+| 905 | Samford | 2535 | 38 |
+| 931 | IUPUI | 85 | 283 |
+| 710 | VMI | 2678 | 259 |
+| 841 | Northern Iowa | 2460 | 187 |
+| 975 | New Mexico State | 166 | 299 |
+| 946 | Prairie View A&M | 2504 | 279 |
+| 982 | UT Rio Grande Valley | 292 | 138 |
+| 830 | Morgan State | 2415 | 177 |
+| 769 | Houston Christian | 2277 | 662 |
+| 659 | Mercer | 2382 | 37 |
+| 742 | UC Riverside | 27 | 476 |
+| 739 | Pacific | 279 | 100 |
+| 834 | Bradley | 71 | 181 |
+| 773 | Utah Valley | 3084 | 437 |
+| 970 | Fresno State | 278 | 311 |
+| 134 | UC San Diego | 28 | 610 |
+| 700 | Sacramento State | 16 | 74 |
+| 699 | Portland State | 2502 | 73 |
+| 741 | UC Irvine | 300 | 101 |
+
+Se conservan íntegros los 287 registros anteriores y el motor de resultados de 0.0.6. La lista original queda en `data/rover-46-encounters-2026-11-07.json`; el nombre de archivo identifica la fecha de recepción, no la fecha de los partidos.
+
 ## 0.0.6 — 2026-11-03
 
 Q1 y Q3 se rellenan con `0` para ambos equipos al confirmar descanso, recuperar H1 durante H2 o confirmar el final. H1 sigue en Q2 y H2 en Q4. Las pruebas unitarias y de Firefox verifican los ceros en CLASSIC y RV2.

@@ -13,6 +13,22 @@
     "rover_source": "https://github.com/Nox1do/rover-basketball/blob/main/CBB/data/rover-espn-team-map.json",
     "fox_source": "https://www.foxsports.com/college-basketball/team-stats?season=2026&category=scoring&page=2"
   },
+  "134": {
+    "rover_code": "134",
+    "rover_name": "UC San Diego",
+    "espn_id": "28",
+    "espn_name": "UC San Diego Tritons",
+    "fox_id": "610",
+    "fox_name": "UC San Diego Tritons",
+    "fox_url": "https://www.foxsports.com/college-basketball/california-san-diego-tritons-team",
+    "fox_match_method": "VERIFIED_TEAM_HEADER",
+    "fox_match_status": "MATCHED",
+    "espn_url": "https://www.espn.com/mens-college-basketball/team/_/id/28",
+    "rover_source": "User supplied 46 encounters, 2026-11-07",
+    "espn_source": "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/teams/28",
+    "fox_source": "https://api.foxsports.com/bifrost/v1/cbk/team/610/header",
+    "verified_date": "2026-11-07"
+  },
   "135": {
     "rover_name": "Utah Tech",
     "espn_id": "3101",
@@ -504,6 +520,22 @@
     "rover_source": "https://github.com/Nox1do/rover-basketball/blob/main/CBB/data/rover-espn-team-map.json",
     "fox_source": "https://www.foxsports.com/college-basketball/team-stats?season=2026&category=scoring&page=2"
   },
+  "659": {
+    "rover_code": "659",
+    "rover_name": "Mercer",
+    "espn_id": "2382",
+    "espn_name": "Mercer Bears",
+    "fox_id": "37",
+    "fox_name": "Mercer Bears",
+    "fox_url": "https://www.foxsports.com/college-basketball/mercer-bears-team",
+    "fox_match_method": "VERIFIED_TEAM_HEADER",
+    "fox_match_status": "MATCHED",
+    "espn_url": "https://www.espn.com/mens-college-basketball/team/_/id/2382",
+    "rover_source": "User supplied 46 encounters, 2026-11-07",
+    "espn_source": "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/teams/2382",
+    "fox_source": "https://api.foxsports.com/bifrost/v1/cbk/team/37/header",
+    "verified_date": "2026-11-07"
+  },
   "660": {
     "rover_name": "North Florida",
     "espn_id": "2454",
@@ -966,6 +998,38 @@
     "rover_source": "https://github.com/Nox1do/rover-basketball/blob/main/CBB/data/rover-espn-team-map.json",
     "fox_source": "https://www.foxsports.com/college-basketball/team-stats?season=2026&category=scoring&page=4"
   },
+  "699": {
+    "rover_code": "699",
+    "rover_name": "Portland State",
+    "espn_id": "2502",
+    "espn_name": "Portland State Vikings",
+    "fox_id": "73",
+    "fox_name": "Portland State Vikings",
+    "fox_url": "https://www.foxsports.com/college-basketball/portland-state-vikings-team",
+    "fox_match_method": "VERIFIED_TEAM_HEADER",
+    "fox_match_status": "MATCHED",
+    "espn_url": "https://www.espn.com/mens-college-basketball/team/_/id/2502",
+    "rover_source": "User supplied 46 encounters, 2026-11-07",
+    "espn_source": "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/teams/2502",
+    "fox_source": "https://api.foxsports.com/bifrost/v1/cbk/team/73/header",
+    "verified_date": "2026-11-07"
+  },
+  "700": {
+    "rover_code": "700",
+    "rover_name": "Sacramento State",
+    "espn_id": "16",
+    "espn_name": "Sacramento State Hornets",
+    "fox_id": "74",
+    "fox_name": "Sacramento State Hornets",
+    "fox_url": "https://www.foxsports.com/college-basketball/sacramento-state-hornets-team",
+    "fox_match_method": "VERIFIED_TEAM_HEADER",
+    "fox_match_status": "MATCHED",
+    "espn_url": "https://www.espn.com/mens-college-basketball/team/_/id/16",
+    "rover_source": "User supplied 46 encounters, 2026-11-07",
+    "espn_source": "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/teams/16",
+    "fox_source": "https://api.foxsports.com/bifrost/v1/cbk/team/74/header",
+    "verified_date": "2026-11-07"
+  },
   "701": {
     "rover_name": "Weber State",
     "espn_id": "2692",
@@ -1091,6 +1155,22 @@
     "espn_url": "https://www.espn.com/mens-college-basketball/team/_/id/2427",
     "rover_source": "https://github.com/Nox1do/rover-basketball/blob/main/CBB/data/rover-espn-team-map.json",
     "fox_source": "https://www.foxsports.com/college-basketball/team-stats?season=2026&category=scoring&page=6"
+  },
+  "710": {
+    "rover_code": "710",
+    "rover_name": "VMI",
+    "espn_id": "2678",
+    "espn_name": "VMI Keydets",
+    "fox_id": "259",
+    "fox_name": "VMI Keydets",
+    "fox_url": "https://www.foxsports.com/college-basketball/vmi-keydets-team",
+    "fox_match_method": "VERIFIED_TEAM_HEADER",
+    "fox_match_status": "MATCHED",
+    "espn_url": "https://www.espn.com/mens-college-basketball/team/_/id/2678",
+    "rover_source": "User supplied 46 encounters, 2026-11-07",
+    "espn_source": "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/teams/2678",
+    "fox_source": "https://api.foxsports.com/bifrost/v1/cbk/team/259/header",
+    "verified_date": "2026-11-07"
   },
   "711": {
     "rover_name": "Winthrop",
@@ -1471,6 +1551,22 @@
     "rover_source": "https://github.com/Nox1do/rover-basketball/blob/main/CBB/data/rover-espn-team-map.json",
     "fox_source": "https://www.foxsports.com/college-basketball/team-stats?season=2026&category=scoring&page=2"
   },
+  "739": {
+    "rover_code": "739",
+    "rover_name": "Pacific",
+    "espn_id": "279",
+    "espn_name": "Pacific Tigers",
+    "fox_id": "100",
+    "fox_name": "Pacific Tigers",
+    "fox_url": "https://www.foxsports.com/college-basketball/pacific-tigers-team",
+    "fox_match_method": "VERIFIED_TEAM_HEADER",
+    "fox_match_status": "MATCHED",
+    "espn_url": "https://www.espn.com/mens-college-basketball/team/_/id/279",
+    "rover_source": "User supplied 46 encounters, 2026-11-07",
+    "espn_source": "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/teams/279",
+    "fox_source": "https://api.foxsports.com/bifrost/v1/cbk/team/100/header",
+    "verified_date": "2026-11-07"
+  },
   "740": {
     "rover_name": "UC Davis",
     "espn_id": "302",
@@ -1484,6 +1580,54 @@
     "espn_url": "https://www.espn.com/mens-college-basketball/team/_/id/302",
     "rover_source": "https://github.com/Nox1do/rover-basketball/blob/main/CBB/data/rover-espn-team-map.json",
     "fox_source": "https://www.foxsports.com/college-basketball/team-stats?season=2026&category=scoring&page=6"
+  },
+  "741": {
+    "rover_code": "741",
+    "rover_name": "UC Irvine",
+    "espn_id": "300",
+    "espn_name": "UC Irvine Anteaters",
+    "fox_id": "101",
+    "fox_name": "UC Irvine Anteaters",
+    "fox_url": "https://www.foxsports.com/college-basketball/uc-irvine-anteaters-team",
+    "fox_match_method": "VERIFIED_TEAM_HEADER",
+    "fox_match_status": "MATCHED",
+    "espn_url": "https://www.espn.com/mens-college-basketball/team/_/id/300",
+    "rover_source": "User supplied 46 encounters, 2026-11-07",
+    "espn_source": "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/teams/300",
+    "fox_source": "https://api.foxsports.com/bifrost/v1/cbk/team/101/header",
+    "verified_date": "2026-11-07"
+  },
+  "742": {
+    "rover_code": "742",
+    "rover_name": "UC Riverside",
+    "espn_id": "27",
+    "espn_name": "UC Riverside Highlanders",
+    "fox_id": "476",
+    "fox_name": "UC Riverside Highlanders",
+    "fox_url": "https://www.foxsports.com/college-basketball/uc-riverside-highlanders-team",
+    "fox_match_method": "VERIFIED_TEAM_HEADER",
+    "fox_match_status": "MATCHED",
+    "espn_url": "https://www.espn.com/mens-college-basketball/team/_/id/27",
+    "rover_source": "User supplied 46 encounters, 2026-11-07",
+    "espn_source": "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/teams/27",
+    "fox_source": "https://api.foxsports.com/bifrost/v1/cbk/team/476/header",
+    "verified_date": "2026-11-07"
+  },
+  "743": {
+    "rover_code": "743",
+    "rover_name": "UC Santa Barbara",
+    "espn_id": "2540",
+    "espn_name": "UC Santa Barbara Gauchos",
+    "fox_id": "102",
+    "fox_name": "UC Santa Barbara Gauchos",
+    "fox_url": "https://www.foxsports.com/college-basketball/uc-santa-barbara-gauchos-team",
+    "fox_match_method": "VERIFIED_TEAM_HEADER",
+    "fox_match_status": "MATCHED",
+    "espn_url": "https://www.espn.com/mens-college-basketball/team/_/id/2540",
+    "rover_source": "User supplied 46 encounters, 2026-11-07",
+    "espn_source": "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/teams/2540",
+    "fox_source": "https://api.foxsports.com/bifrost/v1/cbk/team/102/header",
+    "verified_date": "2026-11-07"
   },
   "745": {
     "rover_name": "Drexel",
@@ -1540,6 +1684,22 @@
     "espn_url": "https://www.espn.com/mens-college-basketball/team/_/id/256",
     "rover_source": "https://github.com/Nox1do/rover-basketball/blob/main/CBB/data/rover-espn-team-map.json",
     "fox_source": "https://www.foxsports.com/college-basketball/team-stats?season=2026&category=scoring&page=2"
+  },
+  "750": {
+    "rover_code": "750",
+    "rover_name": "UNC Wilmington",
+    "espn_id": "350",
+    "espn_name": "UNC Wilmington Seahawks",
+    "fox_id": "108",
+    "fox_name": "UNC Wilmington Seahawks",
+    "fox_url": "https://www.foxsports.com/college-basketball/uncw-seahawks-team",
+    "fox_match_method": "VERIFIED_TEAM_HEADER",
+    "fox_match_status": "MATCHED",
+    "espn_url": "https://www.espn.com/mens-college-basketball/team/_/id/350",
+    "rover_source": "User supplied 46 encounters, 2026-11-07",
+    "espn_source": "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/teams/350",
+    "fox_source": "https://api.foxsports.com/bifrost/v1/cbk/team/108/header",
+    "verified_date": "2026-11-07"
   },
   "751": {
     "rover_name": "Northeastern",
@@ -1723,6 +1883,22 @@
     "rover_source": "https://github.com/Nox1do/rover-basketball/blob/main/CBB/data/rover-espn-team-map.json",
     "fox_source": "https://www.foxsports.com/college-basketball/team-stats?season=2026&category=scoring&page=1"
   },
+  "769": {
+    "rover_code": "769",
+    "rover_name": "Houston Christian",
+    "espn_id": "2277",
+    "espn_name": "Houston Christian Huskies",
+    "fox_id": "662",
+    "fox_name": "Houston Christian Huskies",
+    "fox_url": "https://www.foxsports.com/college-basketball/houston-baptist-huskies-team",
+    "fox_match_method": "VERIFIED_TEAM_HEADER",
+    "fox_match_status": "MATCHED",
+    "espn_url": "https://www.espn.com/mens-college-basketball/team/_/id/2277",
+    "rover_source": "User supplied 46 encounters, 2026-11-07",
+    "espn_source": "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/teams/2277",
+    "fox_source": "https://api.foxsports.com/bifrost/v1/cbk/team/662/header",
+    "verified_date": "2026-11-07"
+  },
   "770": {
     "rover_name": "NJIT Highlanders",
     "espn_id": "2885",
@@ -1765,6 +1941,22 @@
     "espn_source": "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/teams/233",
     "fox_source": "https://api.foxsports.com/bifrost/v1/cbk/team/416/header",
     "rover_source": "Usuario: lista de códigos faltantes del 2026-11-03"
+  },
+  "773": {
+    "rover_code": "773",
+    "rover_name": "Utah Valley",
+    "espn_id": "3084",
+    "espn_name": "Utah Valley Wolverines",
+    "fox_id": "437",
+    "fox_name": "Utah Valley Wolverines",
+    "fox_url": "https://www.foxsports.com/college-basketball/utah-valley-wolverines-team",
+    "fox_match_method": "VERIFIED_TEAM_HEADER",
+    "fox_match_status": "MATCHED",
+    "espn_url": "https://www.espn.com/mens-college-basketball/team/_/id/3084",
+    "rover_source": "User supplied 46 encounters, 2026-11-07",
+    "espn_source": "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/teams/3084",
+    "fox_source": "https://api.foxsports.com/bifrost/v1/cbk/team/437/header",
+    "verified_date": "2026-11-07"
   },
   "774": {
     "rover_name": "Texas A&M",
@@ -2398,6 +2590,54 @@
     "rover_source": "https://github.com/Nox1do/rover-basketball/blob/main/CBB/data/rover-espn-team-map.json",
     "fox_source": "https://www.foxsports.com/college-basketball/team-stats?season=2026&category=scoring&page=3"
   },
+  "830": {
+    "rover_code": "830",
+    "rover_name": "Morgan State",
+    "espn_id": "2415",
+    "espn_name": "Morgan State Bears",
+    "fox_id": "177",
+    "fox_name": "Morgan State Bears",
+    "fox_url": "https://www.foxsports.com/college-basketball/morgan-state-bears-team",
+    "fox_match_method": "VERIFIED_TEAM_HEADER",
+    "fox_match_status": "MATCHED",
+    "espn_url": "https://www.espn.com/mens-college-basketball/team/_/id/2415",
+    "rover_source": "User supplied 46 encounters, 2026-11-07",
+    "espn_source": "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/teams/2415",
+    "fox_source": "https://api.foxsports.com/bifrost/v1/cbk/team/177/header",
+    "verified_date": "2026-11-07"
+  },
+  "831": {
+    "rover_code": "831",
+    "rover_name": "N. Carolina A&T",
+    "espn_id": "2448",
+    "espn_name": "North Carolina A&T Aggies",
+    "fox_id": "179",
+    "fox_name": "North Carolina A&T Aggies",
+    "fox_url": "https://www.foxsports.com/college-basketball/north-carolina-at-aggies-team",
+    "fox_match_method": "VERIFIED_TEAM_HEADER",
+    "fox_match_status": "MATCHED",
+    "espn_url": "https://www.espn.com/mens-college-basketball/team/_/id/2448",
+    "rover_source": "User supplied 46 encounters, 2026-11-07",
+    "espn_source": "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/teams/2448",
+    "fox_source": "https://api.foxsports.com/bifrost/v1/cbk/team/179/header",
+    "verified_date": "2026-11-07"
+  },
+  "834": {
+    "rover_code": "834",
+    "rover_name": "Bradley",
+    "espn_id": "71",
+    "espn_name": "Bradley Braves",
+    "fox_id": "181",
+    "fox_name": "Bradley Braves",
+    "fox_url": "https://www.foxsports.com/college-basketball/bradley-braves-team",
+    "fox_match_method": "VERIFIED_TEAM_HEADER",
+    "fox_match_status": "MATCHED",
+    "espn_url": "https://www.espn.com/mens-college-basketball/team/_/id/71",
+    "rover_source": "User supplied 46 encounters, 2026-11-07",
+    "espn_source": "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/teams/71",
+    "fox_source": "https://api.foxsports.com/bifrost/v1/cbk/team/181/header",
+    "verified_date": "2026-11-07"
+  },
   "835": {
     "rover_name": "Creighton",
     "espn_id": "156",
@@ -2439,6 +2679,22 @@
     "espn_url": "https://www.espn.com/mens-college-basketball/team/_/id/282",
     "rover_source": "https://github.com/Nox1do/rover-basketball/blob/main/CBB/data/rover-espn-team-map.json",
     "fox_source": "https://www.foxsports.com/college-basketball/team-stats?season=2026&category=scoring&page=2"
+  },
+  "841": {
+    "rover_code": "841",
+    "rover_name": "Northern Iowa",
+    "espn_id": "2460",
+    "espn_name": "Northern Iowa Panthers",
+    "fox_id": "187",
+    "fox_name": "Northern Iowa Panthers",
+    "fox_url": "https://www.foxsports.com/college-basketball/uni-panthers-team",
+    "fox_match_method": "VERIFIED_TEAM_HEADER",
+    "fox_match_status": "MATCHED",
+    "espn_url": "https://www.espn.com/mens-college-basketball/team/_/id/2460",
+    "rover_source": "User supplied 46 encounters, 2026-11-07",
+    "espn_source": "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/teams/2460",
+    "fox_source": "https://api.foxsports.com/bifrost/v1/cbk/team/187/header",
+    "verified_date": "2026-11-07"
   },
   "843": {
     "rover_code": "843",
@@ -3185,6 +3441,22 @@
     "rover_source": "https://github.com/Nox1do/rover-basketball/blob/main/CBB/data/rover-espn-team-map.json",
     "fox_source": "https://www.foxsports.com/college-basketball/team-stats?season=2026&category=scoring&page=3"
   },
+  "905": {
+    "rover_code": "905",
+    "rover_name": "Samford",
+    "espn_id": "2535",
+    "espn_name": "Samford Bulldogs",
+    "fox_id": "38",
+    "fox_name": "Samford Bulldogs",
+    "fox_url": "https://www.foxsports.com/college-basketball/samford-bulldogs-team",
+    "fox_match_method": "VERIFIED_TEAM_HEADER",
+    "fox_match_status": "MATCHED",
+    "espn_url": "https://www.espn.com/mens-college-basketball/team/_/id/2535",
+    "rover_source": "User supplied 46 encounters, 2026-11-07",
+    "espn_source": "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/teams/2535",
+    "fox_source": "https://api.foxsports.com/bifrost/v1/cbk/team/38/header",
+    "verified_date": "2026-11-07"
+  },
   "906": {
     "rover_name": "Appalachian State",
     "espn_id": "2026",
@@ -3325,6 +3597,22 @@
     "rover_source": "https://github.com/Nox1do/rover-basketball/blob/main/CBB/data/rover-espn-team-map.json",
     "fox_source": "https://www.foxsports.com/college-basketball/team-stats?season=2026&category=scoring&page=0"
   },
+  "918": {
+    "rover_code": "918",
+    "rover_name": "Lamar",
+    "espn_id": "2320",
+    "espn_name": "Lamar Cardinals",
+    "fox_id": "261",
+    "fox_name": "Lamar Cardinals",
+    "fox_url": "https://www.foxsports.com/college-basketball/lamar-cardinals-team",
+    "fox_match_method": "VERIFIED_TEAM_HEADER",
+    "fox_match_status": "MATCHED",
+    "espn_url": "https://www.espn.com/mens-college-basketball/team/_/id/2320",
+    "rover_source": "User supplied 46 encounters, 2026-11-07",
+    "espn_source": "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/teams/2320",
+    "fox_source": "https://api.foxsports.com/bifrost/v1/cbk/team/261/header",
+    "verified_date": "2026-11-07"
+  },
   "919": {
     "rover_name": "McNeese State",
     "espn_id": "2377",
@@ -3437,6 +3725,22 @@
     "espn_url": "https://www.espn.com/mens-college-basketball/team/_/id/2870",
     "rover_source": "https://github.com/Nox1do/rover-basketball/blob/main/CBB/data/rover-espn-team-map.json",
     "fox_source": "https://www.foxsports.com/college-basketball/team-stats?season=2026&category=scoring&page=4"
+  },
+  "931": {
+    "rover_code": "931",
+    "rover_name": "IUPUI",
+    "espn_id": "85",
+    "espn_name": "IU Indianapolis Jaguars",
+    "fox_id": "283",
+    "fox_name": "IU Indy Jaguars",
+    "fox_url": "https://www.foxsports.com/college-basketball/iupui-jaguars-team",
+    "fox_match_method": "VERIFIED_TEAM_HEADER",
+    "fox_match_status": "MATCHED",
+    "espn_url": "https://www.espn.com/mens-college-basketball/team/_/id/85",
+    "rover_source": "User supplied 46 encounters, 2026-11-07",
+    "espn_source": "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/teams/85",
+    "fox_source": "https://api.foxsports.com/bifrost/v1/cbk/team/283/header",
+    "verified_date": "2026-11-07"
   },
   "932": {
     "rover_code": "932",
@@ -3592,6 +3896,22 @@
     "espn_url": "https://www.espn.com/mens-college-basketball/team/_/id/2296",
     "rover_source": "https://github.com/Nox1do/rover-basketball/blob/main/CBB/data/rover-espn-team-map.json",
     "fox_source": "https://www.foxsports.com/college-basketball/team-stats?season=2026&category=scoring&page=2"
+  },
+  "946": {
+    "rover_code": "946",
+    "rover_name": "Prairie View A&M",
+    "espn_id": "2504",
+    "espn_name": "Prairie View A&M Panthers",
+    "fox_id": "279",
+    "fox_name": "Prairie View A&M Panthers",
+    "fox_url": "https://www.foxsports.com/college-basketball/prairie-view-am-panthers-team",
+    "fox_match_method": "VERIFIED_TEAM_HEADER",
+    "fox_match_status": "MATCHED",
+    "espn_url": "https://www.espn.com/mens-college-basketball/team/_/id/2504",
+    "rover_source": "User supplied 46 encounters, 2026-11-07",
+    "espn_source": "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/teams/2504",
+    "fox_source": "https://api.foxsports.com/bifrost/v1/cbk/team/279/header",
+    "verified_date": "2026-11-07"
   },
   "947": {
     "rover_name": "Southern",
@@ -3818,6 +4138,22 @@
     "rover_source": "https://github.com/Nox1do/rover-basketball/blob/main/CBB/data/rover-espn-team-map.json",
     "fox_source": "https://www.foxsports.com/college-basketball/team-stats?season=2026&category=scoring&page=5"
   },
+  "970": {
+    "rover_code": "970",
+    "rover_name": "Fresno State",
+    "espn_id": "278",
+    "espn_name": "Fresno State Bulldogs",
+    "fox_id": "311",
+    "fox_name": "Fresno State Bulldogs",
+    "fox_url": "https://www.foxsports.com/college-basketball/fresno-state-bulldogs-team",
+    "fox_match_method": "VERIFIED_TEAM_HEADER",
+    "fox_match_status": "MATCHED",
+    "espn_url": "https://www.espn.com/mens-college-basketball/team/_/id/278",
+    "rover_source": "User supplied 46 encounters, 2026-11-07",
+    "espn_source": "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/teams/278",
+    "fox_source": "https://api.foxsports.com/bifrost/v1/cbk/team/311/header",
+    "verified_date": "2026-11-07"
+  },
   "971": {
     "rover_name": "Hawaii",
     "espn_id": "62",
@@ -3860,6 +4196,22 @@
     "rover_source": "https://github.com/Nox1do/rover-basketball/blob/main/CBB/data/rover-espn-team-map.json",
     "fox_source": "https://www.foxsports.com/college-basketball/team-stats?season=2026&category=scoring&page=3"
   },
+  "975": {
+    "rover_code": "975",
+    "rover_name": "New Mexico State",
+    "espn_id": "166",
+    "espn_name": "New Mexico State Aggies",
+    "fox_id": "299",
+    "fox_name": "New Mexico State Aggies",
+    "fox_url": "https://www.foxsports.com/college-basketball/new-mexico-state-aggies-team",
+    "fox_match_method": "VERIFIED_TEAM_HEADER",
+    "fox_match_status": "MATCHED",
+    "espn_url": "https://www.espn.com/mens-college-basketball/team/_/id/166",
+    "rover_source": "User supplied 46 encounters, 2026-11-07",
+    "espn_source": "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/teams/166",
+    "fox_source": "https://api.foxsports.com/bifrost/v1/cbk/team/299/header",
+    "verified_date": "2026-11-07"
+  },
   "976": {
     "rover_name": "San Jose",
     "espn_id": "23",
@@ -3888,6 +4240,22 @@
     "rover_source": "https://github.com/Nox1do/rover-basketball/blob/main/CBB/data/rover-espn-team-map.json",
     "fox_source": "https://www.foxsports.com/college-basketball/team-stats?season=2026&category=scoring&page=6"
   },
+  "979": {
+    "rover_code": "979",
+    "rover_name": "Omaha",
+    "espn_id": "2437",
+    "espn_name": "Omaha Mavericks",
+    "fox_id": "826",
+    "fox_name": "Omaha Mavericks",
+    "fox_url": "https://www.foxsports.com/college-basketball/omaha-mavericks-team",
+    "fox_match_method": "VERIFIED_TEAM_HEADER",
+    "fox_match_status": "MATCHED",
+    "espn_url": "https://www.espn.com/mens-college-basketball/team/_/id/2437",
+    "rover_source": "User supplied 46 encounters, 2026-11-07",
+    "espn_source": "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/teams/2437",
+    "fox_source": "https://api.foxsports.com/bifrost/v1/cbk/team/826/header",
+    "verified_date": "2026-11-07"
+  },
   "980": {
     "rover_name": "Northern Kentucky",
     "espn_id": "94",
@@ -3915,6 +4283,22 @@
     "espn_url": "https://www.espn.com/mens-college-basketball/team/_/id/322",
     "rover_source": "https://github.com/Nox1do/rover-basketball/blob/main/CBB/data/rover-espn-team-map.json",
     "fox_source": "https://www.foxsports.com/college-basketball/team-stats?season=2026&category=scoring&page=2"
+  },
+  "982": {
+    "rover_code": "982",
+    "rover_name": "UT Rio Grande Valley",
+    "espn_id": "292",
+    "espn_name": "UT Rio Grande Valley Vaqueros",
+    "fox_id": "138",
+    "fox_name": "UT Rio Grande Valley Vaqueros",
+    "fox_url": "https://www.foxsports.com/college-basketball/texas-rio-grande-valley-vaqueros-team",
+    "fox_match_method": "VERIFIED_TEAM_HEADER",
+    "fox_match_status": "MATCHED",
+    "espn_url": "https://www.espn.com/mens-college-basketball/team/_/id/292",
+    "rover_source": "User supplied 46 encounters, 2026-11-07",
+    "espn_source": "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/teams/292",
+    "fox_source": "https://api.foxsports.com/bifrost/v1/cbk/team/138/header",
+    "verified_date": "2026-11-07"
   },
   "984": {
     "rover_name": "California Baptist",

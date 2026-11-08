@@ -1,0 +1,328 @@
+{
+  "source": "User supplied 28 Rover matches, 2026-11-08",
+  "received_date": "2026-11-08",
+  "sport": "mens-college-basketball",
+  "encounters": [
+    {
+      "event_id": "1205577",
+      "away": {
+        "rover_code": "803",
+        "rover_name": "Iona"
+      },
+      "home": {
+        "rover_code": "689",
+        "rover_name": "St. Johns"
+      }
+    },
+    {
+      "event_id": "1205603",
+      "away": {
+        "rover_code": "805",
+        "rover_name": "Manhattan"
+      },
+      "home": {
+        "rover_code": "635",
+        "rover_name": "Maine"
+      }
+    },
+    {
+      "event_id": "1205604",
+      "away": {
+        "rover_code": "861",
+        "rover_name": "Sacred Heart"
+      },
+      "home": {
+        "rover_code": "636",
+        "rover_name": "New Hampshire"
+      }
+    },
+    {
+      "event_id": "1205605",
+      "away": {
+        "rover_code": "806",
+        "rover_name": "Marist"
+      },
+      "home": {
+        "rover_code": "983",
+        "rover_name": "MASS Lowel"
+      }
+    },
+    {
+      "event_id": "1205606",
+      "away": {
+        "rover_code": "802",
+        "rover_name": "Fairfield"
+      },
+      "home": {
+        "rover_code": "853",
+        "rover_name": "Bryant"
+      }
+    },
+    {
+      "event_id": "1205607",
+      "away": {
+        "rover_code": "900",
+        "rover_name": "Arkansas"
+      },
+      "home": {
+        "rover_code": "649",
+        "rover_name": "Virginia"
+      }
+    },
+    {
+      "event_id": "1205608",
+      "away": {
+        "rover_code": "799",
+        "rover_name": "Princeton"
+      },
+      "home": {
+        "rover_code": "809",
+        "rover_name": "Siena"
+      }
+    },
+    {
+      "event_id": "1205610",
+      "away": {
+        "rover_code": "254",
+        "rover_name": "Southeast Missouri St"
+      },
+      "home": {
+        "rover_code": "996",
+        "rover_name": "South Carolina"
+      }
+    },
+    {
+      "event_id": "1205666",
+      "away": {
+        "rover_code": "999",
+        "rover_name": "Merrimack"
+      },
+      "home": {
+        "rover_code": "631",
+        "rover_name": "Albany"
+      }
+    },
+    {
+      "event_id": "1205667",
+      "away": {
+        "rover_code": "854",
+        "rover_name": "Central Connecticut"
+      },
+      "home": {
+        "rover_code": "796",
+        "rover_name": "Dartmouth"
+      }
+    },
+    {
+      "event_id": "1205668",
+      "away": {
+        "rover_code": "775",
+        "rover_name": "Butler"
+      },
+      "home": {
+        "rover_code": "969",
+        "rover_name": "Boise State"
+      }
+    },
+    {
+      "event_id": "1205669",
+      "away": {
+        "rover_code": "653",
+        "rover_name": "Campbell"
+      },
+      "home": {
+        "rover_code": "822",
+        "rover_name": "Western Michigan"
+      }
+    },
+    {
+      "event_id": "1205670",
+      "away": {
+        "rover_code": "859",
+        "rover_name": "Quinnipiac"
+      },
+      "home": {
+        "rover_code": "639",
+        "rover_name": "Vermont"
+      }
+    },
+    {
+      "event_id": "1205671",
+      "away": {
+        "rover_code": "778",
+        "rover_name": "Green Bay"
+      },
+      "home": {
+        "rover_code": "176",
+        "rover_name": "St. Thomas-Minnesota"
+      }
+    },
+    {
+      "event_id": "1205672",
+      "away": {
+        "rover_code": "793",
+        "rover_name": "Brown Bears"
+      },
+      "home": {
+        "rover_code": "891",
+        "rover_name": "Lehigh"
+      }
+    },
+    {
+      "event_id": "1205609",
+      "away": {
+        "rover_code": "947",
+        "rover_name": "Southern"
+      },
+      "home": {
+        "rover_code": "836",
+        "rover_name": "Drake"
+      }
+    },
+    {
+      "event_id": "1205693",
+      "away": {
+        "rover_code": "694",
+        "rover_name": "Idaho State"
+      },
+      "home": {
+        "rover_code": "844",
+        "rover_name": "Air Force"
+      }
+    },
+    {
+      "event_id": "1205694",
+      "away": {
+        "rover_code": "949",
+        "rover_name": "Western Kentucky"
+      },
+      "home": {
+        "rover_code": "873",
+        "rover_name": "Tennessee Tech"
+      }
+    },
+    {
+      "event_id": "1205734",
+      "away": {
+        "rover_code": "810",
+        "rover_name": "Saint Peters"
+      },
+      "home": {
+        "rover_code": "770",
+        "rover_name": "NJIT Highlanders"
+      }
+    },
+    {
+      "event_id": "1205735",
+      "away": {
+        "rover_code": "808",
+        "rover_name": "Rider"
+      },
+      "home": {
+        "rover_code": "632",
+        "rover_name": "Binghamton"
+      }
+    },
+    {
+      "event_id": "1205736",
+      "away": {
+        "rover_code": "581",
+        "rover_name": "St. Marys CA"
+      },
+      "home": {
+        "rover_code": "974",
+        "rover_name": "Nevada"
+      }
+    },
+    {
+      "event_id": "1205787",
+      "away": {
+        "rover_code": "671",
+        "rover_name": "Richmond"
+      },
+      "home": {
+        "rover_code": "997",
+        "rover_name": "Temple"
+      }
+    },
+    {
+      "event_id": "1205813",
+      "away": {
+        "rover_code": "832",
+        "rover_name": "Norfolk"
+      },
+      "home": {
+        "rover_code": "755",
+        "rover_name": "William & Mary"
+      }
+    },
+    {
+      "event_id": "1205814",
+      "away": {
+        "rover_code": "932",
+        "rover_name": "ND State"
+      },
+      "home": {
+        "rover_code": "785",
+        "rover_name": "CS Bakersfield"
+      }
+    },
+    {
+      "event_id": "1205920",
+      "away": {
+        "rover_code": "985",
+        "rover_name": "Incarnate Word"
+      },
+      "home": {
+        "rover_code": "767",
+        "rover_name": "UTEP"
+      }
+    },
+    {
+      "event_id": "1206005",
+      "away": {
+        "rover_code": "684",
+        "rover_name": "Pittsburgh"
+      },
+      "home": {
+        "rover_code": "720",
+        "rover_name": "Penn State"
+      }
+    },
+    {
+      "event_id": "1206006",
+      "away": {
+        "rover_code": "757",
+        "rover_name": "Houston"
+      },
+      "home": {
+        "rover_code": "877",
+        "rover_name": "California"
+      }
+    },
+    {
+      "event_id": "1206074",
+      "away": {
+        "rover_code": "927",
+        "rover_name": "UT Arlington"
+      },
+      "home": {
+        "rover_code": "971",
+        "rover_name": "Hawaii"
+      }
+    }
+  ],
+  "new_codes": [
+    "861",
+    "983",
+    "802",
+    "799",
+    "631",
+    "969",
+    "778",
+    "836",
+    "832",
+    "755",
+    "785"
+  ]
+}

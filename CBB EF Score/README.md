@@ -1,6 +1,6 @@
 # CBB Espn-Fox 0.0.8
 
-Userscript para Firefox + Tampermonkey que adapta CFB FOX 1.0.13 a NCAA masculina. ESPN aporta los resultados y FOX los confirma antes de llenar el editor Rover. Incluye 335 equipos Rover con equivalencias ESPN y FOX propias de basketball.
+Userscript para Firefox + Tampermonkey que adapta CFB FOX 1.0.13 a NCAA masculina. ESPN aporta los resultados y FOX los confirma antes de llenar el editor Rover. Incluye 346 equipos Rover con equivalencias ESPN y FOX propias de basketball.
 
 ## Instalación y uso
 

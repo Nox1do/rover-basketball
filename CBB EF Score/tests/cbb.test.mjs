@@ -58,8 +58,8 @@ function halfGame(q,{period=1,clock='0:00',detail='Halftime'}={}) {
   return g;
 }
 
-test('335 CBB identities retain special LIU and distinct Miami teams',()=>{
-  const {q}=load(); assert.equal(Object.keys(q.TEAM_MAP).length,335);
+test('346 CBB identities retain special LIU and distinct Miami teams',()=>{
+  const {q}=load(); assert.equal(Object.keys(q.TEAM_MAP).length,346);
   assert.equal(q.getTeamMap('856').espn_id,'112358');
   assert.equal(q.getTeamMap('856').fox_id,'1468');
   assert.notEqual(q.getTeamMap('646').fox_id,q.getTeamMap('815').fox_id);
@@ -90,6 +90,35 @@ test('all eleven screenshot encounters have both teams mapped in both providers'
     assert.ok(q.getTeamMap(away)?.espn_id&&q.getTeamMap(away)?.fox_id,`AWAY ${away}`);
     assert.ok(q.getTeamMap(home)?.espn_id&&q.getTeamMap(home)?.fox_id,`HOME ${home}`);
   }
+});
+
+// Regresión de la lista CBB de 28 encuentros de 2026-11-08.
+const newNov8Teams=[["861","2529","207","Sacred Heart"],["983","2349","970","MASS Lowel"],["802","2217","148","Fairfield"],["799","163","145","Princeton"],["631","399","133","Albany"],["969","68","95","Boise State"],["778","2739","130","Green Bay"],["836","2181","183","Drake"],["832","2450","178","Norfolk"],["755","2729","112","William & Mary"],["785","2934","335","CS Bakersfield"]];
+for(const [code,espnId,foxId,roverName] of newNov8Teams){
+ test(`Rover ${code} new NCAA basketball mapping is verified`,()=>{
+  const {q}=load(),team=q.getTeamMap(code);
+  assert.ok(team);
+  assert.equal(team.rover_name,roverName);
+  assert.equal(team.espn_id,espnId);
+  assert.equal(team.fox_id,foxId);
+ });
+}
+test('all 28 new Rover games have mapped teams with matching names',()=>{
+ const {q}=load(),games=[["1205577","803","Iona","689","St. Johns"],["1205603","805","Manhattan","635","Maine"],["1205604","861","Sacred Heart","636","New Hampshire"],["1205605","806","Marist","983","MASS Lowel"],["1205606","802","Fairfield","853","Bryant"],["1205607","900","Arkansas","649","Virginia"],["1205608","799","Princeton","809","Siena"],["1205610","254","Southeast Missouri St","996","South Carolina"],["1205666","999","Merrimack","631","Albany"],["1205667","854","Central Connecticut","796","Dartmouth"],["1205668","775","Butler","969","Boise State"],["1205669","653","Campbell","822","Western Michigan"],["1205670","859","Quinnipiac","639","Vermont"],["1205671","778","Green Bay","176","St. Thomas-Minnesota"],["1205672","793","Brown Bears","891","Lehigh"],["1205609","947","Southern","836","Drake"],["1205693","694","Idaho State","844","Air Force"],["1205694","949","Western Kentucky","873","Tennessee Tech"],["1205734","810","Saint Peters","770","NJIT Highlanders"],["1205735","808","Rider","632","Binghamton"],["1205736","581","St. Marys CA","974","Nevada"],["1205787","671","Richmond","997","Temple"],["1205813","832","Norfolk","755","William & Mary"],["1205814","932","ND State","785","CS Bakersfield"],["1205920","985","Incarnate Word","767","UTEP"],["1206005","684","Pittsburgh","720","Penn State"],["1206006","757","Houston","877","California"],["1206074","927","UT Arlington","971","Hawaii"]];
+ for(const [event,a,an,h,hn] of games){for(const [code,name] of [[a,an],[h,hn]]){
+   const team=q.getTeamMap(code);
+   assert.ok(team,`${event} missing ${code}`);
+   assert.equal(team.rover_name,name,`${event} incorrect ${code}`);
+   assert.ok(team.espn_id&&team.fox_id,`${event} incomplete ${code}`);
+ }}
+});
+test('corrected Rover identifiers do not override North Carolina A&T',()=>{
+ const {q}=load();
+ assert.equal(q.getTeamMap('631').espn_id,'399');
+ assert.equal(q.getTeamMap('969').fox_id,'95');
+ assert.equal(q.getTeamMap('831').espn_id,'2448');
+ assert.equal(q.getTeamMap('831').fox_id,'179');
+ assert.equal(q.getTeamMap('989'),null);
 });
 
 test('California Baptist uses current Rover 984 with the same ESPN and FOX identity',()=>{

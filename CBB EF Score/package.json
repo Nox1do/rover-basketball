@@ -1,6 +1,6 @@
 {
   "name": "cbb-espn-fox",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "private": true,
   "description": "Men's NCAA basketball results for Rover; ESPN confirmed by FOX, Q2/Q4 layout.",
   "scripts": {

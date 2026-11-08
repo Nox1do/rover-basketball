@@ -1,5 +1,25 @@
 # Cambios
 
+## 0.0.9 — 2026-11-08
+
+Lista de 28 encuentros Rover (56 equipos): 45 ya estaban registrados y se añaden 11 identidades confirmadas con ESPN (API) y FOX CBK (página oficial). El mapa pasa de 335 a 346 equipos; la lógica de resultados no cambia.
+
+| Rover | Equipo | ESPN | FOX |
+|---|---|---|---|
+| 861 | Sacred Heart | 2529 | 207 |
+| 983 | MASS Lowel | 2349 | 970 |
+| 802 | Fairfield | 2217 | 148 |
+| 799 | Princeton | 163 | 145 |
+| 631 | Albany | 399 | 133 |
+| 969 | Boise State | 68 | 95 |
+| 778 | Green Bay | 2739 | 130 |
+| 836 | Drake | 2181 | 183 |
+| 832 | Norfolk | 2450 | 178 |
+| 755 | William & Mary | 2729 | 112 |
+| 785 | CS Bakersfield | 2934 | 335 |
+
+Se conserva el código Rover 831 de North Carolina A&T y se confirma Albany 631 y Boise State 969. Se incluyen el fixture de 28 encuentros y pruebas de regresión para las 56 identidades. Las formas abreviadas de Rover, incluida MASS Lowel, se conservan exactamente.
+
 ## 0.0.8 — 2026-11-07
 
 Segunda lista del usuario: 59 encuentros NCAA y 118 equipos distintos. 94 ya estaban incluidos y se añaden los 24 restantes, con ID y nombre confirmados en ESPN y FOX CBK. El mapa queda en 335 equipos. West Florida se incorpora con Rover 10641, ESPN 2697 y FOX 441.

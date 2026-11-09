@@ -635,6 +635,11 @@
     "rover_name": "Green Bay",
     "espn_id": "2739"
   },
+  "779": {
+    "rover_name": "Illinois (UIC)",
+    "espn_id": "82",
+    "espn_name": "UIC Flames"
+  },
   "780": {
     "rover_name": "Loyola Chicago",
     "espn_id": "2350"
@@ -1073,6 +1078,11 @@
     "espn_id": "96",
     "espn_name": "Kentucky Wildcats"
   },
+  "896": {
+    "rover_name": "South Carolina St",
+    "espn_id": "2569",
+    "espn_name": "South Carolina State Bulldogs"
+  },
   "897": {
     "rover_name": "Tennessee",
     "espn_id": "2633",
@@ -1126,6 +1136,11 @@
   "908": {
     "rover_name": "Elon Phoenix",
     "espn_id": "2210"
+  },
+  "909": {
+    "rover_name": "UNC Greensboro",
+    "espn_id": "2430",
+    "espn_name": "UNC Greensboro Spartans"
   },
   "910": {
     "rover_name": "Western Carolina",
@@ -1232,6 +1247,11 @@
     "rover_name": "Western Illinois",
     "espn_id": "2710"
   },
+  "939": {
+    "rover_name": "Alabama A&M",
+    "espn_id": "2010",
+    "espn_name": "Alabama A&M Bulldogs"
+  },
   "940": {
     "rover_name": "Alabama State",
     "espn_id": "2011",
@@ -1253,6 +1273,11 @@
   "944": {
     "rover_name": "Jackson State",
     "espn_id": "2296"
+  },
+  "945": {
+    "rover_name": "Mississippi Valley S",
+    "espn_id": "2400",
+    "espn_name": "Mississippi Valley State Delta Devils"
   },
   "946": {
     "rover_name": "Prairie View A&M",

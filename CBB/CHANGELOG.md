@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+## [0.1.18] - 2026-11-09
+
+- Incorporados cinco códigos Rover↔ESPN: South Carolina State, UNC Greensboro, UIC, Alabama A&M y Mississippi Valley State.
+- Añadidos 33 enfrentamientos de referencia, totalizando 340 equipos y 303 cruces históricos.
+- Pruebas de regresión para la cobertura de los nuevos equipos. Sin cambios en la lógica de validación de fecha, hora o localía.
+
+
 ## [0.1.17] - 2026-11-07
 
 - Incorporadas seis identidades Rover↔ESPN faltantes: Boise State, Drake, Norfolk State, William & Mary, CSU Bakersfield y UT Arlington.

@@ -1,6 +1,6 @@
 # CBB LLoader — NCAA Men's Basketball
 
-Versión estable **0.1.17** (primera versión 0.1.0) basada en el archivo aportado `userscript - cfb lloader-0.1.6.user.js`.
+Versión estable **0.1.18** (primera versión 0.1.0) basada en el archivo aportado `userscript - cfb lloader-0.1.6.user.js`.
 
 Este script **vincula enlaces de partidos de ESPN con la tabla de eventos de Rover**. No llena puntajes ni resultados del juego. **Exclusivamente vincula partidos ESPN, compara la hora y verifica si los equipos están invertidos.** Las 58 funciones del CFB LLoader fueron transferidas y adaptadas; se añadieron cuatro funciones auxiliares para CBB.
 
@@ -121,3 +121,7 @@ Para los 48 enfrentamientos facilitados, se añaden **982 UT Rio Grande Valley �
 ## Cobertura de 29 partidos reportados el 7 de noviembre de 2026 (v0.1.17)
 
 Se añaden seis equipos que no figuraban en el mapeo: Boise State (969→68), Drake (836→2181), Norfolk State (832→2450), William & Mary (755→2729), CSU Bakersfield (785→2934) y UT Arlington (927→250). Total **335** equivalencias Rover↔ESPN y **270** cruces históricos de referencia. No se atribuye fecha/hora ni un gameId a los cruces sin datos verificados; se exige coincidencia exacta antes de guardar enlaces.
+
+## Cinco equipos adicionales (v0.1.18)
+
+Se incorporan los códigos Rover **896 South Carolina State → ESPN 2569**, **909 UNC Greensboro → ESPN 2430**, **779 UIC → ESPN 82**, **939 Alabama A&M → ESPN 2010** y **945 Mississippi Valley State → ESPN 2400**. El catálogo suma **340 equipos** y el archivo de referencia **303 enfrentamientos**, incluidos los 33 cruces facilitados. Los emparejamientos no presuponen fecha, horario ni gameId: el loader mantiene las comprobaciones estrictas antes de guardar.

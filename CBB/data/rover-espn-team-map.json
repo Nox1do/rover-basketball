@@ -163,6 +163,11 @@
     "rover_name": "Jacksonville",
     "espn_id": "294"
   },
+  "657": {
+    "rover_name": "Kennesaw State",
+    "espn_id": "338",
+    "espn_name": "Kennesaw State Owls"
+  },
   "658": {
     "rover_name": "Lipscomb",
     "espn_id": "288"
@@ -270,6 +275,11 @@
     "rover_name": "Providence",
     "espn_id": "2507"
   },
+  "686": {
+    "rover_name": "Rutgers",
+    "espn_id": "164",
+    "espn_name": "Rutgers Scarlet Knights"
+  },
   "687": {
     "rover_name": "Seton Hall",
     "espn_id": "2550"
@@ -285,6 +295,11 @@
   "690": {
     "rover_name": "Syracuse",
     "espn_id": "183"
+  },
+  "691": {
+    "rover_name": "Villanova",
+    "espn_id": "222",
+    "espn_name": "Villanova Wildcats"
   },
   "692": {
     "rover_name": "West Virginia",
@@ -631,6 +646,11 @@
     "espn_id": "325",
     "espn_name": "Cleveland State Vikings"
   },
+  "777": {
+    "rover_name": "Detroit",
+    "espn_id": "2174",
+    "espn_name": "Detroit Mercy Titans"
+  },
   "778": {
     "rover_name": "Green Bay",
     "espn_id": "2739"
@@ -704,6 +724,11 @@
   "796": {
     "rover_name": "Dartmouth",
     "espn_id": "159"
+  },
+  "797": {
+    "rover_name": "Harvard",
+    "espn_id": "108",
+    "espn_name": "Harvard Crimson"
   },
   "798": {
     "rover_name": "Pennsylvania",
@@ -922,6 +947,11 @@
     "rover_name": "Utah",
     "espn_id": "254"
   },
+  "852": {
+    "rover_name": "Wyoming",
+    "espn_id": "2751",
+    "espn_name": "Wyoming Cowboys"
+  },
   "853": {
     "rover_name": "Bryant",
     "espn_id": "2803"
@@ -966,6 +996,11 @@
   "866": {
     "rover_name": "Eastern Illinois",
     "espn_id": "2197"
+  },
+  "867": {
+    "rover_name": "Eastern Kentucky",
+    "espn_id": "2198",
+    "espn_name": "Eastern Kentucky Colonels"
   },
   "868": {
     "rover_name": "Jacksonville State",
@@ -1180,6 +1215,11 @@
     "rover_name": "McNeese State",
     "espn_id": "2377"
   },
+  "920": {
+    "rover_name": "Nicholls",
+    "espn_id": "2447",
+    "espn_name": "Nicholls Colonels"
+  },
   "921": {
     "rover_name": "Northwestern State",
     "espn_id": "2466"
@@ -1300,6 +1340,11 @@
     "rover_name": "Florida Atlantic",
     "espn_id": "2226"
   },
+  "952": {
+    "rover_name": "Middle Tenn",
+    "espn_id": "2393",
+    "espn_name": "Middle Tennessee Blue Raiders"
+  },
   "953": {
     "rover_name": "South Alabama",
     "espn_id": "6"
@@ -1344,6 +1389,16 @@
   "963": {
     "rover_name": "Pepperdine",
     "espn_id": "2492"
+  },
+  "964": {
+    "rover_name": "Portland",
+    "espn_id": "2501",
+    "espn_name": "Portland Pilots"
+  },
+  "965": {
+    "rover_name": "San Diego",
+    "espn_id": "301",
+    "espn_name": "San Diego Toreros"
   },
   "966": {
     "rover_name": "San Francisco",

@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+## [0.1.19] - 2026-11-09
+
+- Se añaden 11 equivalencias Rover↔ESPN para la nueva lista de 57 enfrentamientos, totalizando 351 equipos y 360 cruces de referencia.
+- Se corrigen las regresiones históricas para usar rangos fijos en el CSV en lugar de tomar los últimos N encuentros.
+- Se añaden pruebas del nuevo lote de 57 encuentros. La lógica de vinculación y auditoría permanece intacta.
+
+
 ## [0.1.18] - 2026-11-09
 
 - Incorporados cinco códigos Rover↔ESPN: South Carolina State, UNC Greensboro, UIC, Alabama A&M y Mississippi Valley State.

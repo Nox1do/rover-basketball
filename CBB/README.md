@@ -1,6 +1,6 @@
 # CBB LLoader — NCAA Men's Basketball
 
-Versión estable **0.1.18** (primera versión 0.1.0) basada en el archivo aportado `userscript - cfb lloader-0.1.6.user.js`.
+Versión estable **0.1.19** (primera versión 0.1.0) basada en el archivo aportado `userscript - cfb lloader-0.1.6.user.js`.
 
 Este script **vincula enlaces de partidos de ESPN con la tabla de eventos de Rover**. No llena puntajes ni resultados del juego. **Exclusivamente vincula partidos ESPN, compara la hora y verifica si los equipos están invertidos.** Las 58 funciones del CFB LLoader fueron transferidas y adaptadas; se añadieron cuatro funciones auxiliares para CBB.
 
@@ -125,3 +125,7 @@ Se añaden seis equipos que no figuraban en el mapeo: Boise State (969→68), Dr
 ## Cinco equipos adicionales (v0.1.18)
 
 Se incorporan los códigos Rover **896 South Carolina State → ESPN 2569**, **909 UNC Greensboro → ESPN 2430**, **779 UIC → ESPN 82**, **939 Alabama A&M → ESPN 2010** y **945 Mississippi Valley State → ESPN 2400**. El catálogo suma **340 equipos** y el archivo de referencia **303 enfrentamientos**, incluidos los 33 cruces facilitados. Los emparejamientos no presuponen fecha, horario ni gameId: el loader mantiene las comprobaciones estrictas antes de guardar.
+
+## Ampliación de equipos y 57 encuentros (v0.1.19)
+
+Se incorporan 11 códigos de equipo Rover↔ESPN: Portland (964→2501), Rutgers (686→164), Detroit Mercy (777→2174), Eastern Kentucky (867→2198), Wyoming (852→2751), Villanova (691→222), Harvard (797→108), Kennesaw State (657→338), Nicholls (920→2447), Middle Tennessee (952→2393) y San Diego (965→301). El mapa suma **351 equipos** y el registro de enfrentamientos **360 referencias**, incluidas las 57 entregadas. Los cruces no presuponen fecha/hora ni `gameId` ESPN. Se preservan la validación de fecha, minuto y localía y las protecciones de escritura.

@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+## [0.1.20] - 2026-11-10
+
+- Se incorporan cinco equipos Rover↔ESPN y se corrige California Baptist al código Rover 984 (antes 19210).
+- Añadidas 48 referencias; total 356 equipos y 408 cruces.
+- Pruebas actualizadas para el código corregido y los nuevos cruces; sin cambios de lógica de vinculación.
+
+
 ## [0.1.19] - 2026-11-09
 
 - Se añaden 11 equivalencias Rover↔ESPN para la nueva lista de 57 enfrentamientos, totalizando 351 equipos y 360 cruces de referencia.

@@ -135,7 +135,7 @@ match_number,away_rover_id,away_rover_name,away_espn_id,home_rover_id,home_rover
 134,776,Cleveland State,325,728,Missouri,142
 135,658,Lipscomb,288,714,Iowa,2294
 136,942,Arkansas Pine Bluff,2029,900,Arkansas,8
-137,660,North Florida,2454,19210,California Baptist,2856
+137,660,North Florida,2454,984,California Baptist,2856
 138,697,Northern Arizona,2464,850,UNLV,2439
 139,736,Fullerton,2239,848,S. Diego St.,21
 140,791,SIU Edwards,2565,658,Lipscomb,288
@@ -359,3 +359,51 @@ match_number,away_rover_id,away_rover_name,away_espn_id,home_rover_id,home_rover
 358,747,Georgia State,2247,970,Fresno State,278
 359,726,Kansas,2305,895,Kentucky,96
 360,695,Montana,149,966,San Francisco,2539
+361,855,Fair Dick,161,300,East Texas A&M C,2837
+362,826,Florida A&M,50,937,Kansas City,140
+363,796,Dartmouth,159,631,Albany,399
+364,985,Incarnate Word,2916,740,UC Davis,302
+365,780,Loyola Chicago,2350,844,Air Force,2005
+366,277,Saint Josephs,2603,688,South Florida,58
+367,831,N. Carolina A&T,2448,756,East Carolina,151
+368,823,Bethune,2065,848,S. Diego St.,21
+369,798,Pennsylvania,219,892,Navy,2426
+370,787,NC Central,2428,710,VMI,2678
+371,179,Southern Indiana,88,931,IUPUI,85
+372,912,Charleston,232,997,Temple,218
+373,781,Milwaukee,270,839,Indiana St,282
+374,814,Kent State,2309,750,NC-Wilming,350
+375,795,Cornell,172,673,St. Bonaventure,179
+376,983,MASS Lowel,2349,669,Massachusetts,113
+377,709,UNC Asheville,2427,381,West Georgia,2698
+378,885,American University,44,745,Drexel,2182
+379,749,James Madison,256,744,Delaware,48
+380,752,Old Dominion,295,832,Norfolk State,2450
+381,682,Marquette,269,715,Michigan,130
+382,653,Campbell,2097,654,East Tenn St,2193
+383,914,Furman,231,889,Holy Cross,107
+384,770,NJIT Highlanders,2885,754,VCU,2670
+385,888,Colgate,2142,689,St. Johns,2599
+386,637,Stony Brook,2619,799,Princeton,163
+387,810,Saint Peters,2612,996,South Carolina,2579
+388,896,South Carolina St,2569,683,Notre Dame,87
+389,755,William & Mary,2729,951,Florida Atlantic,2226
+390,963,Pepperdine,2492,923,Sam Houston State,2534
+391,924,Stephen F. Austin,2617,988,Abilene Christian,2000
+392,782,Valparaiso,2674,935,South Dakota State,2571
+393,868,Jacksonville State,55,757,Houston,248
+394,967,Santa Clara,2541,958,North Texas,249
+395,860,Robert Morris,2523,900,Arkansas,8
+396,934,Oral Roberts,198,764,Tulsa,202
+397,944,Jackson State,2296,762,Southern Miss,2572
+398,133,Lindenwood,2815,729,Nebraska,158
+399,735,Cal Poly,13,890,Grand Canyon,2253
+400,933,Oakland,2473,969,Boise State,68
+401,699,Portland State,2502,846,Colorado State,36
+402,974,Nevada,2440,743,UC Santa,2540
+403,942,Arkansas Pine Bluff,2029,881,UCLA,26
+404,768,Chicago State,2130,984,California Baptist,2856
+405,928,UTSA Roadrunners,2636,790,Seattle U,2547
+406,739,Pacific,279,738,Long Be St,299
+407,945,Mississippi Valley S,2400,878,Oregon,2483
+408,882,USC,30,877,California,25

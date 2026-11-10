@@ -87,6 +87,10 @@
     "rover_name": "New Hampshire",
     "espn_id": "160"
   },
+  "637": {
+    "rover_name": "Stony Brook",
+    "espn_id": "2619"
+  },
   "638": {
     "rover_name": "UMBC",
     "espn_id": "2378"
@@ -518,6 +522,10 @@
     "espn_id": "2540",
     "espn_name": "UC Santa Barbara Gauchos"
   },
+  "744": {
+    "rover_name": "Delaware",
+    "espn_id": "48"
+  },
   "745": {
     "rover_name": "Drexel",
     "espn_id": "2182",
@@ -584,6 +592,10 @@
   "760": {
     "rover_name": "RIce",
     "espn_id": "242"
+  },
+  "762": {
+    "rover_name": "Southern Miss",
+    "espn_id": "2572"
   },
   "763": {
     "rover_name": "Tulane",
@@ -1185,6 +1197,10 @@
     "rover_name": "The Citadel",
     "espn_id": "2643"
   },
+  "912": {
+    "rover_name": "Charleston",
+    "espn_id": "232"
+  },
   "913": {
     "rover_name": "Davidson",
     "espn_id": "2166"
@@ -1233,6 +1249,10 @@
     "rover_name": "Sam Houston State",
     "espn_id": "2534",
     "espn_name": "Sam Houston Bearkats"
+  },
+  "924": {
+    "rover_name": "Stephen F. Austin",
+    "espn_id": "2617"
   },
   "925": {
     "rover_name": "Texas Corpus",
@@ -1466,6 +1486,11 @@
     "rover_name": "MASS Lowel",
     "espn_id": "2349"
   },
+  "984": {
+    "rover_name": "California Baptist",
+    "espn_id": "2856",
+    "espn_name": "California Baptist Lancers"
+  },
   "985": {
     "rover_name": "Incarnate Word",
     "espn_id": "2916"
@@ -1494,10 +1519,5 @@
   "999": {
     "rover_name": "Merrimack",
     "espn_id": "2771"
-  },
-  "19210": {
-    "rover_name": "California Baptist",
-    "espn_id": "2856",
-    "espn_name": "California Baptist Lancers"
   }
 }

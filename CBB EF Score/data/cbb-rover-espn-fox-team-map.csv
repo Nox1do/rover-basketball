@@ -6,6 +6,7 @@
 179,Southern Indiana,88,Southern Indiana Screaming Eagles,990,Southern Indiana Screaming Eagles,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/88,https://www.foxsports.com/college-basketball/southern-indiana-screaming-eagles-team
 254,Southeast Missouri St,2546,Southeast Missouri State Redhawks,216,Southeast Missouri State Redhawks,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/2546,https://www.foxsports.com/college-basketball/southeast-missouri-state-redhawks-team
 270,Le Moyne,2330,Le Moyne Dolphins,966,Le Moyne Dolphins,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/2330,https://www.foxsports.com/college-basketball/le-moyne-dolphins-team
+275,West Florida,2697,West Florida Argonauts,441,West Florida Argonauts,VERIFIED_TEAM_HEADER,https://www.espn.com/mens-college-basketball/team/_/id/2697,https://www.foxsports.com/college-basketball/west-florida-argonauts-team
 277,Saint Josephs,2603,Saint Joseph's Hawks,18,Saint Joseph's Hawks,API_TEAM_HEADER_VERIFIED,https://www.espn.com/mens-college-basketball/team/_/id/2603,https://www.foxsports.com/college-basketball/saint-josephs-hawks-team
 285,New Haven,2441,New Haven Chargers,390,New Haven Chargers,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/2441,https://www.foxsports.com/college-basketball/new-haven-chargers-team
 300,East Texas A&M C,2837,East Texas A&M Lions,854,East Texas A&M Lions,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/2837,https://www.foxsports.com/college-basketball/texas-am-commerce-lions-team
@@ -15,6 +16,7 @@
 388,Bellarmine,91,Bellarmine Knights,908,Bellarmine Knights,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/91,https://www.foxsports.com/college-basketball/bellarmine-knights-team
 400,Florida Gulf Coast,526,Florida Gulf Coast Eagles,892,Florida Gulf Coast Eagles,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/526,https://www.foxsports.com/college-basketball/fgcu-eagles-team
 581,St. Marys CA,2608,Saint Mary's Gaels,307,Saint Mary's Gaels,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/2608,https://www.foxsports.com/college-basketball/saint-marys-gaels-team
+631,Albany,399,UAlbany Great Danes,133,University at Albany Great Danes,VERIFIED_TEAM_HEADER,https://www.espn.com/mens-college-basketball/team/_/id/399,https://www.foxsports.com/college-basketball/albany-great-danes-team
 632,Binghamton,2066,Binghamton Bearcats,478,Binghamton Bearcats,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/2066,https://www.foxsports.com/college-basketball/binghamton-bearcats-team
 633,Boston University,104,Boston University Terriers,1,Boston University Terriers,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/104,https://www.foxsports.com/college-basketball/boston-university-terriers-team
 635,Maine,311,Maine Black Bears,6,Maine Black Bears,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/311,https://www.foxsports.com/college-basketball/maine-black-bears-team
@@ -130,6 +132,7 @@
 752,Old Dominion,295,Old Dominion Monarchs,109,Old Dominion Monarchs,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/295,https://www.foxsports.com/college-basketball/old-dominion-monarchs-team
 753,Towson,119,Towson Tigers,9,Towson Tigers,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/119,https://www.foxsports.com/college-basketball/towson-tigers-team
 754,VCU,2670,VCU Rams,111,VCU Rams,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/2670,https://www.foxsports.com/college-basketball/vcu-rams-team
+755,William & Mary,2729,William & Mary Tribe,112,William & Mary Tribe,VERIFIED_TEAM_HEADER,https://www.espn.com/mens-college-basketball/team/_/id/2729,https://www.foxsports.com/college-basketball/william-mary-tribe-team
 756,East Carolina,151,East Carolina Pirates,105,East Carolina Pirates,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/151,https://www.foxsports.com/college-basketball/east-carolina-pirates-team
 757,Houston,248,Houston Cougars,113,Houston Cougars,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/248,https://www.foxsports.com/college-basketball/houston-cougars-team
 758,Marshall,276,Marshall Thundering Herd,161,Marshall Thundering Herd,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/276,https://www.foxsports.com/college-basketball/marshall-thundering-herd-team
@@ -149,12 +152,14 @@
 775,Butler,2086,Butler Bulldogs,125,Butler Bulldogs,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/2086,https://www.foxsports.com/college-basketball/butler-bulldogs-team
 776,Cleveland State,325,Cleveland State Vikings,126,Cleveland State Vikings,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/325,https://www.foxsports.com/college-basketball/cleveland-state-vikings-team
 777,Detroit,2174,Detroit Mercy Titans,127,Detroit Mercy Titans,VERIFIED_TEAM_HEADER,https://www.espn.com/mens-college-basketball/team/_/id/2174,https://www.foxsports.com/college-basketball/detroit-titans-team
+778,Green Bay,2739,Green Bay Phoenix,130,Green Bay Phoenix,VERIFIED_TEAM_HEADER,https://www.espn.com/mens-college-basketball/team/_/id/2739,https://www.foxsports.com/college-basketball/green-bay-phoenix-team
 779,Illinois (UIC),82,UIC Flames,128,UIC Flames,VERIFIED_TEAM_HEADER,https://www.espn.com/mens-college-basketball/team/_/id/82,https://www.foxsports.com/college-basketball/uic-flames-team
 780,Loyola Chicago,2350,Loyola Chicago Ramblers,129,Loyola Chicago Ramblers,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/2350,https://www.foxsports.com/college-basketball/loyola-chicago-ramblers-team
 781,Milwaukee,270,Milwaukee Panthers,131,Milwaukee Panthers,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/270,https://www.foxsports.com/college-basketball/milwaukee-panthers-team
 782,Valparaiso,2674,Valparaiso Beacons,288,Valparaiso Beacons,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/2674,https://www.foxsports.com/college-basketball/valparaiso-beacons-team
 783,Wright State,2750,Wright State Raiders,132,Wright State Raiders,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/2750,https://www.foxsports.com/college-basketball/wright-state-raiders-team
 784,Youngst St,2754,Youngstown State Penguins,290,Youngstown State Penguins,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/2754,https://www.foxsports.com/college-basketball/youngstown-state-penguins-team
+785,CS Bakersfield,2934,Cal State Bakersfield Roadrunners,335,Cal State Bakersfield Roadrunners,VERIFIED_TEAM_HEADER,https://www.espn.com/mens-college-basketball/team/_/id/2934,https://www.foxsports.com/college-basketball/bakersfield-roadrunners-team
 786,Longwood,2344,Longwood Lancers,376,Longwood Lancers,API_TEAM_HEADER_VERIFIED,https://www.espn.com/mens-college-basketball/team/_/id/2344,https://www.foxsports.com/college-basketball/longwood-lancers-team
 787,NC Central,2428,North Carolina Central Eagles,393,North Carolina Central Eagles,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/2428,https://www.foxsports.com/college-basketball/north-carolina-central-eagles-team
 788,New Orleans,2443,LSU New Orleans Privateers,300,LSU New Orleans Privateers,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/2443,https://www.foxsports.com/college-basketball/new-orleans-privateers-team
@@ -164,8 +169,10 @@
 794,Columbia,171,Columbia Lions,140,Columbia Lions,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/171,https://www.foxsports.com/college-basketball/columbia-lions-team
 795,Cornell,172,Cornell Big Red,141,Cornell Big Red,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/172,https://www.foxsports.com/college-basketball/cornell-big-red-team
 796,Dartmouth,159,Dartmouth Big Green,142,Dartmouth Big Green,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/159,https://www.foxsports.com/college-basketball/dartmouth-big-green-team
+799,Princeton,163,Princeton Tigers,145,Princeton Tigers,VERIFIED_TEAM_HEADER,https://www.espn.com/mens-college-basketball/team/_/id/163,https://www.foxsports.com/college-basketball/princeton-tigers-team
 800,Yale,43,Yale Bulldogs,146,Yale Bulldogs,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/43,https://www.foxsports.com/college-basketball/yale-bulldogs-team
 801,Canisius,2099,Canisius Golden Griffins,147,Canisius Golden Griffins,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/2099,https://www.foxsports.com/college-basketball/canisius-golden-griffins-team
+802,Fairfield,2217,Fairfield Stags,148,Fairfield Stags,VERIFIED_TEAM_HEADER,https://www.espn.com/mens-college-basketball/team/_/id/2217,https://www.foxsports.com/college-basketball/fairfield-stags-team
 803,Iona,314,Iona Gaels,149,Iona Gaels,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/314,https://www.foxsports.com/college-basketball/iona-gaels-team
 804,Loyola Maryland,2352,Loyola Maryland Greyhounds,150,Loyola Maryland Greyhounds,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/2352,https://www.foxsports.com/college-basketball/loyola-maryland-greyhounds-team
 805,Manhattan,2363,Manhattan Jaspers,151,Manhattan Jaspers,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/2363,https://www.foxsports.com/college-basketball/manhattan-jaspers-team
@@ -194,8 +201,10 @@
 829,Maryland Eastern Shore,2379,Maryland Eastern Shore Hawks,176,Maryland-Eastern Shore Hawks,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/2379,https://www.foxsports.com/college-basketball/maryland-eastern-shore-hawks-team
 830,Morgan State,2415,Morgan State Bears,177,Morgan State Bears,VERIFIED_TEAM_HEADER,https://www.espn.com/mens-college-basketball/team/_/id/2415,https://www.foxsports.com/college-basketball/morgan-state-bears-team
 831,N. Carolina A&T,2448,North Carolina A&T Aggies,179,North Carolina A&T Aggies,VERIFIED_TEAM_HEADER,https://www.espn.com/mens-college-basketball/team/_/id/2448,https://www.foxsports.com/college-basketball/north-carolina-at-aggies-team
+832,Norfolk,2450,Norfolk State Spartans,178,Norfolk State Spartans,VERIFIED_TEAM_HEADER,https://www.espn.com/mens-college-basketball/team/_/id/2450,https://www.foxsports.com/college-basketball/norfolk-state-spartans-team
 834,Bradley,71,Bradley Braves,181,Bradley Braves,VERIFIED_TEAM_HEADER,https://www.espn.com/mens-college-basketball/team/_/id/71,https://www.foxsports.com/college-basketball/bradley-braves-team
 835,Creighton,156,Creighton Bluejays,182,Creighton Bluejays,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/156,https://www.foxsports.com/college-basketball/creighton-bluejays-team
+836,Drake,2181,Drake Bulldogs,183,Drake Bulldogs,VERIFIED_TEAM_HEADER,https://www.espn.com/mens-college-basketball/team/_/id/2181,https://www.foxsports.com/college-basketball/drake-bulldogs-team
 838,Illinois State,2287,Illinois State Redbirds,185,Illinois State Redbirds,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/2287,https://www.foxsports.com/college-basketball/illinois-state-redbirds-team
 839,Indiana St,282,Indiana State Sycamores,186,Indiana State Sycamores,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/282,https://www.foxsports.com/college-basketball/indiana-state-sycamores-team
 841,Northern Iowa,2460,Northern Iowa Panthers,187,Northern Iowa Panthers,VERIFIED_TEAM_HEADER,https://www.espn.com/mens-college-basketball/team/_/id/2460,https://www.foxsports.com/college-basketball/uni-panthers-team
@@ -218,6 +227,7 @@
 858,Mount St. Marys,116,Mount St. Mary's Mountaineers,204,Mount St. Mary's Mountaineers,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/116,https://www.foxsports.com/college-basketball/mount-st-marys-mountaineers-team
 859,Quinnipiac,2514,Quinnipiac Bobcats,205,Quinnipiac Bobcats,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/2514,https://www.foxsports.com/college-basketball/quinnipiac-bobcats-team
 860,Robert Morris,2523,Robert Morris Colonials,206,Robert Morris Colonials,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/2523,https://www.foxsports.com/college-basketball/robert-morris-colonials-team
+861,Sacred Heart,2529,Sacred Heart Pioneers,207,Sacred Heart Pioneers,VERIFIED_TEAM_HEADER,https://www.espn.com/mens-college-basketball/team/_/id/2529,https://www.foxsports.com/college-basketball/sacred-heart-pioneers-team
 864,Wagner,2681,Wagner Seahawks,210,Wagner Seahawks,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/2681,https://www.foxsports.com/college-basketball/wagner-seahawks-team
 865,Austin Peay,2046,Austin Peay Governors,211,Austin Peay Governors,VERIFIED_TEAM_HEADER,https://www.espn.com/mens-college-basketball/team/_/id/2046,https://www.foxsports.com/college-basketball/austin-peay-governors-team
 866,Eastern Illinois,2197,Eastern Illinois Panthers,212,Eastern Illinois Panthers,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/2197,https://www.foxsports.com/college-basketball/eastern-illinois-panthers-team
@@ -313,6 +323,7 @@
 965,San Diego,301,San Diego Toreros,308,San Diego Toreros,VERIFIED_TEAM_HEADER,https://www.espn.com/mens-college-basketball/team/_/id/301,https://www.foxsports.com/college-basketball/san-diego-toreros-team
 966,San Francisco,2539,San Francisco Dons,309,San Francisco Dons,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/2539,https://www.foxsports.com/college-basketball/san-francisco-dons-team
 967,Santa Clara,2541,Santa Clara Broncos,310,Santa Clara Broncos,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/2541,https://www.foxsports.com/college-basketball/santa-clara-broncos-team
+969,Boise State,68,Boise State Broncos,95,Boise State Broncos,VERIFIED_TEAM_HEADER,https://www.espn.com/mens-college-basketball/team/_/id/68,https://www.foxsports.com/college-basketball/boise-state-broncos-team
 970,Fresno State,278,Fresno State Bulldogs,311,Fresno State Bulldogs,VERIFIED_TEAM_HEADER,https://www.espn.com/mens-college-basketball/team/_/id/278,https://www.foxsports.com/college-basketball/fresno-state-bulldogs-team
 971,Hawaii,62,Hawai'i Rainbow Warriors,312,Hawai'i Rainbow Warriors,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/62,https://www.foxsports.com/college-basketball/hawaii-rainbow-warriors-team
 972,Idaho,70,Idaho Vandals,98,Idaho Vandals,VERIFIED_TEAM_HEADER,https://www.espn.com/mens-college-basketball/team/_/id/70,https://www.foxsports.com/college-basketball/idaho-vandals-team
@@ -325,6 +336,7 @@
 980,Northern Kentucky,94,Northern Kentucky Norse,981,Northern Kentucky Norse,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/94,https://www.foxsports.com/college-basketball/northern-kentucky-norse-team
 981,Lafayette,322,Lafayette Leopards,234,Lafayette Leopards,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/322,https://www.foxsports.com/college-basketball/lafayette-leopards-team
 982,UT Rio Grande Valley,292,UT Rio Grande Valley Vaqueros,138,UT Rio Grande Valley Vaqueros,VERIFIED_TEAM_HEADER,https://www.espn.com/mens-college-basketball/team/_/id/292,https://www.foxsports.com/college-basketball/texas-rio-grande-valley-vaqueros-team
+983,MASS Lowel,2349,UMass Lowell River Hawks,970,UMass Lowell River Hawks,VERIFIED_TEAM_HEADER,https://www.espn.com/mens-college-basketball/team/_/id/2349,https://www.foxsports.com/college-basketball/massachusetts-lowell-river-hawks-team
 984,California Baptist,2856,California Baptist Lancers,648,California Baptist Lancers,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/2856,https://www.foxsports.com/college-basketball/california-baptist-lancers-team
 985,Incarnate Word,2916,Incarnate Word Cardinals,962,Incarnate Word Cardinals,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/2916,https://www.foxsports.com/college-basketball/incarnate-word-cardinals-team
 987,North Alabama,2453,North Alabama Lions,828,North Alabama Lions,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/2453,https://www.foxsports.com/college-basketball/north-alabama-lions-team
@@ -333,4 +345,3 @@
 997,Temple,218,Temple Owls,19,Temple Owls,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/218,https://www.foxsports.com/college-basketball/temple-owls-team
 998,SMU,2567,SMU Mustangs,316,SMU Mustangs,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/2567,https://www.foxsports.com/college-basketball/smu-mustangs-team
 999,Merrimack,2771,Merrimack Warriors,972,Merrimack Warriors,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/2771,https://www.foxsports.com/college-basketball/merrimack-warriors-team
-10641,West Florida,2697,West Florida Argonauts,441,West Florida Argonauts,VERIFIED_TEAM_HEADER,https://www.espn.com/mens-college-basketball/team/_/id/2697,https://www.foxsports.com/college-basketball/west-florida-argonauts-team

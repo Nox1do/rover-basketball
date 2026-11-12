@@ -99,6 +99,26 @@
     "rover_source": "https://github.com/Nox1do/rover-basketball/blob/main/CBB/data/rover-espn-team-map.json",
     "fox_source": "https://www.foxsports.com/college-basketball/team-stats?season=2026&category=scoring&page=2"
   },
+  "275": {
+    "rover_code": "275",
+    "rover_name": "West Florida",
+    "espn_id": "2697",
+    "espn_name": "West Florida Argonauts",
+    "fox_id": "441",
+    "fox_name": "West Florida Argonauts",
+    "fox_url": "https://www.foxsports.com/college-basketball/west-florida-argonauts-team",
+    "fox_match_method": "VERIFIED_TEAM_HEADER",
+    "fox_match_status": "MATCHED",
+    "espn_url": "https://www.espn.com/mens-college-basketball/team/_/id/2697",
+    "rover_source": "User confirmed newest Rover code 275 on 2026-11-12",
+    "espn_source": "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/teams/2697",
+    "fox_source": "https://api.foxsports.com/bifrost/v1/cbk/team/441/header",
+    "verified_date": "2026-11-07",
+    "previous_rover_codes": [
+      "10641"
+    ],
+    "rover_code_updated": "2026-11-12"
+  },
   "277": {
     "rover_code": "277",
     "rover_name": "Saint Josephs",
@@ -4958,21 +4978,5 @@
     "espn_url": "https://www.espn.com/mens-college-basketball/team/_/id/2771",
     "rover_source": "https://github.com/Nox1do/rover-basketball/blob/main/CBB/data/rover-espn-team-map.json",
     "fox_source": "https://www.foxsports.com/college-basketball/team-stats?season=2026&category=scoring&page=3"
-  },
-  "10641": {
-    "rover_code": "10641",
-    "rover_name": "West Florida",
-    "espn_id": "2697",
-    "espn_name": "West Florida Argonauts",
-    "fox_id": "441",
-    "fox_name": "West Florida Argonauts",
-    "fox_url": "https://www.foxsports.com/college-basketball/west-florida-argonauts-team",
-    "fox_match_method": "VERIFIED_TEAM_HEADER",
-    "fox_match_status": "MATCHED",
-    "espn_url": "https://www.espn.com/mens-college-basketball/team/_/id/2697",
-    "rover_source": "User supplied second list of 59 NCAA encounters, 2026-11-07",
-    "espn_source": "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/teams/2697",
-    "fox_source": "https://api.foxsports.com/bifrost/v1/cbk/team/441/header",
-    "verified_date": "2026-11-07"
   }
 }

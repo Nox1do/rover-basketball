@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         CBB Espn-Fox
 // @namespace    https://roversport.net/
-// @version      0.0.9
+// @version      0.0.10
 // @description  NCAA masculino: ESPN + validación FOX; H1→Q2, H2→Q4, OT y Final. Firefox/Tampermonkey.
 // @author       noeg
 // @match        https://www.roversport.net/adm/es/*
@@ -22,7 +22,7 @@
 (() => {
     "use strict";
 
-    const VERSION = "0.0.9";
+    const VERSION = "0.0.10";
     const TAG = "[CBB Espn-Fox]";
 
     /*
@@ -52,6 +52,7 @@
         "179": {"rover_name":"Southern Indiana","espn_id":"88","espn_name":"Southern Indiana Screaming Eagles","fox_id":"990","fox_name":"Southern Indiana Screaming Eagles"},
         "254": {"rover_name":"Southeast Missouri St","espn_id":"2546","espn_name":"Southeast Missouri State Redhawks","fox_id":"216","fox_name":"Southeast Missouri State Redhawks"},
         "270": {"rover_name":"Le Moyne","espn_id":"2330","espn_name":"Le Moyne Dolphins","fox_id":"966","fox_name":"Le Moyne Dolphins"},
+        "275": {"rover_name":"West Florida","espn_id":"2697","espn_name":"West Florida Argonauts","fox_id":"441","fox_name":"West Florida Argonauts"},
         "277": {"rover_name":"Saint Josephs","espn_id":"2603","espn_name":"Saint Joseph's Hawks","fox_id":"18","fox_name":"Saint Joseph's Hawks"},
         "285": {"rover_name":"New Haven","espn_id":"2441","espn_name":"New Haven Chargers","fox_id":"390","fox_name":"New Haven Chargers"},
         "300": {"rover_name":"East Texas A&M C","espn_id":"2837","espn_name":"East Texas A&M Lions","fox_id":"854","fox_name":"East Texas A&M Lions"},
@@ -389,8 +390,7 @@
         "996": {"rover_name":"South Carolina","espn_id":"2579","espn_name":"South Carolina Gamecocks","fox_id":"240","fox_name":"South Carolina Gamecocks"},
         "997": {"rover_name":"Temple","espn_id":"218","espn_name":"Temple Owls","fox_id":"19","fox_name":"Temple Owls"},
         "998": {"rover_name":"SMU","espn_id":"2567","espn_name":"SMU Mustangs","fox_id":"316","fox_name":"SMU Mustangs"},
-        "999": {"rover_name":"Merrimack","espn_id":"2771","espn_name":"Merrimack Warriors","fox_id":"972","fox_name":"Merrimack Warriors"},
-        "10641": {"rover_name":"West Florida","espn_id":"2697","espn_name":"West Florida Argonauts","fox_id":"441","fox_name":"West Florida Argonauts"}
+        "999": {"rover_name":"Merrimack","espn_id":"2771","espn_name":"Merrimack Warriors","fox_id":"972","fox_name":"Merrimack Warriors"}
     };
 
     const clean = value =>

@@ -1,9 +1,9 @@
-# Validación 0.0.8
+# Validación 0.0.10
 
 ## Ejecución
 
 - `npm run check`: sintaxis correcta.
-- `CBB_FIREFOX_CONTAINER=1 node --test tests/*.test.mjs`: 75/75 pruebas, cero fallos: 53 unitarias, 11 Firefox y 11 del publicador.
+- `node --test tests/cbb.test.mjs tests/release.test.mjs`: 77/77 pruebas de Node (66 unitarias y 11 del publicador), cero fallos. GitHub Actions ejecuta también las 11 de Firefox.
 - Firefox 153.0 de Playwright 1.62.1, headless, usando zona America/Santo_Domingo para ejercitar la independencia de la PC.
 
 Las pruebas iniciales se ejecutaron contra CFB antes de implementar la adaptación. Las regresiones de estado `2ND`, fecha ausente y nombres de estado con underscores se observaron fallar antes de corregirlas.
@@ -49,3 +49,7 @@ La lista del usuario contiene 46 encuentros y 92 equipos distintos: 68 ya inclui
 ## Ampliación 0.0.8
 
 Segunda lista: 118 equipos NCAA en 59 encuentros, 94 existentes y 24 nuevos. Se verificaron 48 respuestas oficiales de equipos ESPN y headers FOX CBK, comprobando ID y nombre. Se conservan los 311 registros anteriores. El mapa JSON, CSV y embebido queda en 335 equipos; el motor de resultados permanece idéntico a 0.0.7 salvo VERSION. Los cuatro encuentros internacionales quedan fuera del mapa NCAA.
+
+## Código West Florida — 0.0.10
+
+West Florida se resuelve con Rover 275; 10641 se retira del mapa activo. ESPN 2697 y FOX 441 se conservan. Los otros 345 registros no cambian. JSON, CSV y mapa embebido se sincronizan con 346 equipos; el motor de resultados permanece idéntico a 0.0.9 salvo VERSION.

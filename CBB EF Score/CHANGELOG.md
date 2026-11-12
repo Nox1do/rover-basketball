@@ -1,5 +1,9 @@
 # Cambios
 
+## 0.0.10 — 2026-11-12
+
+West Florida cambia del código Rover 10641 al actual **275**, confirmado por el usuario. Conserva ESPN **2697** y FOX **441**. Se retira 10641 del mapa activo para evitar duplicar la identidad. El total permanece en 346 equipos y el CSV se sincroniza con el mapa completo.
+
 ## 0.0.9 — 2026-11-08
 
 Lista de 28 encuentros Rover (56 equipos): 45 ya estaban registrados y se añaden 11 identidades confirmadas con ESPN (API) y FOX CBK (página oficial). El mapa pasa de 335 a 346 equipos; la lógica de resultados no cambia.

@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+## [0.1.21] - 2026-11-12
+
+- Se añade West Florida con el código Rover vigente 275 y ESPN 2697, manteniendo descartado el código anterior 10641.
+- El total de equipos de CBB LLoader aumenta a 357; no se altera el CSV de partidos ni la vinculación.
+- Nuevas pruebas de mapeo y rechazo del código obsoleto.
+
+
 ## [0.1.20] - 2026-11-10
 
 - Se incorporan cinco equipos Rover↔ESPN y se corrige California Baptist al código Rover 984 (antes 19210).

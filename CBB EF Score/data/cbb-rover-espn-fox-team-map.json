@@ -4235,6 +4235,22 @@
     "rover_source": "https://github.com/Nox1do/rover-basketball/blob/main/CBB/data/rover-espn-team-map.json",
     "fox_source": "https://www.foxsports.com/college-basketball/team-stats?season=2026&category=scoring&page=5"
   },
+  "936": {
+    "rover_code": "936",
+    "rover_name": "Southern Utah",
+    "espn_id": "253",
+    "espn_name": "Southern Utah Thunderbirds",
+    "fox_id": "287",
+    "fox_name": "Southern Utah Thunderbirds",
+    "fox_url": "https://www.foxsports.com/college-basketball/southern-utah-thunderbirds-team",
+    "fox_match_method": "VERIFIED_TEAM_HEADER",
+    "fox_match_status": "MATCHED",
+    "espn_url": "https://www.espn.com/mens-college-basketball/team/_/id/253",
+    "rover_source": "User screenshot SN 1211771: 936 Southern Utah vs 705 High Point, 2026-11-12",
+    "espn_source": "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/teams/253",
+    "fox_source": "https://api.foxsports.com/bifrost/v1/cbk/team/287/header",
+    "verified_date": "2026-11-12"
+  },
   "937": {
     "rover_name": "Kansas City",
     "espn_id": "140",

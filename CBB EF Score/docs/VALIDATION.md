@@ -1,4 +1,4 @@
-# Validación 0.0.10
+# Validación 0.0.11
 
 ## Ejecución
 
@@ -53,3 +53,7 @@ Segunda lista: 118 equipos NCAA en 59 encuentros, 94 existentes y 24 nuevos. Se 
 ## Código West Florida — 0.0.10
 
 West Florida se resuelve con Rover 275; 10641 se retira del mapa activo. ESPN 2697 y FOX 441 se conservan. Los otros 345 registros no cambian. JSON, CSV y mapa embebido se sincronizan con 346 equipos; el motor de resultados permanece idéntico a 0.0.9 salvo VERSION.
+
+## Southern Utah — 0.0.11
+
+El aviso NO_MAP_AWAY de la captura SN 1211771 corresponde al código Rover 936 ausente. Se incorpora Southern Utah con ESPN 253 y FOX 287, comprobados por ID y nombre en los endpoints oficiales. Los 346 registros previos se conservan; el mapa JSON, CSV y embebido contiene 347 equipos. La lógica de resultados permanece idéntica a 0.0.10 salvo VERSION.

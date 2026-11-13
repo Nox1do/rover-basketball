@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         CBB Espn-Fox
 // @namespace    https://roversport.net/
-// @version      0.0.10
+// @version      0.0.11
 // @description  NCAA masculino: ESPN + validación FOX; H1→Q2, H2→Q4, OT y Final. Firefox/Tampermonkey.
 // @author       noeg
 // @match        https://www.roversport.net/adm/es/*
@@ -22,7 +22,7 @@
 (() => {
     "use strict";
 
-    const VERSION = "0.0.10";
+    const VERSION = "0.0.11";
     const TAG = "[CBB Espn-Fox]";
 
     /*
@@ -340,6 +340,7 @@
         "933": {"rover_name":"Oakland","espn_id":"2473","espn_name":"Oakland Golden Grizzlies","fox_id":"285","fox_name":"Oakland Golden Grizzlies"},
         "934": {"rover_name":"Oral Roberts","espn_id":"198","espn_name":"Oral Roberts Golden Eagles","fox_id":"286","fox_name":"Oral Roberts Golden Eagles"},
         "935": {"rover_name":"South Dakota State","espn_id":"2571","espn_name":"South Dakota State Jackrabbits","fox_id":"417","fox_name":"South Dakota State Jackrabbits"},
+        "936": {"rover_name":"Southern Utah","espn_id":"253","espn_name":"Southern Utah Thunderbirds","fox_id":"287","fox_name":"Southern Utah Thunderbirds"},
         "937": {"rover_name":"Kansas City","espn_id":"140","espn_name":"Kansas City Roos","fox_id":"284","fox_name":"Kansas City Roos"},
         "938": {"rover_name":"Western Illinois","espn_id":"2710","espn_name":"Western Illinois Leathernecks","fox_id":"289","fox_name":"Western Illinois Leathernecks"},
         "940": {"rover_name":"Alabama State","espn_id":"2011","espn_name":"Alabama State Hornets","fox_id":"323","fox_name":"Alabama State Hornets"},

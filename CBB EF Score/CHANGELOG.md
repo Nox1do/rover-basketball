@@ -1,5 +1,9 @@
 # Cambios
 
+## 0.0.11 — 2026-11-12
+
+Añadido **936 Southern Utah** para resolver `NO_MAP_AWAY` en el encuentro Rover SN 1211771 frente a High Point. Equivalencias verificadas en las respuestas oficiales: ESPN **253**, FOX CBK **287**, Southern Utah Thunderbirds. El mapa pasa de 346 a 347 equipos y conserva todos los registros anteriores.
+
 ## 0.0.10 — 2026-11-12
 
 West Florida cambia del código Rover 10641 al actual **275**, confirmado por el usuario. Conserva ESPN **2697** y FOX **441**. Se retira 10641 del mapa activo para evitar duplicar la identidad. El total permanece en 346 equipos y el CSV se sincroniza con el mapa completo.

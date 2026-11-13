@@ -58,8 +58,8 @@ function halfGame(q,{period=1,clock='0:00',detail='Halftime'}={}) {
   return g;
 }
 
-test('346 CBB identities retain special LIU and distinct Miami teams',()=>{
-  const {q}=load(); assert.equal(Object.keys(q.TEAM_MAP).length,346);
+test('347 CBB identities retain special LIU and distinct Miami teams',()=>{
+  const {q}=load(); assert.equal(Object.keys(q.TEAM_MAP).length,347);
   assert.equal(q.getTeamMap('856').espn_id,'112358');
   assert.equal(q.getTeamMap('856').fox_id,'1468');
   assert.notEqual(q.getTeamMap('646').fox_id,q.getTeamMap('815').fox_id);

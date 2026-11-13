@@ -1,6 +1,6 @@
 # CBB LLoader — NCAA Men's Basketball
 
-Versión estable **0.1.21** (primera versión 0.1.0) basada en el archivo aportado `userscript - cfb lloader-0.1.6.user.js`.
+Versión estable **0.1.22** (primera versión 0.1.0) basada en el archivo aportado `userscript - cfb lloader-0.1.6.user.js`.
 
 Este script **vincula enlaces de partidos de ESPN con la tabla de eventos de Rover**. No llena puntajes ni resultados del juego. **Exclusivamente vincula partidos ESPN, compara la hora y verifica si los equipos están invertidos.** Las 58 funciones del CFB LLoader fueron transferidas y adaptadas; se añadieron cuatro funciones auxiliares para CBB.
 
@@ -137,3 +137,7 @@ Se agregan Charleston (912→232), Delaware (744→48), Stony Brook (637→2619)
 ## West Florida actualizado (v0.1.21)
 
 Se incorpora West Florida Argonauts con el **código Rover vigente 275** y el ID de equipo ESPN **2697**. El código histórico Rover **10641** no se registra ni se utiliza. Esto sincroniza la identidad con el mapa ya existente en el proyecto independiente CBB EF Score, sin modificar dicho proyecto. El catálogo ahora contiene **357 equipos**. No se agregan partidos ni se cambian las comprobaciones de fecha, hora ni localía.
+
+## v0.1.22
+
+Southern Utah Rover 936→ESPN 253, Northern Colorado Rover 698→ESPN 2458 y Austin Peay Rover 865→ESPN 2046. Se agregan 62 cruces de referencia; total 360 equipos y 470 encuentros. Sin cambios en las salvaguardas de fecha, hora ni localía.

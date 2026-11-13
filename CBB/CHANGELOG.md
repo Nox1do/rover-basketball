@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+## [0.1.22] - 2026-11-13
+
+- Tres nuevas equivalencias Rover↔ESPN (936→253, 698→2458, 865→2046).
+- Añadidos 62 cruces, total 360 equipos y 470 cruces de referencia.
+- Pruebas de regresión para los nuevos códigos y partidas; reglas de enlace intactas.
+
+
 ## [0.1.21] - 2026-11-12
 
 - Se añade West Florida con el código Rover vigente 275 y ESPN 2697, manteniendo descartado el código anterior 10641.

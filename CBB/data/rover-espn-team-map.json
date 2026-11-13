@@ -335,6 +335,10 @@
     "espn_id": "2464",
     "espn_name": "Northern Arizona Lumberjacks"
   },
+  "698": {
+    "rover_name": "North Colorado",
+    "espn_id": "2458"
+  },
   "699": {
     "rover_name": "Portland State",
     "espn_id": "2502",
@@ -1010,6 +1014,10 @@
     "espn_id": "2681",
     "espn_name": "Wagner Seahawks"
   },
+  "865": {
+    "rover_name": "Austin Peay",
+    "espn_id": "2046"
+  },
   "866": {
     "rover_name": "Eastern Illinois",
     "espn_id": "2197"
@@ -1303,6 +1311,10 @@
     "rover_name": "South Dakota State",
     "espn_id": "2571",
     "espn_name": "South Dakota State Jackrabbits"
+  },
+  "936": {
+    "rover_name": "Southern Utah",
+    "espn_id": "253"
   },
   "937": {
     "rover_name": "Kansas City",

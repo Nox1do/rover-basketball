@@ -2810,6 +2810,22 @@
     "rover_source": "https://github.com/Nox1do/rover-basketball/blob/main/CBB/data/rover-espn-team-map.json",
     "fox_source": "https://www.foxsports.com/college-basketball/team-stats?season=2026&category=scoring&page=1"
   },
+  "825": {
+    "rover_name": "Delaware State",
+    "espn_id": "2169",
+    "espn_name": "Delaware State Hornets",
+    "fox_id": "172",
+    "fox_name": "Delaware State Hornets",
+    "fox_url": "https://www.foxsports.com/college-basketball/delaware-state-hornets-team",
+    "fox_match_method": "VERIFIED_TEAM_HEADER",
+    "fox_match_status": "MATCHED",
+    "rover_code": "825",
+    "espn_url": "https://www.espn.com/mens-college-basketball/team/_/id/2169",
+    "rover_source": "User supplied Rover 825 Delaware State vs 756 East Carolina, 2026-11-14",
+    "espn_source": "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/teams?limit=600",
+    "fox_source": "https://www.foxsports.com/college-basketball/delaware-state-hornets-team",
+    "verified_date": "2026-11-14"
+  },
   "826": {
     "rover_name": "Florida A&M",
     "espn_id": "50",

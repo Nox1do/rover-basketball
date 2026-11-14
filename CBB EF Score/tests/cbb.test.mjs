@@ -58,8 +58,8 @@ function halfGame(q,{period=1,clock='0:00',detail='Halftime'}={}) {
   return g;
 }
 
-test('347 CBB identities retain special LIU and distinct Miami teams',()=>{
-  const {q}=load(); assert.equal(Object.keys(q.TEAM_MAP).length,347);
+test('348 CBB identities retain special LIU and distinct Miami teams',()=>{
+  const {q}=load(); assert.equal(Object.keys(q.TEAM_MAP).length,348);
   assert.equal(q.getTeamMap('856').espn_id,'112358');
   assert.equal(q.getTeamMap('856').fox_id,'1468');
   assert.notEqual(q.getTeamMap('646').fox_id,q.getTeamMap('815').fox_id);
@@ -119,6 +119,15 @@ test('corrected Rover identifiers do not override North Carolina A&T',()=>{
  assert.equal(q.getTeamMap('831').espn_id,'2448');
  assert.equal(q.getTeamMap('831').fox_id,'179');
  assert.equal(q.getTeamMap('989'),null);
+});
+
+test('Rover 825 Delaware State and 756 East Carolina map to verified ESPN and FOX identities',()=>{
+ const {q}=load();const away=q.getTeamMap('825'),home=q.getTeamMap('756');
+ assert.ok(away);assert.ok(home);
+ assert.equal(away.rover_name,'Delaware State');assert.equal(away.espn_id,'2169');assert.equal(away.fox_id,'172');
+ assert.equal(away.espn_name,'Delaware State Hornets');assert.equal(away.fox_name,'Delaware State Hornets');
+ assert.equal(home.rover_name,'East Carolina');assert.equal(home.espn_id,'151');assert.equal(home.fox_id,'105');
+ assert.notEqual(away.espn_id,home.espn_id);assert.notEqual(away.fox_id,home.fox_id);
 });
 
 test('California Baptist uses current Rover 984 with the same ESPN and FOX identity',()=>{

@@ -1,5 +1,9 @@
 # Cambios
 
+## 0.0.12 — 2026-11-14
+
+Se añadió **825 Delaware State** al mapa de CBB para el encuentro frente a **756 East Carolina**. Delaware State Hornets queda asociado a ESPN **2169** y FOX CBK **172**, verificados con las fuentes oficiales. East Carolina (ESPN **151**, FOX **105**) permanece sin cambios. El mapa pasa de 347 a **348 equipos**; JSON, CSV y userscript se mantienen sincronizados y se incorpora una prueba de regresión. La lógica de validación y escritura no cambia.
+
 ## 0.0.11 — 2026-11-12
 
 Añadido **936 Southern Utah** para resolver `NO_MAP_AWAY` en el encuentro Rover SN 1211771 frente a High Point. Equivalencias verificadas en las respuestas oficiales: ESPN **253**, FOX CBK **287**, Southern Utah Thunderbirds. El mapa pasa de 346 a 347 equipos y conserva todos los registros anteriores.

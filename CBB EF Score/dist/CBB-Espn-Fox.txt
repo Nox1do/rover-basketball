@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         CBB Espn-Fox
 // @namespace    https://roversport.net/
-// @version      0.0.11
+// @version      0.0.12
 // @description  NCAA masculino: ESPN + validación FOX; H1→Q2, H2→Q4, OT y Final. Firefox/Tampermonkey.
 // @author       noeg
 // @match        https://www.roversport.net/adm/es/*
@@ -22,7 +22,7 @@
 (() => {
     "use strict";
 
-    const VERSION = "0.0.11";
+    const VERSION = "0.0.12";
     const TAG = "[CBB Espn-Fox]";
 
     /*
@@ -241,6 +241,7 @@
         "822": {"rover_name":"Western Michigan","espn_id":"2711","espn_name":"Western Michigan Broncos","fox_id":"169","fox_name":"Western Michigan Broncos"},
         "823": {"rover_name":"Bethune","espn_id":"2065","espn_name":"Bethune-Cookman Wildcats","fox_id":"170","fox_name":"Bethune-Cookman Wildcats"},
         "824": {"rover_name":"Coppin State","espn_id":"2154","espn_name":"Coppin State Eagles","fox_id":"171","fox_name":"Coppin State Eagles"},
+        "825": {"rover_name":"Delaware State","espn_id":"2169","espn_name":"Delaware State Hornets","fox_id":"172","fox_name":"Delaware State Hornets"},
         "826": {"rover_name":"Florida A&M","espn_id":"50","espn_name":"Florida A&M Rattlers","fox_id":"173","fox_name":"Florida A&M Rattlers"},
         "827": {"rover_name":"Hampton","espn_id":"2261","espn_name":"Hampton Pirates","fox_id":"174","fox_name":"Hampton Pirates"},
         "828": {"rover_name":"Howard","espn_id":"47","espn_name":"Howard Bison","fox_id":"175","fox_name":"Howard Bison"},

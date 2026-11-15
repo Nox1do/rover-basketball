@@ -114,6 +114,7 @@
 732,Texas,251,Texas Longhorns,50,Texas Longhorns,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/251,https://www.foxsports.com/college-basketball/texas-longhorns-team
 733,Queens University,2511,Queens University Royals,403,Queens University Royals,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/2511,https://www.foxsports.com/college-basketball/queens-university-royals-team
 734,Texas Tech,2641,Texas Tech Red Raiders,52,Texas Tech Red Raiders,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/2641,https://www.foxsports.com/college-basketball/texas-tech-red-raiders-team
+735,Cal Poly,13,Cal Poly Mustangs,96,Cal Poly Mustangs,VERIFIED_TEAM_HEADER,https://www.espn.com/mens-college-basketball/team/_/id/13,https://www.foxsports.com/college-basketball/cal-poly-mustangs-team
 736,Fullerton,2239,Cal State Fullerton Titans,97,Cal State Fullerton Titans,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/2239,https://www.foxsports.com/college-basketball/cal-state-fullerton-titans-team
 737,CS North,2463,Cal State Northridge Matadors,67,Cal State Northridge Matadors,API_TEAM_HEADER_VERIFIED,https://www.espn.com/mens-college-basketball/team/_/id/2463,https://www.foxsports.com/college-basketball/csun-matadors-team
 738,Long Be St,299,Long Beach State Beach,99,Long Beach State Beach,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/299,https://www.foxsports.com/college-basketball/long-beach-state-49ers-team
@@ -169,6 +170,7 @@
 794,Columbia,171,Columbia Lions,140,Columbia Lions,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/171,https://www.foxsports.com/college-basketball/columbia-lions-team
 795,Cornell,172,Cornell Big Red,141,Cornell Big Red,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/172,https://www.foxsports.com/college-basketball/cornell-big-red-team
 796,Dartmouth,159,Dartmouth Big Green,142,Dartmouth Big Green,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/159,https://www.foxsports.com/college-basketball/dartmouth-big-green-team
+797,Harvard,108,Harvard Crimson,143,Harvard Crimson,VERIFIED_TEAM_HEADER,https://www.espn.com/mens-college-basketball/team/_/id/108,https://www.foxsports.com/college-basketball/harvard-crimson-team
 799,Princeton,163,Princeton Tigers,145,Princeton Tigers,VERIFIED_TEAM_HEADER,https://www.espn.com/mens-college-basketball/team/_/id/163,https://www.foxsports.com/college-basketball/princeton-tigers-team
 800,Yale,43,Yale Bulldogs,146,Yale Bulldogs,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/43,https://www.foxsports.com/college-basketball/yale-bulldogs-team
 801,Canisius,2099,Canisius Golden Griffins,147,Canisius Golden Griffins,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/2099,https://www.foxsports.com/college-basketball/canisius-golden-griffins-team
@@ -274,6 +276,7 @@
 909,UNC Greensboro,2430,UNC Greensboro Spartans,258,UNC Greensboro Spartans,VERIFIED_TEAM_HEADER,https://www.espn.com/mens-college-basketball/team/_/id/2430,https://www.foxsports.com/college-basketball/uncg-spartans-team
 910,Western Carolina,2717,Western Carolina Catamounts,260,Western Carolina Catamounts,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/2717,https://www.foxsports.com/college-basketball/western-carolina-catamounts-team
 911,The Citadel,2643,The Citadel Bulldogs,251,The Citadel Bulldogs,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/2643,https://www.foxsports.com/college-basketball/citadel-bulldogs-team
+912,Charleston,232,Charleston Cougars,249,Charleston Cougars,VERIFIED_TEAM_HEADER,https://www.espn.com/mens-college-basketball/team/_/id/232,https://www.foxsports.com/college-basketball/charleston-cougars-team
 913,Davidson,2166,Davidson Wildcats,256,Davidson Wildcats,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/2166,https://www.foxsports.com/college-basketball/davidson-wildcats-team
 914,Furman,231,Furman Paladins,252,Furman Paladins,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/231,https://www.foxsports.com/college-basketball/furman-paladins-team
 915,Georgia Southern,290,Georgia Southern Eagles,253,Georgia Southern Eagles,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/290,https://www.foxsports.com/college-basketball/georgia-southern-eagles-team
@@ -298,6 +301,7 @@
 936,Southern Utah,253,Southern Utah Thunderbirds,287,Southern Utah Thunderbirds,VERIFIED_TEAM_HEADER,https://www.espn.com/mens-college-basketball/team/_/id/253,https://www.foxsports.com/college-basketball/southern-utah-thunderbirds-team
 937,Kansas City,140,Kansas City Roos,284,Kansas City Roos,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/140,https://www.foxsports.com/college-basketball/umkc-kangaroos-team
 938,Western Illinois,2710,Western Illinois Leathernecks,289,Western Illinois Leathernecks,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/2710,https://www.foxsports.com/college-basketball/western-illinois-leathernecks-team
+939,Alabama A&M,2010,Alabama A&M Bulldogs,272,Alabama A&M Bulldogs,VERIFIED_TEAM_HEADER,https://www.espn.com/mens-college-basketball/team/_/id/2010,https://www.foxsports.com/college-basketball/alabama-am-bulldogs-team
 940,Alabama State,2011,Alabama State Hornets,323,Alabama State Hornets,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/2011,https://www.foxsports.com/college-basketball/alabama-huntsville-chargers-team
 941,Alcorn State,2016,Alcorn State Braves,274,Alcorn State Braves,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/2016,https://www.foxsports.com/college-basketball/alcorn-state-braves-team
 942,Arkansas Pine Bluff,2029,Arkansas-Pine Bluff Golden Lions,275,Arkansas-Pine Bluff Golden Lions,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/2029,https://www.foxsports.com/college-basketball/uapb-golden-lions-team

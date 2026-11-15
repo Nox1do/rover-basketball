@@ -1,5 +1,18 @@
 # Cambios
 
+## 0.0.13 — 2026-11-15
+
+Se procesaron 35 encuentros Rover con 70 equipos distintos: 66 ya estaban registrados y se añaden los cuatro faltantes, con IDs ESPN/FOX verificados en fuentes oficiales. El mapa pasa de 348 a **352 equipos**. La primera pareja (Quinnipiac - Central Connecticut) se entregó sin número de evento, preservado como no especificado.
+
+| Rover | Equipo | ESPN ID | FOX ID |
+|---|---|---|---|
+| 797 | Harvard | 108 | 143 |
+| 912 | Charleston | 232 | 249 |
+| 939 | Alabama A&M | 2010 | 272 |
+| 735 | Cal Poly | 13 | 96 |
+
+Se sincronizan JSON, CSV, src, dist, meta y snapshot histórico, y se añaden pruebas de regresión para los 35 encuentros. Sin cambios en el motor ESPN/FOX o la lógica de escritura de Rover.
+
 ## 0.0.12 — 2026-11-14
 
 Se añadió **825 Delaware State** al mapa de CBB para el encuentro frente a **756 East Carolina**. Delaware State Hornets queda asociado a ESPN **2169** y FOX CBK **172**, verificados con las fuentes oficiales. East Carolina (ESPN **151**, FOX **105**) permanece sin cambios. El mapa pasa de 347 a **348 equipos**; JSON, CSV y userscript se mantienen sincronizados y se incorpora una prueba de regresión. La lógica de validación y escritura no cambia.

@@ -1,0 +1,398 @@
+{
+  "source": "User provided 35 matchups 2026-11-15",
+  "received_date": "2026-11-15",
+  "sport": "mens-college-basketball",
+  "encounters": [
+    {
+      "event_id": null,
+      "away": {
+        "rover_code": "859",
+        "rover_name": "Quinnipiac"
+      },
+      "home": {
+        "rover_code": "854",
+        "rover_name": "Central Connecticut"
+      }
+    },
+    {
+      "event_id": "1215347",
+      "away": {
+        "rover_code": "807",
+        "rover_name": "Niagara"
+      },
+      "home": {
+        "rover_code": "725",
+        "rover_name": "Iowa State"
+      }
+    },
+    {
+      "event_id": "1215348",
+      "away": {
+        "rover_code": "969",
+        "rover_name": "Boise State"
+      },
+      "home": {
+        "rover_code": "729",
+        "rover_name": "Nebraska"
+      }
+    },
+    {
+      "event_id": "1215349",
+      "away": {
+        "rover_code": "681",
+        "rover_name": "Louisville"
+      },
+      "home": {
+        "rover_code": "759",
+        "rover_name": "Memphis Tigers"
+      }
+    },
+    {
+      "event_id": "1215350",
+      "away": {
+        "rover_code": "797",
+        "rover_name": "Harvard"
+      },
+      "home": {
+        "rover_code": "885",
+        "rover_name": "American University"
+      }
+    },
+    {
+      "event_id": "1215351",
+      "away": {
+        "rover_code": "796",
+        "rover_name": "Dartmouth"
+      },
+      "home": {
+        "rover_code": "633",
+        "rover_name": "Boston University"
+      }
+    },
+    {
+      "event_id": "1215352",
+      "away": {
+        "rover_code": "888",
+        "rover_name": "Colgate"
+      },
+      "home": {
+        "rover_code": "744",
+        "rover_name": "Delaware"
+      }
+    },
+    {
+      "event_id": "1215354",
+      "away": {
+        "rover_code": "832",
+        "rover_name": "Norfolk"
+      },
+      "home": {
+        "rover_code": "747",
+        "rover_name": "Georgia State"
+      }
+    },
+    {
+      "event_id": "1215355",
+      "away": {
+        "rover_code": "636",
+        "rover_name": "New Hampshire"
+      },
+      "home": {
+        "rover_code": "640",
+        "rover_name": "Boston College"
+      }
+    },
+    {
+      "event_id": "1215487",
+      "away": {
+        "rover_code": "799",
+        "rover_name": "Princeton"
+      },
+      "home": {
+        "rover_code": "670",
+        "rover_name": "Rhode Island"
+      }
+    },
+    {
+      "event_id": "1215488",
+      "away": {
+        "rover_code": "785",
+        "rover_name": "CS Bakersfield"
+      },
+      "home": {
+        "rover_code": "932",
+        "rover_name": "ND State"
+      }
+    },
+    {
+      "event_id": "1215489",
+      "away": {
+        "rover_code": "755",
+        "rover_name": "William & Mary"
+      },
+      "home": {
+        "rover_code": "715",
+        "rover_name": "Michigan"
+      }
+    },
+    {
+      "event_id": "1215490",
+      "away": {
+        "rover_code": "631",
+        "rover_name": "Albany"
+      },
+      "home": {
+        "rover_code": "889",
+        "rover_name": "Holy Cross"
+      }
+    },
+    {
+      "event_id": "1215491",
+      "away": {
+        "rover_code": "896",
+        "rover_name": "South Carolina St"
+      },
+      "home": {
+        "rover_code": "912",
+        "rover_name": "Charleston"
+      }
+    },
+    {
+      "event_id": "1215492",
+      "away": {
+        "rover_code": "997",
+        "rover_name": "Temple"
+      },
+      "home": {
+        "rover_code": "668",
+        "rover_name": "La Salle"
+      }
+    },
+    {
+      "event_id": "1215493",
+      "away": {
+        "rover_code": "728",
+        "rover_name": "Missouri"
+      },
+      "home": {
+        "rover_code": "682",
+        "rover_name": "Marquette"
+      }
+    },
+    {
+      "event_id": "1215494",
+      "away": {
+        "rover_code": "732",
+        "rover_name": "Texas"
+      },
+      "home": {
+        "rover_code": "723",
+        "rover_name": "Baylor"
+      }
+    },
+    {
+      "event_id": "1215495",
+      "away": {
+        "rover_code": "705",
+        "rover_name": "High Point"
+      },
+      "home": {
+        "rover_code": "674",
+        "rover_name": "Saint Louis"
+      }
+    },
+    {
+      "event_id": "1215496",
+      "away": {
+        "rover_code": "835",
+        "rover_name": "Creighton"
+      },
+      "home": {
+        "rover_code": "714",
+        "rover_name": "Iowa"
+      }
+    },
+    {
+      "event_id": "1215497",
+      "away": {
+        "rover_code": "930",
+        "rover_name": "Purdue Fort Wayne"
+      },
+      "home": {
+        "rover_code": "866",
+        "rover_name": "Eastern Illinois"
+      }
+    },
+    {
+      "event_id": "1215498",
+      "away": {
+        "rover_code": "776",
+        "rover_name": "Cleveland State"
+      },
+      "home": {
+        "rover_code": "939",
+        "rover_name": "Alabama A&M"
+      }
+    },
+    {
+      "event_id": "1215499",
+      "away": {
+        "rover_code": "382",
+        "rover_name": "Mercyhurst"
+      },
+      "home": {
+        "rover_code": "749",
+        "rover_name": "James Madison"
+      }
+    },
+    {
+      "event_id": "1215500",
+      "away": {
+        "rover_code": "768",
+        "rover_name": "Chicago State"
+      },
+      "home": {
+        "rover_code": "962",
+        "rover_name": "Loyola Marymount"
+      }
+    },
+    {
+      "event_id": "1215501",
+      "away": {
+        "rover_code": "975",
+        "rover_name": "New Mexico State"
+      },
+      "home": {
+        "rover_code": "848",
+        "rover_name": "S. Diego St."
+      }
+    },
+    {
+      "event_id": "1215502",
+      "away": {
+        "rover_code": "285",
+        "rover_name": "New Haven"
+      },
+      "home": {
+        "rover_code": "720",
+        "rover_name": "Penn State"
+      }
+    },
+    {
+      "event_id": "1215503",
+      "away": {
+        "rover_code": "822",
+        "rover_name": "Western Michigan"
+      },
+      "home": {
+        "rover_code": "179",
+        "rover_name": "Southern Indiana"
+      }
+    },
+    {
+      "event_id": "1215524",
+      "away": {
+        "rover_code": "963",
+        "rover_name": "Pepperdine"
+      },
+      "home": {
+        "rover_code": "878",
+        "rover_name": "Oregon"
+      }
+    },
+    {
+      "event_id": "1215525",
+      "away": {
+        "rover_code": "801",
+        "rover_name": "Canisius"
+      },
+      "home": {
+        "rover_code": "813",
+        "rover_name": "Buffalo"
+      }
+    },
+    {
+      "event_id": "1215545",
+      "away": {
+        "rover_code": "735",
+        "rover_name": "Cal Poly"
+      },
+      "home": {
+        "rover_code": "696",
+        "rover_name": "Montana State"
+      }
+    },
+    {
+      "event_id": "1215606",
+      "away": {
+        "rover_code": "942",
+        "rover_name": "Arkansas Pine Bluff"
+      },
+      "home": {
+        "rover_code": "882",
+        "rover_name": "USC"
+      }
+    },
+    {
+      "event_id": "1215607",
+      "away": {
+        "rover_code": "690",
+        "rover_name": "Syracuse"
+      },
+      "home": {
+        "rover_code": "689",
+        "rover_name": "St. Johns"
+      }
+    },
+    {
+      "event_id": "1215682",
+      "away": {
+        "rover_code": "703",
+        "rover_name": "Coast Carolina"
+      },
+      "home": {
+        "rover_code": "722",
+        "rover_name": "Wisconsin"
+      }
+    },
+    {
+      "event_id": "1215683",
+      "away": {
+        "rover_code": "826",
+        "rover_name": "Florida A&M"
+      },
+      "home": {
+        "rover_code": "767",
+        "rover_name": "UTEP"
+      }
+    },
+    {
+      "event_id": "1215684",
+      "away": {
+        "rover_code": "926",
+        "rover_name": "Texas State"
+      },
+      "home": {
+        "rover_code": "928",
+        "rover_name": "UTSA Roadrunners"
+      }
+    },
+    {
+      "event_id": "1215699",
+      "away": {
+        "rover_code": "940",
+        "rover_name": "Alabama State"
+      },
+      "home": {
+        "rover_code": "976",
+        "rover_name": "San Jose"
+      }
+    }
+  ],
+  "new_codes": [
+    "797",
+    "912",
+    "939",
+    "735"
+  ]
+}

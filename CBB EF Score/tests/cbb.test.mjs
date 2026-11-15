@@ -58,8 +58,8 @@ function halfGame(q,{period=1,clock='0:00',detail='Halftime'}={}) {
   return g;
 }
 
-test('348 CBB identities retain special LIU and distinct Miami teams',()=>{
-  const {q}=load(); assert.equal(Object.keys(q.TEAM_MAP).length,348);
+test('352 CBB identities retain special LIU and distinct Miami teams',()=>{
+  const {q}=load(); assert.equal(Object.keys(q.TEAM_MAP).length,352);
   assert.equal(q.getTeamMap('856').espn_id,'112358');
   assert.equal(q.getTeamMap('856').fox_id,'1468');
   assert.notEqual(q.getTeamMap('646').fox_id,q.getTeamMap('815').fox_id);
@@ -128,6 +128,33 @@ test('Rover 825 Delaware State and 756 East Carolina map to verified ESPN and FO
  assert.equal(away.espn_name,'Delaware State Hornets');assert.equal(away.fox_name,'Delaware State Hornets');
  assert.equal(home.rover_name,'East Carolina');assert.equal(home.espn_id,'151');assert.equal(home.fox_id,'105');
  assert.notEqual(away.espn_id,home.espn_id);assert.notEqual(away.fox_id,home.fox_id);
+});
+
+const newNov15Teams=[["797","Harvard","108","143"],["912","Charleston","232","249"],["939","Alabama A&M","2010","272"],["735","Cal Poly","13","96"]];
+for(const [rover,name,espn,fox] of newNov15Teams){
+ test(`2026-11-15 new map ${rover} ${name} ESPN/FOX identity`,()=>{
+  const {q}=load();const item=q.getTeamMap(rover);
+  assert.ok(item);
+  assert.equal(item.rover_name,name);
+  assert.equal(item.espn_id,espn);
+  assert.equal(item.fox_id,fox);
+ });
+}
+test('2026-11-15 list: all 35 Rover games have both correct team codes and verified providers',()=>{
+ const {q}=load();const games=[[null,"859","Quinnipiac","854","Central Connecticut"],["1215347","807","Niagara","725","Iowa State"],["1215348","969","Boise State","729","Nebraska"],["1215349","681","Louisville","759","Memphis Tigers"],["1215350","797","Harvard","885","American University"],["1215351","796","Dartmouth","633","Boston University"],["1215352","888","Colgate","744","Delaware"],["1215354","832","Norfolk","747","Georgia State"],["1215355","636","New Hampshire","640","Boston College"],["1215487","799","Princeton","670","Rhode Island"],["1215488","785","CS Bakersfield","932","ND State"],["1215489","755","William & Mary","715","Michigan"],["1215490","631","Albany","889","Holy Cross"],["1215491","896","South Carolina St","912","Charleston"],["1215492","997","Temple","668","La Salle"],["1215493","728","Missouri","682","Marquette"],["1215494","732","Texas","723","Baylor"],["1215495","705","High Point","674","Saint Louis"],["1215496","835","Creighton","714","Iowa"],["1215497","930","Purdue Fort Wayne","866","Eastern Illinois"],["1215498","776","Cleveland State","939","Alabama A&M"],["1215499","382","Mercyhurst","749","James Madison"],["1215500","768","Chicago State","962","Loyola Marymount"],["1215501","975","New Mexico State","848","S. Diego St."],["1215502","285","New Haven","720","Penn State"],["1215503","822","Western Michigan","179","Southern Indiana"],["1215524","963","Pepperdine","878","Oregon"],["1215525","801","Canisius","813","Buffalo"],["1215545","735","Cal Poly","696","Montana State"],["1215606","942","Arkansas Pine Bluff","882","USC"],["1215607","690","Syracuse","689","St. Johns"],["1215682","703","Coast Carolina","722","Wisconsin"],["1215683","826","Florida A&M","767","UTEP"],["1215684","926","Texas State","928","UTSA Roadrunners"],["1215699","940","Alabama State","976","San Jose"]];
+ for(const [sn,away,awayName,home,homeName] of games){
+  for(const [code,name] of [[away,awayName],[home,homeName]]){
+   const item=q.getTeamMap(code);
+   assert.ok(item,`missing Rover ${code} event ${sn??'not supplied'}`);
+   assert.equal(item.rover_name,name,`name mismatch ${code}`);
+   assert.ok(item.espn_id&&item.fox_id,`incomplete providers ${code}`);
+  }
+ }
+});
+test('new Harvard/Charleston/Alabama A&M/Cal Poly IDs are unique across the map',()=>{
+ const {q}=load(); const values=Object.values(q.TEAM_MAP);
+ assert.equal(new Set(values.map(x=>x.espn_id)).size,values.length);
+ assert.equal(new Set(values.map(x=>x.fox_id)).size,values.length);
 });
 
 test('California Baptist uses current Rover 984 with the same ESPN and FOX identity',()=>{

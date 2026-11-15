@@ -1640,6 +1640,22 @@
     "rover_source": "https://github.com/Nox1do/rover-basketball/blob/main/CBB/data/rover-espn-team-map.json",
     "fox_source": "https://www.foxsports.com/college-basketball/team-stats?season=2026&category=scoring&page=6"
   },
+  "735": {
+    "rover_name": "Cal Poly",
+    "espn_id": "13",
+    "espn_name": "Cal Poly Mustangs",
+    "fox_id": "96",
+    "fox_name": "Cal Poly Mustangs",
+    "fox_url": "https://www.foxsports.com/college-basketball/cal-poly-mustangs-team",
+    "fox_match_method": "VERIFIED_TEAM_HEADER",
+    "fox_match_status": "MATCHED",
+    "rover_code": "735",
+    "espn_url": "https://www.espn.com/mens-college-basketball/team/_/id/13",
+    "rover_source": "User supplied 35 CBB encounters, 2026-11-15",
+    "espn_source": "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/teams?limit=600",
+    "fox_source": "https://www.foxsports.com/college-basketball/cal-poly-mustangs-team",
+    "verified_date": "2026-11-15"
+  },
   "736": {
     "rover_name": "Fullerton",
     "espn_id": "2239",
@@ -2441,6 +2457,22 @@
     "espn_url": "https://www.espn.com/mens-college-basketball/team/_/id/159",
     "rover_source": "https://github.com/Nox1do/rover-basketball/blob/main/CBB/data/rover-espn-team-map.json",
     "fox_source": "https://www.foxsports.com/college-basketball/team-stats?season=2026&category=scoring&page=1"
+  },
+  "797": {
+    "rover_name": "Harvard",
+    "espn_id": "108",
+    "espn_name": "Harvard Crimson",
+    "fox_id": "143",
+    "fox_name": "Harvard Crimson",
+    "fox_url": "https://www.foxsports.com/college-basketball/harvard-crimson-team",
+    "fox_match_method": "VERIFIED_TEAM_HEADER",
+    "fox_match_status": "MATCHED",
+    "rover_code": "797",
+    "espn_url": "https://www.espn.com/mens-college-basketball/team/_/id/108",
+    "rover_source": "User supplied 35 CBB encounters, 2026-11-15",
+    "espn_source": "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/teams?limit=600",
+    "fox_source": "https://www.foxsports.com/college-basketball/harvard-crimson-team",
+    "verified_date": "2026-11-15"
   },
   "799": {
     "rover_name": "Princeton",
@@ -3947,6 +3979,22 @@
     "rover_source": "https://github.com/Nox1do/rover-basketball/blob/main/CBB/data/rover-espn-team-map.json",
     "fox_source": "https://www.foxsports.com/college-basketball/team-stats?season=2026&category=scoring&page=6"
   },
+  "912": {
+    "rover_name": "Charleston",
+    "espn_id": "232",
+    "espn_name": "Charleston Cougars",
+    "fox_id": "249",
+    "fox_name": "Charleston Cougars",
+    "fox_url": "https://www.foxsports.com/college-basketball/charleston-cougars-team",
+    "fox_match_method": "VERIFIED_TEAM_HEADER",
+    "fox_match_status": "MATCHED",
+    "rover_code": "912",
+    "espn_url": "https://www.espn.com/mens-college-basketball/team/_/id/232",
+    "rover_source": "User supplied 35 CBB encounters, 2026-11-15",
+    "espn_source": "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/teams?limit=600",
+    "fox_source": "https://www.foxsports.com/college-basketball/charleston-cougars-team",
+    "verified_date": "2026-11-15"
+  },
   "913": {
     "rover_name": "Davidson",
     "espn_id": "2166",
@@ -4294,6 +4342,22 @@
     "espn_url": "https://www.espn.com/mens-college-basketball/team/_/id/2710",
     "rover_source": "https://github.com/Nox1do/rover-basketball/blob/main/CBB/data/rover-espn-team-map.json",
     "fox_source": "https://www.foxsports.com/college-basketball/team-stats?season=2026&category=scoring&page=7"
+  },
+  "939": {
+    "rover_name": "Alabama A&M",
+    "espn_id": "2010",
+    "espn_name": "Alabama A&M Bulldogs",
+    "fox_id": "272",
+    "fox_name": "Alabama A&M Bulldogs",
+    "fox_url": "https://www.foxsports.com/college-basketball/alabama-am-bulldogs-team",
+    "fox_match_method": "VERIFIED_TEAM_HEADER",
+    "fox_match_status": "MATCHED",
+    "rover_code": "939",
+    "espn_url": "https://www.espn.com/mens-college-basketball/team/_/id/2010",
+    "rover_source": "User supplied 35 CBB encounters, 2026-11-15",
+    "espn_source": "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/teams?limit=600",
+    "fox_source": "https://www.foxsports.com/college-basketball/alabama-am-bulldogs-team",
+    "verified_date": "2026-11-15"
   },
   "940": {
     "rover_name": "Alabama State",

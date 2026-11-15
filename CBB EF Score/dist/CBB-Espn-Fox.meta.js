@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         CBB Espn-Fox
 // @namespace    https://roversport.net/
-// @version      0.0.12
+// @version      0.0.13
 // @description  NCAA masculino: ESPN + validación FOX; H1→Q2, H2→Q4, OT y Final. Firefox/Tampermonkey.
 // @author       noeg
 // @match        https://www.roversport.net/adm/es/*

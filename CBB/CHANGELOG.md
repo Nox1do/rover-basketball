@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+## [0.1.24] - 2026-11-17
+
+- Se incorpora Idaho Vandals con código Rover 972 y ESPN 70.
+- Se añaden 59 enfrentamientos de referencia (363 equipos y 583 cruces totales).
+- Se amplían las pruebas de regresión, sin cambiar la lógica de vinculación, fecha, hora o localía.
+
+
 ## [0.1.23] - 2026-11-16
 
 - Se añaden Southern Illinois (842→79) y Florida International (950→2229) al mapa Rover↔ESPN.

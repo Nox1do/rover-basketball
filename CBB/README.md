@@ -1,6 +1,6 @@
 # CBB LLoader — NCAA Men's Basketball
 
-Versión estable **0.1.23** (primera versión 0.1.0) basada en el archivo aportado `userscript - cfb lloader-0.1.6.user.js`.
+Versión estable **0.1.24** (primera versión 0.1.0) basada en el archivo aportado `userscript - cfb lloader-0.1.6.user.js`.
 
 Este script **vincula enlaces de partidos de ESPN con la tabla de eventos de Rover**. No llena puntajes ni resultados del juego. **Exclusivamente vincula partidos ESPN, compara la hora y verifica si los equipos están invertidos.** Las 58 funciones del CFB LLoader fueron transferidas y adaptadas; se añadieron cuatro funciones auxiliares para CBB.
 
@@ -145,3 +145,7 @@ Southern Utah Rover 936→ESPN 253, Northern Colorado Rover 698→ESPN 2458 y Au
 ## 54 encuentros nuevos — v0.1.23
 
 Se añaden Southern Illinois (Rover 842 → ESPN 79) y Florida International (Rover 950 → ESPN 2229). Se agregan 54 emparejamientos con IDs de evento Rover proporcionados por el usuario. El mapa suma **362 equipos** y el registro de referencia **524 cruces**. Los ID de evento Rover no constituyen IDs de ESPN; no se asignan fechas ni horarios sin datos confirmados. Se mantienen las protecciones de fecha, minuto y localía.
+
+## Idaho y 59 enfrentamientos — v0.1.24
+
+Se incorpora el equipo **Idaho Vandals (Rover 972 → ESPN 70)**. Se agregan 59 enfrentamientos cuyos IDs de evento Rover proporcionó el usuario, sin tratarlos como gameIds ESPN ni inferir horario o fecha. Total: **363 equipos**, **583 emparejamientos de referencia**. Se conservan las validaciones estrictas de fecha, hora y localía.

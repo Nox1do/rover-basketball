@@ -930,6 +930,22 @@
     "rover_source": "https://github.com/Nox1do/rover-basketball/blob/main/CBB/data/rover-espn-team-map.json",
     "fox_source": "https://www.foxsports.com/college-basketball/team-stats?season=2026&category=scoring&page=7"
   },
+  "683": {
+    "rover_name": "Notre Dame",
+    "espn_id": "87",
+    "espn_name": "Notre Dame Fighting Irish",
+    "fox_id": "61",
+    "fox_name": "Notre Dame Fighting Irish",
+    "fox_url": "https://www.foxsports.com/college-basketball/notre-dame-fighting-irish-team",
+    "fox_match_method": "VERIFIED_TEAM_HEADER",
+    "fox_match_status": "MATCHED",
+    "rover_code": "683",
+    "espn_url": "https://www.espn.com/mens-college-basketball/team/_/id/87",
+    "rover_source": "User supplied 54 CBB encounters, 2026-11-17",
+    "espn_source": "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/teams?limit=600",
+    "fox_source": "https://www.foxsports.com/college-basketball/notre-dame-fighting-irish-team",
+    "verified_date": "2026-11-17"
+  },
   "684": {
     "rover_name": "Pittsburgh",
     "espn_id": "221",
@@ -1851,6 +1867,22 @@
     "rover_source": "https://github.com/Nox1do/rover-basketball/blob/main/CBB/data/rover-espn-team-map.json",
     "fox_source": "https://www.foxsports.com/college-basketball/team-stats?season=2026&category=scoring&page=2"
   },
+  "748": {
+    "rover_name": "Hofstra",
+    "espn_id": "2275",
+    "espn_name": "Hofstra Pride",
+    "fox_id": "5",
+    "fox_name": "Hofstra Pride",
+    "fox_url": "https://www.foxsports.com/college-basketball/hofstra-pride-team",
+    "fox_match_method": "VERIFIED_TEAM_HEADER",
+    "fox_match_status": "MATCHED",
+    "rover_code": "748",
+    "espn_url": "https://www.espn.com/mens-college-basketball/team/_/id/2275",
+    "rover_source": "User supplied 54 CBB encounters, 2026-11-17",
+    "espn_source": "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/teams?limit=600",
+    "fox_source": "https://www.foxsports.com/college-basketball/hofstra-pride-team",
+    "verified_date": "2026-11-17"
+  },
   "749": {
     "rover_name": "James Madison",
     "espn_id": "256",
@@ -2008,6 +2040,22 @@
     "espn_url": "https://www.espn.com/mens-college-basketball/team/_/id/235",
     "rover_source": "https://github.com/Nox1do/rover-basketball/blob/main/CBB/data/rover-espn-team-map.json",
     "fox_source": "https://www.foxsports.com/college-basketball/team-stats?season=2026&category=scoring&page=3"
+  },
+  "760": {
+    "rover_name": "RIce",
+    "espn_id": "242",
+    "espn_name": "Rice Owls",
+    "fox_id": "314",
+    "fox_name": "Rice Owls",
+    "fox_url": "https://www.foxsports.com/college-basketball/rice-owls-team",
+    "fox_match_method": "VERIFIED_TEAM_HEADER",
+    "fox_match_status": "MATCHED",
+    "rover_code": "760",
+    "espn_url": "https://www.espn.com/mens-college-basketball/team/_/id/242",
+    "rover_source": "User supplied 54 CBB encounters, 2026-11-17",
+    "espn_source": "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/teams?limit=600",
+    "fox_source": "https://www.foxsports.com/college-basketball/rice-owls-team",
+    "verified_date": "2026-11-17"
   },
   "762": {
     "rover_code": "762",
@@ -3040,6 +3088,22 @@
     "fox_source": "https://www.foxsports.com/college-basketball/drake-bulldogs-team",
     "verified_date": "2026-11-08"
   },
+  "837": {
+    "rover_name": "Evansville Aces",
+    "espn_id": "339",
+    "espn_name": "Evansville Purple Aces",
+    "fox_id": "184",
+    "fox_name": "Evansville Purple Aces",
+    "fox_url": "https://www.foxsports.com/college-basketball/evansville-aces-team",
+    "fox_match_method": "VERIFIED_TEAM_HEADER",
+    "fox_match_status": "MATCHED",
+    "rover_code": "837",
+    "espn_url": "https://www.espn.com/mens-college-basketball/team/_/id/339",
+    "rover_source": "User supplied 54 CBB encounters, 2026-11-17",
+    "espn_source": "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/teams?limit=600",
+    "fox_source": "https://www.foxsports.com/college-basketball/evansville-aces-team",
+    "verified_date": "2026-11-17"
+  },
   "838": {
     "rover_name": "Illinois State",
     "espn_id": "2287",
@@ -3446,6 +3510,22 @@
     "espn_source": "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/teams?limit=600",
     "fox_source": "https://www.foxsports.com/college-basketball/eastern-kentucky-colonels-team",
     "verified_date": "2026-11-16"
+  },
+  "868": {
+    "rover_name": "Jacksonville State",
+    "espn_id": "55",
+    "espn_name": "Jacksonville State Gamecocks",
+    "fox_id": "36",
+    "fox_name": "Jacksonville State Gamecocks",
+    "fox_url": "https://www.foxsports.com/college-basketball/jacksonville-state-gamecocks-team",
+    "fox_match_method": "VERIFIED_TEAM_HEADER",
+    "fox_match_status": "MATCHED",
+    "rover_code": "868",
+    "espn_url": "https://www.espn.com/mens-college-basketball/team/_/id/55",
+    "rover_source": "User supplied 54 CBB encounters, 2026-11-17",
+    "espn_source": "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/teams?limit=600",
+    "fox_source": "https://www.foxsports.com/college-basketball/jacksonville-state-gamecocks-team",
+    "verified_date": "2026-11-17"
   },
   "869": {
     "rover_name": "Morehead State",

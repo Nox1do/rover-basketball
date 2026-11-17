@@ -1,5 +1,19 @@
 # Cambios
 
+## 0.0.15 — 2026-11-17
+
+Se revisaron **54 encuentros con 108 equipos distintos**. Se confirmaron 103 equivalencias existentes y se añadieron cinco códigos faltantes verificados en ESPN y FOX CBK. El mapa aumenta de **356 a 361 equipos**.
+
+| Rover | Equipo | ESPN ID | FOX ID |
+|---|---|---|---|
+| 748 | Hofstra | 2275 | 5 |
+| 683 | Notre Dame | 87 | 61 |
+| 868 | Jacksonville State | 55 | 36 |
+| 837 | Evansville Aces | 339 | 184 |
+| 760 | RIce | 242 | 314 |
+
+Se agregó el fixture de 54 encuentros, pruebas de identidad para los cinco equipos nuevos, cobertura de todos los partidos y unicidad de IDs. Sin cambios en la lógica de actualización y validación de resultados ESPN/FOX de Rover.
+
 ## 0.0.14 — 2026-11-16
 
 Se revisaron 22 encuentros CBB con 44 equipos distintos: 40 ya estaban registrados y se añadieron cuatro códigos faltantes, verificados en ESPN y FOX CBK. El mapa aumenta de **352 a 356 equipos**.

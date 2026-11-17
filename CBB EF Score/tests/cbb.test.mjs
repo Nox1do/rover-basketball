@@ -58,8 +58,8 @@ function halfGame(q,{period=1,clock='0:00',detail='Halftime'}={}) {
   return g;
 }
 
-test('356 CBB identities retain special LIU and distinct Miami teams',()=>{
-  const {q}=load(); assert.equal(Object.keys(q.TEAM_MAP).length,356);
+test('361 CBB identities retain special LIU and distinct Miami teams',()=>{
+  const {q}=load(); assert.equal(Object.keys(q.TEAM_MAP).length,361);
   assert.equal(q.getTeamMap('856').espn_id,'112358');
   assert.equal(q.getTeamMap('856').fox_id,'1468');
   assert.notEqual(q.getTeamMap('646').fox_id,q.getTeamMap('815').fox_id);
@@ -181,6 +181,31 @@ test('all 22 November 16 CBB encounters resolve exact Rover names and both sourc
  }
 });
 test('all 356 team mappings have unique ESPN and FOX team IDs',()=>{
+ const {q}=load();const teams=Object.values(q.TEAM_MAP);
+ assert.equal(new Set(teams.map(t=>t.espn_id)).size,teams.length);
+ assert.equal(new Set(teams.map(t=>t.fox_id)).size,teams.length);
+});
+
+// Regresión de 54 partidos NCAA suministrados el 2026-11-17.
+const november17NewTeams=[["748","Hofstra","2275","5"],["683","Notre Dame","87","61"],["868","Jacksonville State","55","36"],["837","Evansville Aces","339","184"],["760","RIce","242","314"]];
+for(const [rover,name,espnId,foxId] of november17NewTeams){
+ test(`Nov 17 CBB Rover ${rover} ${name} has verified ESPN and FOX IDs`,()=>{
+  const {q}=load();const team=q.getTeamMap(rover);
+  assert.ok(team);assert.equal(team.rover_name,name);
+  assert.equal(team.espn_id,espnId);assert.equal(team.fox_id,foxId);
+ });
+}
+test('all 54 November 17 CBB encounters have exact Rover identities and full provider mapping',()=>{
+ const {q}=load();const fixture=JSON.parse(fs.readFileSync(new URL('data/rover-54-encounters-2026-11-17.json',root),'utf8'));
+ assert.equal(fixture.encounters.length,54);
+ for(const ev of fixture.encounters){for(const side of ['away','home']){
+  const row=ev[side],team=q.getTeamMap(row.rover_code);
+  assert.ok(team,`Rover ${row.rover_code} missing in ${ev.event_id}`);
+  assert.equal(team.rover_name,row.rover_name,`wrong name in ${ev.event_id}`);
+  assert.ok(team.espn_id&&team.fox_id,`missing IDs in ${ev.event_id}`);
+ }}
+});
+test('all 361 CBB mappings have unique ESPN and FOX IDs',()=>{
  const {q}=load();const teams=Object.values(q.TEAM_MAP);
  assert.equal(new Set(teams.map(t=>t.espn_id)).size,teams.length);
  assert.equal(new Set(teams.map(t=>t.fox_id)).size,teams.length);

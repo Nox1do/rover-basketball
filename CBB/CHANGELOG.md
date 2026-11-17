@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+## [0.1.23] - 2026-11-16
+
+- Se añaden Southern Illinois (842→79) y Florida International (950→2229) al mapa Rover↔ESPN.
+- Se registran 54 cruces nuevos, para un total de 362 equipos y 524 referencias.
+- Se agregan pruebas para los IDs nuevos y los cruces; sin cambiar lógica de guardado ni comparación.
+
+
 ## [0.1.22] - 2026-11-13
 
 - Tres nuevas equivalencias Rover↔ESPN (936→253, 698→2458, 865→2046).

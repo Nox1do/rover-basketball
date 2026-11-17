@@ -929,6 +929,11 @@
     "espn_id": "2460",
     "espn_name": "Northern Iowa Panthers"
   },
+  "842": {
+    "rover_name": "Southern Illinois",
+    "espn_id": "79",
+    "espn_name": "Southern Illinois Salukis"
+  },
   "843": {
     "rover_name": "Wichita State",
     "espn_id": "2724",
@@ -1372,6 +1377,11 @@
   "949": {
     "rover_name": "Western Kentucky",
     "espn_id": "98"
+  },
+  "950": {
+    "rover_name": "Florida Internationa",
+    "espn_id": "2229",
+    "espn_name": "Florida International Panthers"
   },
   "951": {
     "rover_name": "Florida Atlantic",

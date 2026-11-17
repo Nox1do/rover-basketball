@@ -1,0 +1,255 @@
+{
+  "source": "User-supplied 22 CBB encounters on 2026-11-16",
+  "received_date": "2026-11-16",
+  "sport": "mens-college-basketball",
+  "encounters": [
+    {
+      "event_id": "153644634",
+      "away": {
+        "rover_code": "826",
+        "rover_name": "Florida A&M"
+      },
+      "home": {
+        "rover_code": "767",
+        "rover_name": "UTEP"
+      }
+    },
+    {
+      "event_id": "1216859",
+      "away": {
+        "rover_code": "941",
+        "rover_name": "Alcorn State"
+      },
+      "home": {
+        "rover_code": "645",
+        "rover_name": "Maryland"
+      }
+    },
+    {
+      "event_id": "1216860",
+      "away": {
+        "rover_code": "803",
+        "rover_name": "Iona"
+      },
+      "home": {
+        "rover_code": "638",
+        "rover_name": "UMBC"
+      }
+    },
+    {
+      "event_id": "1216861",
+      "away": {
+        "rover_code": "946",
+        "rover_name": "Prairie View A&M"
+      },
+      "home": {
+        "rover_code": "719",
+        "rover_name": "Ohio State"
+      }
+    },
+    {
+      "event_id": "1216973",
+      "away": {
+        "rover_code": "943",
+        "rover_name": "Grambling"
+      },
+      "home": {
+        "rover_code": "895",
+        "rover_name": "Kentucky"
+      }
+    },
+    {
+      "event_id": "1216974",
+      "away": {
+        "rover_code": "656",
+        "rover_name": "Jacksonville"
+      },
+      "home": {
+        "rover_code": "894",
+        "rover_name": "Georgia"
+      }
+    },
+    {
+      "event_id": "1216975",
+      "away": {
+        "rover_code": "671",
+        "rover_name": "Richmond"
+      },
+      "home": {
+        "rover_code": "650",
+        "rover_name": "Virginia Tech"
+      }
+    },
+    {
+      "event_id": "1216976",
+      "away": {
+        "rover_code": "911",
+        "rover_name": "The Citadel"
+      },
+      "home": {
+        "rover_code": "641",
+        "rover_name": "Clemson"
+      }
+    },
+    {
+      "event_id": "1216977",
+      "away": {
+        "rover_code": "176",
+        "rover_name": "St. Thomas-Minnesota"
+      },
+      "home": {
+        "rover_code": "856",
+        "rover_name": "LIU Brooklyn"
+      }
+    },
+    {
+      "event_id": "1216978",
+      "away": {
+        "rover_code": "867",
+        "rover_name": "Eastern Kentucky"
+      },
+      "home": {
+        "rover_code": "814",
+        "rover_name": "Kent State"
+      }
+    },
+    {
+      "event_id": "1216979",
+      "away": {
+        "rover_code": "949",
+        "rover_name": "Western Kentucky"
+      },
+      "home": {
+        "rover_code": "764",
+        "rover_name": "Tulsa"
+      }
+    },
+    {
+      "event_id": "1216980",
+      "away": {
+        "rover_code": "386",
+        "rover_name": "Tarleton State"
+      },
+      "home": {
+        "rover_code": "836",
+        "rover_name": "Drake"
+      }
+    },
+    {
+      "event_id": "1217056",
+      "away": {
+        "rover_code": "695",
+        "rover_name": "Montana"
+      },
+      "home": {
+        "rover_code": "727",
+        "rover_name": "Kansas State"
+      }
+    },
+    {
+      "event_id": "1217058",
+      "away": {
+        "rover_code": "917",
+        "rover_name": "Central Arkansas"
+      },
+      "home": {
+        "rover_code": "731",
+        "rover_name": "Oklahoma State"
+      }
+    },
+    {
+      "event_id": "1217059",
+      "away": {
+        "rover_code": "794",
+        "rover_name": "Columbia"
+      },
+      "home": {
+        "rover_code": "718",
+        "rover_name": "Northwestern"
+      }
+    },
+    {
+      "event_id": "1217060",
+      "away": {
+        "rover_code": "988",
+        "rover_name": "Abilene Christian"
+      },
+      "home": {
+        "rover_code": "840",
+        "rover_name": "Missouri State"
+      }
+    },
+    {
+      "event_id": "1217061",
+      "away": {
+        "rover_code": "938",
+        "rover_name": "Western Illinois"
+      },
+      "home": {
+        "rover_code": "717",
+        "rover_name": "Minnesota"
+      }
+    },
+    {
+      "event_id": "1217062",
+      "away": {
+        "rover_code": "922",
+        "rover_name": "Southeastern Louisia"
+      },
+      "home": {
+        "rover_code": "774",
+        "rover_name": "Texas A&M"
+      }
+    },
+    {
+      "event_id": "1217110",
+      "away": {
+        "rover_code": "300",
+        "rover_name": "East Texas A&M C"
+      },
+      "home": {
+        "rover_code": "879",
+        "rover_name": "Oregon State"
+      }
+    },
+    {
+      "event_id": "1217111",
+      "away": {
+        "rover_code": "699",
+        "rover_name": "Portland State"
+      },
+      "home": {
+        "rover_code": "581",
+        "rover_name": "St. Marys CA"
+      }
+    },
+    {
+      "event_id": "1217112",
+      "away": {
+        "rover_code": "948",
+        "rover_name": "Texas Southern"
+      },
+      "home": {
+        "rover_code": "134",
+        "rover_name": "UC San Diego"
+      }
+    },
+    {
+      "event_id": "1217113",
+      "away": {
+        "rover_code": "738",
+        "rover_name": "Long Be St"
+      },
+      "home": {
+        "rover_code": "881",
+        "rover_name": "UCLA"
+      }
+    }
+  ],
+  "new_codes": [
+    "656",
+    "867",
+    "764",
+    "840"
+  ]
+}

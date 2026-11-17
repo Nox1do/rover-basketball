@@ -58,8 +58,8 @@ function halfGame(q,{period=1,clock='0:00',detail='Halftime'}={}) {
   return g;
 }
 
-test('352 CBB identities retain special LIU and distinct Miami teams',()=>{
-  const {q}=load(); assert.equal(Object.keys(q.TEAM_MAP).length,352);
+test('356 CBB identities retain special LIU and distinct Miami teams',()=>{
+  const {q}=load(); assert.equal(Object.keys(q.TEAM_MAP).length,356);
   assert.equal(q.getTeamMap('856').espn_id,'112358');
   assert.equal(q.getTeamMap('856').fox_id,'1468');
   assert.notEqual(q.getTeamMap('646').fox_id,q.getTeamMap('815').fox_id);
@@ -155,6 +155,35 @@ test('new Harvard/Charleston/Alabama A&M/Cal Poly IDs are unique across the map'
  const {q}=load(); const values=Object.values(q.TEAM_MAP);
  assert.equal(new Set(values.map(x=>x.espn_id)).size,values.length);
  assert.equal(new Set(values.map(x=>x.fox_id)).size,values.length);
+});
+
+// Regresión de 22 encuentros CBB enviados el 2026-11-16.
+const november16Teams=[["656","Jacksonville","294","35"],["867","Eastern Kentucky","2198","213"],["764","Tulsa","202","318"],["840","Missouri State","2623","189"]];
+for(const [rover,name,espnId,foxId] of november16Teams){
+ test(`Nov 16 Rover ${rover} ${name} has verified ESPN/FOX IDs`,()=>{
+   const {q}=load();const team=q.getTeamMap(rover);
+   assert.ok(team);
+   assert.equal(team.rover_name,name);
+   assert.equal(team.espn_id,espnId);
+   assert.equal(team.fox_id,foxId);
+ });
+}
+test('all 22 November 16 CBB encounters resolve exact Rover names and both source IDs',()=>{
+ const {q}=load();const fixture=JSON.parse(fs.readFileSync(new URL('data/rover-22-encounters-2026-11-16.json',root),'utf8'));
+ assert.equal(fixture.encounters.length,22);
+ for(const encounter of fixture.encounters){
+  for(const side of ['away','home']){
+   const row=encounter[side];const entry=q.getTeamMap(row.rover_code);
+   assert.ok(entry,`missing Rover ${row.rover_code} in ${encounter.event_id}`);
+   assert.equal(entry.rover_name,row.rover_name,`wrong name in ${encounter.event_id}`);
+   assert.ok(entry.espn_id&&entry.fox_id,`incomplete IDs in ${encounter.event_id}`);
+  }
+ }
+});
+test('all 356 team mappings have unique ESPN and FOX team IDs',()=>{
+ const {q}=load();const teams=Object.values(q.TEAM_MAP);
+ assert.equal(new Set(teams.map(t=>t.espn_id)).size,teams.length);
+ assert.equal(new Set(teams.map(t=>t.fox_id)).size,teams.length);
 });
 
 test('California Baptist uses current Rover 984 with the same ESPN and FOX identity',()=>{

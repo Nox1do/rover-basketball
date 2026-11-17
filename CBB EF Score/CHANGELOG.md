@@ -1,5 +1,18 @@
 # Cambios
 
+## 0.0.14 — 2026-11-16
+
+Se revisaron 22 encuentros CBB con 44 equipos distintos: 40 ya estaban registrados y se añadieron cuatro códigos faltantes, verificados en ESPN y FOX CBK. El mapa aumenta de **352 a 356 equipos**.
+
+| Rover | Equipo | ESPN ID | FOX ID |
+|---|---|---|---|
+| 656 | Jacksonville | 294 | 35 |
+| 867 | Eastern Kentucky | 2198 | 213 |
+| 764 | Tulsa | 202 | 318 |
+| 840 | Missouri State | 2623 | 189 |
+
+Se agregó un fixture de los 22 encuentros, pruebas de identidad y de unicidad de ID. Se conservaron los otros 352 registros y la lógica ESPN/FOX de validación de resultados y escritura en Rover.
+
 ## 0.0.13 — 2026-11-15
 
 Se procesaron 35 encuentros Rover con 70 equipos distintos: 66 ya estaban registrados y se añaden los cuatro faltantes, con IDs ESPN/FOX verificados en fuentes oficiales. El mapa pasa de 348 a **352 equipos**. La primera pareja (Quinnipiac - Central Connecticut) se entregó sin número de evento, preservado como no especificado.

@@ -39,6 +39,7 @@
 652,Belmont,2057,Belmont Bruins,134,Belmont Bruins,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/2057,https://www.foxsports.com/college-basketball/belmont-bruins-team
 653,Campbell,2097,Campbell Fighting Camels,31,Campbell Fighting Camels,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/2097,https://www.foxsports.com/college-basketball/campbell-fighting-camels-team
 654,East Tenn St,2193,East Tennessee State Buccaneers,257,East Tennessee State Buccaneers,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/2193,https://www.foxsports.com/college-basketball/east-tennessee-state-buccaneers-team
+656,Jacksonville,294,Jacksonville Dolphins,35,Jacksonville Dolphins,VERIFIED_TEAM_HEADER,https://www.espn.com/mens-college-basketball/team/_/id/294,https://www.foxsports.com/college-basketball/jacksonville-dolphins-team
 657,Kennesaw State,338,Kennesaw State Owls,858,Kennesaw State Owls,VERIFIED_TEAM_HEADER,https://www.espn.com/mens-college-basketball/team/_/id/338,https://www.foxsports.com/college-basketball/kennesaw-state-owls-team
 658,Lipscomb,288,Lipscomb Bisons,731,Lipscomb Bisons,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/288,https://www.foxsports.com/college-basketball/lipscomb-bisons-team
 659,Mercer,2382,Mercer Bears,37,Mercer Bears,VERIFIED_TEAM_HEADER,https://www.espn.com/mens-college-basketball/team/_/id/2382,https://www.foxsports.com/college-basketball/mercer-bears-team
@@ -140,6 +141,7 @@
 759,Memphis Tigers,235,Memphis Tigers,114,Memphis Tigers,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/235,https://www.foxsports.com/college-basketball/memphis-tigers-team
 762,Southern Miss,2572,Southern Miss Golden Eagles,116,Southern Miss Golden Eagles,VERIFIED_TEAM_HEADER,https://www.espn.com/mens-college-basketball/team/_/id/2572,https://www.foxsports.com/college-basketball/southern-miss-golden-eagles-team
 763,Tulane,2655,Tulane Green Wave,117,Tulane Green Wave,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/2655,https://www.foxsports.com/college-basketball/tulane-green-wave-team
+764,Tulsa,202,Tulsa Golden Hurricane,318,Tulsa Golden Hurricane,VERIFIED_TEAM_HEADER,https://www.espn.com/mens-college-basketball/team/_/id/202,https://www.foxsports.com/college-basketball/tulsa-golden-hurricane-team
 765,UAB,5,UAB Blazers,118,UAB Blazers,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/5,https://www.foxsports.com/college-basketball/uab-blazers-team
 766,UCF,2116,UCF Knights,32,UCF Knights,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/2116,https://www.foxsports.com/college-basketball/ucf-knights-team
 767,UTEP,2638,UTEP Miners,319,UTEP Miners,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/2638,https://www.foxsports.com/college-basketball/utep-miners-team
@@ -210,6 +212,7 @@
 836,Drake,2181,Drake Bulldogs,183,Drake Bulldogs,VERIFIED_TEAM_HEADER,https://www.espn.com/mens-college-basketball/team/_/id/2181,https://www.foxsports.com/college-basketball/drake-bulldogs-team
 838,Illinois State,2287,Illinois State Redbirds,185,Illinois State Redbirds,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/2287,https://www.foxsports.com/college-basketball/illinois-state-redbirds-team
 839,Indiana St,282,Indiana State Sycamores,186,Indiana State Sycamores,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/282,https://www.foxsports.com/college-basketball/indiana-state-sycamores-team
+840,Missouri State,2623,Missouri State Bears,189,Missouri State Bears,VERIFIED_TEAM_HEADER,https://www.espn.com/mens-college-basketball/team/_/id/2623,https://www.foxsports.com/college-basketball/missouri-state-bears-team
 841,Northern Iowa,2460,Northern Iowa Panthers,187,Northern Iowa Panthers,VERIFIED_TEAM_HEADER,https://www.espn.com/mens-college-basketball/team/_/id/2460,https://www.foxsports.com/college-basketball/uni-panthers-team
 842,Southern Illinois,79,Southern Illinois Salukis,188,Southern Illinois Salukis,VERIFIED_TEAM_HEADER,https://www.espn.com/mens-college-basketball/team/_/id/79,https://www.foxsports.com/college-basketball/southern-illinois-salukis-team
 843,Wichita State,2724,Wichita State Shockers,190,Wichita State Shockers,API_TEAM_HEADER_VERIFIED,https://www.espn.com/mens-college-basketball/team/_/id/2724,https://www.foxsports.com/college-basketball/wichita-state-shockers-team
@@ -234,6 +237,7 @@
 864,Wagner,2681,Wagner Seahawks,210,Wagner Seahawks,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/2681,https://www.foxsports.com/college-basketball/wagner-seahawks-team
 865,Austin Peay,2046,Austin Peay Governors,211,Austin Peay Governors,VERIFIED_TEAM_HEADER,https://www.espn.com/mens-college-basketball/team/_/id/2046,https://www.foxsports.com/college-basketball/austin-peay-governors-team
 866,Eastern Illinois,2197,Eastern Illinois Panthers,212,Eastern Illinois Panthers,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/2197,https://www.foxsports.com/college-basketball/eastern-illinois-panthers-team
+867,Eastern Kentucky,2198,Eastern Kentucky Colonels,213,Eastern Kentucky Colonels,VERIFIED_TEAM_HEADER,https://www.espn.com/mens-college-basketball/team/_/id/2198,https://www.foxsports.com/college-basketball/eastern-kentucky-colonels-team
 869,Morehead State,2413,Morehead State Eagles,214,Morehead State Eagles,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/2413,https://www.foxsports.com/college-basketball/morehead-state-eagles-team
 870,Murray State,93,Murray State Racers,215,Murray State Racers,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/93,https://www.foxsports.com/college-basketball/murray-state-racers-team
 872,Tennessee State,2634,Tennessee State Tigers,217,Tennessee State Tigers,EXACT_NAME,https://www.espn.com/mens-college-basketball/team/_/id/2634,https://www.foxsports.com/college-basketball/tennessee-state-tigers-team

@@ -574,6 +574,22 @@
     "rover_source": "https://github.com/Nox1do/rover-basketball/blob/main/CBB/data/rover-espn-team-map.json",
     "fox_source": "https://www.foxsports.com/college-basketball/team-stats?season=2026&category=scoring&page=1"
   },
+  "656": {
+    "rover_name": "Jacksonville",
+    "espn_id": "294",
+    "espn_name": "Jacksonville Dolphins",
+    "fox_id": "35",
+    "fox_name": "Jacksonville Dolphins",
+    "fox_url": "https://www.foxsports.com/college-basketball/jacksonville-dolphins-team",
+    "fox_match_method": "VERIFIED_TEAM_HEADER",
+    "fox_match_status": "MATCHED",
+    "rover_code": "656",
+    "espn_url": "https://www.espn.com/mens-college-basketball/team/_/id/294",
+    "rover_source": "User supplied 22 CBB encounters, 2026-11-16",
+    "espn_source": "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/teams?limit=600",
+    "fox_source": "https://www.foxsports.com/college-basketball/jacksonville-dolphins-team",
+    "verified_date": "2026-11-16"
+  },
   "657": {
     "rover_code": "657",
     "rover_name": "Kennesaw State",
@@ -2023,6 +2039,22 @@
     "rover_source": "https://github.com/Nox1do/rover-basketball/blob/main/CBB/data/rover-espn-team-map.json",
     "fox_source": "https://www.foxsports.com/college-basketball/team-stats?season=2026&category=scoring&page=6"
   },
+  "764": {
+    "rover_name": "Tulsa",
+    "espn_id": "202",
+    "espn_name": "Tulsa Golden Hurricane",
+    "fox_id": "318",
+    "fox_name": "Tulsa Golden Hurricane",
+    "fox_url": "https://www.foxsports.com/college-basketball/tulsa-golden-hurricane-team",
+    "fox_match_method": "VERIFIED_TEAM_HEADER",
+    "fox_match_status": "MATCHED",
+    "rover_code": "764",
+    "espn_url": "https://www.espn.com/mens-college-basketball/team/_/id/202",
+    "rover_source": "User supplied 22 CBB encounters, 2026-11-16",
+    "espn_source": "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/teams?limit=600",
+    "fox_source": "https://www.foxsports.com/college-basketball/tulsa-golden-hurricane-team",
+    "verified_date": "2026-11-16"
+  },
   "765": {
     "rover_name": "UAB",
     "espn_id": "5",
@@ -3036,6 +3068,22 @@
     "rover_source": "https://github.com/Nox1do/rover-basketball/blob/main/CBB/data/rover-espn-team-map.json",
     "fox_source": "https://www.foxsports.com/college-basketball/team-stats?season=2026&category=scoring&page=2"
   },
+  "840": {
+    "rover_name": "Missouri State",
+    "espn_id": "2623",
+    "espn_name": "Missouri State Bears",
+    "fox_id": "189",
+    "fox_name": "Missouri State Bears",
+    "fox_url": "https://www.foxsports.com/college-basketball/missouri-state-bears-team",
+    "fox_match_method": "VERIFIED_TEAM_HEADER",
+    "fox_match_status": "MATCHED",
+    "rover_code": "840",
+    "espn_url": "https://www.espn.com/mens-college-basketball/team/_/id/2623",
+    "rover_source": "User supplied 22 CBB encounters, 2026-11-16",
+    "espn_source": "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/teams?limit=600",
+    "fox_source": "https://www.foxsports.com/college-basketball/missouri-state-bears-team",
+    "verified_date": "2026-11-16"
+  },
   "841": {
     "rover_code": "841",
     "rover_name": "Northern Iowa",
@@ -3382,6 +3430,22 @@
     "espn_url": "https://www.espn.com/mens-college-basketball/team/_/id/2197",
     "rover_source": "https://github.com/Nox1do/rover-basketball/blob/main/CBB/data/rover-espn-team-map.json",
     "fox_source": "https://www.foxsports.com/college-basketball/team-stats?season=2026&category=scoring&page=1"
+  },
+  "867": {
+    "rover_name": "Eastern Kentucky",
+    "espn_id": "2198",
+    "espn_name": "Eastern Kentucky Colonels",
+    "fox_id": "213",
+    "fox_name": "Eastern Kentucky Colonels",
+    "fox_url": "https://www.foxsports.com/college-basketball/eastern-kentucky-colonels-team",
+    "fox_match_method": "VERIFIED_TEAM_HEADER",
+    "fox_match_status": "MATCHED",
+    "rover_code": "867",
+    "espn_url": "https://www.espn.com/mens-college-basketball/team/_/id/2198",
+    "rover_source": "User supplied 22 CBB encounters, 2026-11-16",
+    "espn_source": "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/teams?limit=600",
+    "fox_source": "https://www.foxsports.com/college-basketball/eastern-kentucky-colonels-team",
+    "verified_date": "2026-11-16"
   },
   "869": {
     "rover_name": "Morehead State",

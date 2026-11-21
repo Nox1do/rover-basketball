@@ -1,6 +1,6 @@
 # CBB LLoader — NCAA Men's Basketball
 
-Versión estable **0.1.24** (primera versión 0.1.0) basada en el archivo aportado `userscript - cfb lloader-0.1.6.user.js`.
+Versión estable **0.1.25** (primera versión 0.1.0) basada en el archivo aportado `userscript - cfb lloader-0.1.6.user.js`.
 
 Este script **vincula enlaces de partidos de ESPN con la tabla de eventos de Rover**. No llena puntajes ni resultados del juego. **Exclusivamente vincula partidos ESPN, compara la hora y verifica si los equipos están invertidos.** Las 58 funciones del CFB LLoader fueron transferidas y adaptadas; se añadieron cuatro funciones auxiliares para CBB.
 
@@ -149,3 +149,7 @@ Se añaden Southern Illinois (Rover 842 → ESPN 79) y Florida International (Ro
 ## Idaho y 59 enfrentamientos — v0.1.24
 
 Se incorpora el equipo **Idaho Vandals (Rover 972 → ESPN 70)**. Se agregan 59 enfrentamientos cuyos IDs de evento Rover proporcionó el usuario, sin tratarlos como gameIds ESPN ni inferir horario o fecha. Total: **363 equipos**, **583 emparejamientos de referencia**. Se conservan las validaciones estrictas de fecha, hora y localía.
+
+## Missouri State incorporado — v0.1.25
+
+Se agrega **Missouri State Bears (Rover 840 → ESPN 2623)**, coherente con el mapa verificado del proyecto separado CBB EF Score. Se incorpora Drake (Rover 836, ESPN 2181) @ Missouri State (Rover 840, ESPN 2623), confirmado por ambas universidades para el **21/11/2026, 2:00 PM CT = 3:00 PM ET**. Total **364 equipos** y **584 cruces** de referencia. No se asigna un gameId real de ESPN ni se cambia la lógica de fecha, hora o localía.

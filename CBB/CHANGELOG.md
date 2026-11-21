@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+## [0.1.25] - 2026-11-21
+
+- Se agrega Missouri State (Rover 840 → ESPN 2623) para resolver el aviso HOME sin equivalencia ESPN.
+- Se incorpora Drake @ Missouri State como cruce de referencia; total 364 equipos y 584 cruces.
+- Se añaden regresiones de fecha, hora ET, localía y mapa; no se alteran las protecciones de los enlaces.
+
+
 ## [0.1.24] - 2026-11-17
 
 - Se incorpora Idaho Vandals con código Rover 972 y ESPN 70.

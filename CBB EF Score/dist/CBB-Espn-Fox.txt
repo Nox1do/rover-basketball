@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         CBB Espn-Fox
 // @namespace    https://roversport.net/
-// @version      0.0.15
+// @version      0.0.16
 // @description  NCAA masculino: ESPN + validación FOX; H1→Q2, H2→Q4, OT y Final. Firefox/Tampermonkey.
 // @author       noeg
 // @match        https://www.roversport.net/adm/es/*
@@ -22,7 +22,7 @@
 (() => {
     "use strict";
 
-    const VERSION = "0.0.15";
+    const VERSION = "0.0.16";
     const TAG = "[CBB Espn-Fox]";
 
     /*
@@ -41,7 +41,7 @@
 
     // ============================================================
     // MOD 01 - MAPA ROVER COD -> ESPN + FOX TEAM ID
-    // 361 códigos Rover con equivalencia ESPN y FOX CBB; identidad por código, no por nombre.
+    // 362 códigos Rover con equivalencia ESPN y FOX CBB; identidad por código, no por nombre.
     // ============================================================
 
     const TEAM_MAP = {
@@ -222,6 +222,7 @@
         "795": {"rover_name":"Cornell","espn_id":"172","espn_name":"Cornell Big Red","fox_id":"141","fox_name":"Cornell Big Red"},
         "796": {"rover_name":"Dartmouth","espn_id":"159","espn_name":"Dartmouth Big Green","fox_id":"142","fox_name":"Dartmouth Big Green"},
         "797": {"rover_name":"Harvard","espn_id":"108","espn_name":"Harvard Crimson","fox_id":"143","fox_name":"Harvard Crimson"},
+        "798": {"rover_name":"Pennsylvania","espn_id":"219","espn_name":"Pennsylvania Quakers","fox_id":"144","fox_name":"Penn Quakers"},
         "799": {"rover_name":"Princeton","espn_id":"163","espn_name":"Princeton Tigers","fox_id":"145","fox_name":"Princeton Tigers"},
         "800": {"rover_name":"Yale","espn_id":"43","espn_name":"Yale Bulldogs","fox_id":"146","fox_name":"Yale Bulldogs"},
         "801": {"rover_name":"Canisius","espn_id":"2099","espn_name":"Canisius Golden Griffins","fox_id":"147","fox_name":"Canisius Golden Griffins"},

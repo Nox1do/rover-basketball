@@ -58,8 +58,8 @@ function halfGame(q,{period=1,clock='0:00',detail='Halftime'}={}) {
   return g;
 }
 
-test('361 CBB identities retain special LIU and distinct Miami teams',()=>{
-  const {q}=load(); assert.equal(Object.keys(q.TEAM_MAP).length,361);
+test('362 CBB identities retain special LIU and distinct Miami teams',()=>{
+  const {q}=load(); assert.equal(Object.keys(q.TEAM_MAP).length,362);
   assert.equal(q.getTeamMap('856').espn_id,'112358');
   assert.equal(q.getTeamMap('856').fox_id,'1468');
   assert.notEqual(q.getTeamMap('646').fox_id,q.getTeamMap('815').fox_id);
@@ -205,10 +205,22 @@ test('all 54 November 17 CBB encounters have exact Rover identities and full pro
   assert.ok(team.espn_id&&team.fox_id,`missing IDs in ${ev.event_id}`);
  }}
 });
-test('all 361 CBB mappings have unique ESPN and FOX IDs',()=>{
+test('all CBB mappings have unique ESPN and FOX IDs',()=>{
  const {q}=load();const teams=Object.values(q.TEAM_MAP);
  assert.equal(new Set(teams.map(t=>t.espn_id)).size,teams.length);
  assert.equal(new Set(teams.map(t=>t.fox_id)).size,teams.length);
+});
+
+test('Rover 745 Drexel and 798 Pennsylvania use verified distinct ESPN and FOX IDs',()=>{
+ const {q}=load();
+ const away=q.getTeamMap('745'),home=q.getTeamMap('798');
+ assert.ok(away);assert.ok(home);
+ assert.equal(away.rover_name,'Drexel');assert.equal(away.espn_id,'2182');assert.equal(away.fox_id,'3');
+ assert.equal(home.rover_name,'Pennsylvania');assert.equal(home.espn_id,'219');assert.equal(home.fox_id,'144');
+ assert.equal(home.espn_name,'Pennsylvania Quakers');assert.equal(home.fox_name,'Penn Quakers');
+ const values=Object.values(q.TEAM_MAP);
+ assert.equal(new Set(values.map(t=>t.espn_id)).size,values.length);
+ assert.equal(new Set(values.map(t=>t.fox_id)).size,values.length);
 });
 
 test('California Baptist uses current Rover 984 with the same ESPN and FOX identity',()=>{

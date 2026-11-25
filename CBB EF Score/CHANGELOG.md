@@ -1,5 +1,9 @@
 # Cambios
 
+## 0.0.16 — 2026-11-24
+
+Se incorpora **798 Pennsylvania** (Penn Quakers) con ESPN **219** y FOX CBK **144**, verificados en fuentes oficiales. Drexel (Rover 745, ESPN 2182, FOX 3) ya estaba registrado y permanece intacto. El mapa aumenta de 361 a **362 equipos**; JSON, CSV, userscript y metadata quedan sincronizados. Se agrega una prueba de regresión para ambas identidades y se conserva la lógica de resultados.
+
 ## 0.0.15 — 2026-11-17
 
 Se revisaron **54 encuentros con 108 equipos distintos**. Se confirmaron 103 equivalencias existentes y se añadieron cinco códigos faltantes verificados en ESPN y FOX CBK. El mapa aumenta de **356 a 361 equipos**.

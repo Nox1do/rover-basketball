@@ -140,3 +140,24 @@ test('Firefox NBA: script remains inactive with no result requests',async t=>{
   const {page,requests}=await setup(t,{league:'NBA'});assert.equal(await page.evaluate(()=>window.__CBB_ESPN_FOX.isCBBView()),false);
   assert.equal(await page.locator('[data-espn-action="update-result"]').count(),0);assert.equal(requests.length,0);
 });
+
+test('Firefox FINAL: missing ESPN linescores recover from FOX, no submit',async t=>{
+  const {page,state,errors}=await setup(t);
+  for(const c of state.data.espn.header.competitions[0].competitors)delete c.linescores;
+  const result=await page.evaluate(()=>window.__CBB_ESPN_FOX.updateLinkedResult());
+  assert.equal(result.applied,true);assert.equal(result.game.scoreSource,'FOX_FALLBACK');
+  const v=await values(page);
+  assert.equal(v['1195994T1Q2Basq'],'33');assert.equal(v['1195994T1Q4Basq'],'30');
+  assert.equal(v['1195994T2Q2Basq'],'35');assert.equal(v['1195994T2Q4Basq'],'33');
+  assert.equal(v['1195994-Estado'],'3');assert.equal(await page.evaluate(()=>window.submitEvents),0);
+  assert.deepEqual(errors,[]);
+});
+test('Firefox FINAL: missing ESPN splits with different totals blocks every write',async t=>{
+  const {page,state}=await setup(t);
+  for(const c of state.data.espn.header.competitions[0].competitors)delete c.linescores;
+  state.data.espn.header.competitions[0].competitors[0].score='999';
+  const before=await values(page);
+  const result=await page.evaluate(()=>window.__CBB_ESPN_FOX.updateLinkedResult());
+  assert.equal(result.applied,false);assert.equal(result.reason,'FOX_ESPN_SCORE_MISMATCH');
+  assert.deepEqual(await values(page),before);
+});

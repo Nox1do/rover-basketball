@@ -57,3 +57,7 @@ West Florida se resuelve con Rover 275; 10641 se retira del mapa activo. ESPN 26
 ## Southern Utah — 0.0.11
 
 El aviso NO_MAP_AWAY de la captura SN 1211771 corresponde al código Rover 936 ausente. Se incorpora Southern Utah con ESPN 253 y FOX 287, comprobados por ID y nombre en los endpoints oficiales. Los 346 registros previos se conservan; el mapa JSON, CSV y embebido contiene 347 equipos. La lógica de resultados permanece idéntica a 0.0.10 salvo VERSION.
+
+## 0.0.17 — recuperación FINAL desde FOX
+
+Regresiones construidas a partir del diagnóstico normalizado aportado de Samford–Georgia Tech; los tests comprueban recuperaciones, datos contradictorios, faltantes, fecha, fase, OT, orden y escritura Firefox sin submit. No son capturas HTTP completas del partido.

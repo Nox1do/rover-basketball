@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         CBB Espn-Fox
 // @namespace    https://roversport.net/
-// @version      0.0.16
+// @version      0.0.17
 // @description  NCAA masculino: ESPN + validación FOX; H1→Q2, H2→Q4, OT y Final. Firefox/Tampermonkey.
 // @author       noeg
 // @match        https://www.roversport.net/adm/es/*
@@ -22,7 +22,7 @@
 (() => {
     "use strict";
 
-    const VERSION = "0.0.16";
+    const VERSION = "0.0.17";
     const TAG = "[CBB Espn-Fox]";
 
     /*
@@ -4790,6 +4790,83 @@
         return away && home ? { away, home } : null;
     }
 
+    // Recover only absent FINAL splits; never replace contradictory ESPN evidence.
+    function recoverFinalSplitsFromFox(game, foxLink) {
+        const reject = reason => ({ ok: false, reason });
+        if (!game?.pairMatchesRover || game.status?.normalized !== "FINAL")
+            return reject("INCOMPLETE_ESPN_SCORE");
+        const espn = getRoverOrderedScoreTeams(game);
+        const fox = getFoxOrderedTeams(foxLink);
+        if (!espn || !fox ||
+            String(foxLink.ids.away) !== getTeamMap(game.expected.awayRoverCode)?.fox_id ||
+            String(foxLink.ids.home) !== getTeamMap(game.expected.homeRoverCode)?.fox_id)
+            return reject("FOX_PAIR_MISMATCH");
+        if (!game.roverDate || game.event?.easternDate !== game.roverDate ||
+            foxLink.foxEvent.date !== game.roverDate)
+            return reject("FOX_DATE_MISMATCH");
+        if (foxLink.foxEvent.status?.normalized !== "FINAL")
+            return reject("FOX_PHASE_NOT_CONFIRMED");
+
+        const ep = Number(game.status.period || 0);
+        const fp = Number(foxLink.foxEvent.status.period || 0);
+        if (ep >= 2 && fp >= 2 && ep !== fp)
+            return reject("FOX_ESPN_SCORE_MISMATCH");
+        const absent = value => value === "" || value === null || value === undefined;
+        const recovered = [];
+        const replacements = new Map();
+        for (const [a, b] of [[espn.roverAway, fox.away], [espn.roverHome, fox.home]]) {
+            if (!isNumericScoreValue(a.final)) return reject("INCOMPLETE_ESPN_SCORE");
+            if (!["h1", "h2", "ot", "final"].every(k => isNumericScoreValue(b[k])))
+                return reject("FOX_PERIODS_INCOMPLETE");
+            if (Number(b.h1) + Number(b.h2) + Number(b.ot) !== Number(b.final) ||
+                Number(a.final) !== Number(b.final))
+                return reject("FOX_ESPN_SCORE_MISMATCH");
+            const extra = b.otPeriods || [];
+            if ((Number(b.ot) > 0 || ep >= 3 || fp >= 3) && !extra.length)
+                return reject("FOX_PERIODS_INCOMPLETE");
+            if (extra.some(x => !isNumericScoreValue(x.value)) ||
+                extra.reduce((sum, x) => sum + Number(x.value), 0) !== Number(b.ot))
+                return reject("FOX_ESPN_SCORE_MISMATCH");
+
+            // Inspect raw ESPN values too: an invalid or conflicting line can
+            // normalize to empty, but must not become eligible for recovery.
+            for (const [index, line] of (a.linescoresRaw || []).entries()) {
+                const period = Number(line?.period ?? line?.periodNumber ?? index + 1);
+                const raw = line?.value ?? line?.displayValue ?? line?.score;
+                if (absent(raw)) continue;
+                const value = normalizeScoreValue(raw);
+                if (!Number.isInteger(period) || period < 1 || !isNumericScoreValue(value))
+                    return reject("INCONSISTENT_ESPN_SCORE");
+                const expected = period === 1 ? b.h1 : period === 2 ? b.h2 :
+                    extra.find(x => x.period === period)?.value;
+                if (period >= 3 && extra.length === 1 && (ep > 3 || fp > 3)) {
+                    // A single FOX OT column may aggregate multiple periods.
+                    // Only the known complete ESPN aggregate can validate it.
+                    if (!isNumericScoreValue(a.ot) || Number(a.ot) !== Number(b.ot))
+                        return reject("FOX_ESPN_SCORE_MISMATCH");
+                } else if (!isNumericScoreValue(expected) || Number(value) !== Number(expected))
+                    return reject("FOX_ESPN_SCORE_MISMATCH");
+            }
+            const next = { ...a };
+            for (const field of ["h1", "h2", "ot"]) {
+                if (absent(a[field])) {
+                    next[field] = Number(b[field]);
+                    recovered.push({ teamId: a.teamId, field, source: "FOX" });
+                } else if (!isNumericScoreValue(a[field]) || Number(a[field]) !== Number(b[field]))
+                    return reject("FOX_ESPN_SCORE_MISMATCH");
+            }
+            if (absent(a.ot)) next.otPeriods = extra;
+            replacements.set(a.teamId, next);
+        }
+        if (!recovered.length) return reject("INCOMPLETE_ESPN_SCORE");
+        const merged = { ...game, away: replacements.get(game.away.teamId),
+            home: replacements.get(game.home.teamId), scoreSource: "FOX_FALLBACK", recovered };
+        const validation = validateWritableGamePhase(merged, "FINAL");
+        if (!validation.ok) return reject(validation.reason);
+        const confirmed = verifyFoxResult(merged, "FINAL", foxLink);
+        return confirmed.ok ? { ok: true, game: merged, recovered } : confirmed;
+    }
+
     function verifyFoxResult(game, phase, foxLink) {
         const reject = (reason, differences = []) => ({ ok: false, reason, differences });
         const espn = getRoverOrderedScoreTeams(game);
@@ -5383,7 +5460,10 @@
                 validationStartedAt
             );
 
-        if (!payloadValidation.ok) {
+        const needsFoxSplits = phase === "FINAL" &&
+            payloadValidation.reason === "INCOMPLETE_ESPN_SCORE" &&
+            [game.away, game.home].every(team => isNumericScoreValue(team.final));
+        if (!payloadValidation.ok && !needsFoxSplits) {
             publishUpdateTiming(
                 timing,
                 payloadValidation.reason
@@ -5404,6 +5484,7 @@
         }
 
         sourceState.validating = true;
+        sourceState.recoveringSplits = needsFoxSplits;
         sourceState.phase = phase;
         showSource();
 
@@ -5463,6 +5544,20 @@
 
         const sourceValidationStartedAt =
             performance.now();
+
+        if (needsFoxSplits) {
+            const recovery = recoverFinalSplitsFromFox(game, foxLink);
+            if (!recovery.ok) {
+                publishUpdateTiming(timing, recovery.reason);
+                finishSource(recovery.reason, phase);
+                deferSourceResults(game, foxLink);
+                return { ok: false, applied: false, reason: recovery.reason, phase, game, foxLink };
+            }
+            game = recovery.game;
+            sourceState.game = game;
+            timing.scoreSource = game.scoreSource;
+            timing.recovered = game.recovered;
+        }
 
         const foxValidation =
             verifyFoxResult(
@@ -5661,7 +5756,9 @@
                 DATO: item.label,
                 ANTES:
                     result.previous ?? "",
-                ESPN: item.value,
+                ESPN: game.scoreSource === "FOX_FALLBACK" ? undefined : item.value,
+                VALOR: item.value,
+                FUENTE: game.scoreSource === "FOX_FALLBACK" ? "ESPN/FOX (ver recovered)" : "ESPN+FOX",
                 CAMBIO:
                     result.changed
                         ? "SI"
@@ -5742,7 +5839,7 @@
         );
 
         console.log(
-            `${TAG} ESPN = FOX · ${anyChanged ? "Rover actualizado" : "Rover ya coincidía"} · ${elapsedMs} ms`
+            `${TAG} ${game.scoreSource === "FOX_FALLBACK" ? "Final ESPN = FOX; parciales FOX" : "ESPN = FOX"} · ${anyChanged ? "Rover actualizado" : "Rover ya coincidía"} · ${elapsedMs} ms`
         );
 
         return {
@@ -6599,15 +6696,19 @@
         const game = state.game;
         if (reason === "APPLIED" && game) {
             const canonical = buildGameProgressNotice(game);
+            if (game.scoreSource === "FOX_FALLBACK") return { ...canonical,
+                text: "Final · Parciales FOX",
+                title: `${canonical.text} · Final confirmado por ESPN y FOX; parciales ausentes recuperados de FOX. ${state.result.changed ? "Rover fue actualizado." : "Rover ya tenía esos valores."}`
+            };
             return { ...canonical,
                 title: `${canonical.title || ""} · ESPN y FOX coinciden. ${state.result.changed ? "Rover fue actualizado." : "Rover ya tenía esos valores."}`
             };
         }
         if (["ESPN_UNAVAILABLE","NO_GAME_DATA"].includes(reason))
             return fail("ESPN no disponible");
-        if (["INCOMPLETE_ESPN_SCORE","INCONSISTENT_ESPN_SCORE",
-             "TEAM_ID_MAPPING_FAILED"].includes(reason))
-            return fail("ESPN incompleto");
+        if (reason === "INCOMPLETE_ESPN_SCORE") return fail("ESPN sin datos suficientes");
+        if (reason === "INCONSISTENT_ESPN_SCORE") return fail("ESPN inconsistente", "is-error");
+        if (reason === "TEAM_ID_MAPPING_FAILED") return fail("Identidad ESPN incorrecta", "is-error");
         if (["FOX_UNAVAILABLE","FOX_LINK_WARM_FAILED"].includes(reason))
             return fail("FOX no disponible");
         if (["FOX_GAME_NOT_FOUND","FOX_MAPPING_MISSING","FOX_LINK_NOT_WARM"].includes(reason))
@@ -6638,6 +6739,8 @@
             return fail("Consultando ESPN y FOX…", "is-pre",
                 "Ambas consultas en curso. Rover no cambió.");
         if (state.espn === "pending") return wait("ESPN", "", true);
+        if (state.recoveringSplits && state.fox === "pending")
+            return fail("Recuperando parciales FOX…", "is-waiting");
         if (state.fox === "pending") return wait("FOX", "", true);
 
         if (!game || !state.foxData?.ok || !state.foxData.foxEvent)
@@ -8201,6 +8304,7 @@
         readGame,
         readGameFresh,
         verifyFoxResult,
+        recoverFinalSplitsFromFox,
         resolveFoxGame,
         warmFoxLink,
         getCachedFoxLinkForRover,

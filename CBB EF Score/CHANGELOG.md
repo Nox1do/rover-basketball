@@ -1,5 +1,9 @@
 # Cambios
 
+## 0.0.17 — 2026-11-24
+
+Fallback FINAL controlado: si ESPN confirma el final y sus parciales están ausentes, FOX puede completar los campos faltantes únicamente con identidad, fecha, estado, totales y parciales disponibles coincidentes. Se valida la suma y la evidencia OT; nunca se reemplazan datos contradictorios. La UI y el diagnóstico identifican los parciales FOX. Regresiones Samford–Georgia Tech (SN 1229125), rechazos y Firefox; sin cambios en mapa ni guardado manual.
+
 ## 0.0.16 — 2026-11-24
 
 Se incorpora **798 Pennsylvania** (Penn Quakers) con ESPN **219** y FOX CBK **144**, verificados en fuentes oficiales. Drexel (Rover 745, ESPN 2182, FOX 3) ya estaba registrado y permanece intacto. El mapa aumenta de 361 a **362 equipos**; JSON, CSV, userscript y metadata quedan sincronizados. Se agrega una prueba de regresión para ambas identidades y se conserva la lógica de resultados.

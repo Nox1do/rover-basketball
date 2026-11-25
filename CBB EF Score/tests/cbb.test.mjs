@@ -23,7 +23,7 @@ function load(overrides = {}) {
     window.qa = { TEAM_MAP, normalizeGameSummary, normalizeFoxEvent, parseFoxLinescore,
       statusInfoFromCompetition, normalizeFoxStatus, firstHalfTotal, validateWritableGamePhase, parseEspnEvent,
       isHalftimeGame, isAfterHalftimeCatchUp, buildRoverResultPlan, buildRoverHalftimePlan,
-      verifyFoxResult, foxSeasonFromDate, easternDateFromEspnDate,
+      verifyFoxResult, recoverFinalSplitsFromFox, foxSeasonFromDate, easternDateFromEspnDate,
       getRoverOrderedScoreTeams, buildGameProgressNotice, buildSourcesNotice,
       fetchGameSummary, fetchFoxEvent, fetchTeamSchedule, fetchScoreboardVariant,
       findFoxScheduleMatches, getTeamMap, getContext, verifyRoverResultControls,
@@ -398,3 +398,57 @@ test('missing FOX OT cell is incomplete rather than a zero',()=>{
 });
 
 export {load, realGame, foxLink, clone, halfGame};
+
+ 
+// Reproduction of the normalized diagnostics supplied for Samford / Georgia Tech.
+function samford(q) {
+  const game=q.normalizeGameSummary({header:{competitions:[{date:'2026-11-25T00:00Z',
+    status:{period:0,type:{name:'STATUS_FINAL',state:'post',completed:true}},
+    competitors:[{homeAway:'away',team:{id:'2535'},score:'92'},
+      {homeAway:'home',team:{id:'59'},score:'81'}]}]}},
+    {espnEventId:'401920309',rover:{roverEventId:'1229125',date:'2026-11-24',away:{roverCode:'905'},home:{roverCode:'644'}}});
+  const team=(foxTeamId,h1,h2,final)=>({foxTeamId,h1,h2,ot:0,otPeriods:[],final});
+  return {game,foxLink:{ok:true,ids:{away:'38',home:'25'},foxEvent:{foxEventId:'267332',
+    date:'2026-11-24',status:{normalized:'FINAL',period:2},left:team('38',44,48,92),right:team('25',34,47,81)}}};
+}
+test('Samford final: recover missing splits by team ID, preserve raw ESPN and build correct Rover plan',()=>{
+  const {q}=load(),{game,foxLink}=samford(q);
+  assert.equal(q.validateWritableGamePhase(game,'FINAL').reason,'INCOMPLETE_ESPN_SCORE');
+  const result=q.recoverFinalSplitsFromFox(game,foxLink);
+  assert.equal(result.ok,true);assert.equal(result.game.scoreSource,'FOX_FALLBACK');
+  assert.equal(result.recovered.length,6);assert.equal(game.away.h1,'');
+  assert.equal(result.game.away.linescoresRaw.length,0);
+  const plan=q.buildRoverResultPlan(result.game);
+  const val=Object.fromEntries(plan.scoreFields.map(x=>[x.id,x.value]));
+  assert.equal(val['1229125T1Q2Basq'],44);assert.equal(val['1229125T1Q4Basq'],48);
+  assert.equal(val['1229125T2Q2Basq'],34);assert.equal(val['1229125T2Q4Basq'],47);
+  assert.equal(plan.statusValue,'3');
+  assert.equal(q.buildSourcesNotice({game:result.game,result:{reason:'APPLIED'}}).text,'Final · Parciales FOX');
+});
+for(const [label,mutate] of [
+  ['total differs',(g,f)=>g.away.final=93],
+  ['missing ESPN total',(g,f)=>g.away.final=''],
+  ['FOX missing half',(g,f)=>f.foxEvent.left.h1=null],
+  ['FOX inconsistent total',(g,f)=>f.foxEvent.left.h1=45],
+  ['ESPN known half contradicts FOX',(g,f)=>g.away.h1=43],
+  ['ESPN zero contradicts FOX',(g,f)=>g.away.h1=0],
+  ['malformed raw ESPN value',(g,f)=>g.away.linescoresRaw=[{displayValue:'bad'}]],
+  ['conflicting raw ESPN duplicate',(g,f)=>g.away.linescoresRaw=[{period:1,value:43},{period:1,value:44}]],
+  ['FOX live',(g,f)=>f.foxEvent.status.normalized='LIVE'],
+  ['ESPN live',(g,f)=>g.status.normalized='LIVE'],
+  ['different date',(g,f)=>f.foxEvent.date='2026-11-25'],
+  ['wrong FOX mapping',(g,f)=>f.ids.away='25'],
+  ['OT status mismatch',(g,f)=>g.status.period=3],
+  ['FOX OT without breakdown',(g,f)=>{f.foxEvent.status.period=3;f.foxEvent.left.h2=43;f.foxEvent.left.ot=5;}]
+])test('final FOX fallback rejects '+label,()=>{
+  const {q}=load(),{game,foxLink}=samford(q);mutate(game,foxLink);
+  assert.equal(q.recoverFinalSplitsFromFox(game,foxLink).ok,false);
+});
+test('FOX fallback preserves a known matching ESPN half and handles reversed FOX order',()=>{
+  const {q}=load(),{game,foxLink}=samford(q);
+  game.away.h1=44;game.away.linescoresRaw=[{displayValue:'44'}];
+  [foxLink.foxEvent.left,foxLink.foxEvent.right]=[foxLink.foxEvent.right,foxLink.foxEvent.left];
+  const result=q.recoverFinalSplitsFromFox(game,foxLink);
+  assert.equal(result.ok,true);assert.equal(result.recovered.length,5);
+  assert.equal(result.game.away.h1,44);assert.equal(result.game.home.h2,47);
+});

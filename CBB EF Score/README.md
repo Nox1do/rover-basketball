@@ -1,4 +1,4 @@
-# CBB Espn-Fox 0.0.16
+# CBB Espn-Fox 0.0.17
 
 Userscript para Firefox + Tampermonkey que adapta CFB FOX 1.0.13 a NCAA masculina. ESPN aporta los resultados y FOX los confirma antes de llenar el editor Rover. Incluye 362 equipos Rover con equivalencias ESPN y FOX propias de basketball.
 
@@ -7,7 +7,7 @@ Userscript para Firefox + Tampermonkey que adapta CFB FOX 1.0.13 a NCAA masculin
 1. Abre [Instalar / actualizar desde GitHub](https://raw.githubusercontent.com/Nox1do/rover-basketball/main/CBB%20EF%20Score/dist/CBB-Espn-Fox.user.js) y confirma en Tampermonkey. Instala esta versión una vez para sustituir la copia local 0.0.4 y activar las rutas de actualización GitHub. Si Firefox abre el archivo como texto, copia [dist/CBB-Espn-Fox.txt](dist/CBB-Espn-Fox.txt) en el editor de Tampermonkey.
 2. Abre resultados Rover en `roversport.net` o `roversport.lol`, CATEGORY **BASKETBALL**, LEAGUE **CBB**. Si cambias liga o fecha, pulsa Search para refrescar la tabla.
 3. Selecciona un partido. La barra CBB intenta vincularlo con ESPN y prepara la equivalencia FOX.
-4. Pulsa **↻** para consultar y llenar. Si ambas fuentes confirman H1 o Final y coinciden, se actualizan los campos. Si faltan datos o las fuentes difieren, quedan sin modificar.
+4. Pulsa **↻** para consultar y llenar. Si ambas fuentes confirman H1 o Final y coinciden, se actualizan los campos. Si ESPN FINAL carece de parciales pero confirma ambos totales, FOX puede completar solamente los datos ausentes bajo validación estricta. Si faltan datos indispensables o las fuentes difieren, quedan sin modificar.
 5. **✎** permite buscar un vínculo manual o introducir el ESPN Event ID. **×** desactiva el vínculo automático para ese evento; **AUTO** lo reactiva. Estas preferencias son propias de CBB y no comparten claves con CFB.
 
 El vínculo manual sigue obligado a superar la comprobación de equipos, fecha y resultados. La interfaz conserva el comportamiento de CFB FOX; no se ha añadido un temporizador de llenado. Guardar/procesar resultados sigue siendo una acción del usuario. El script no hace peticiones POST ni pulsa Guardar/Procesar.
@@ -29,7 +29,7 @@ Al final se rellenan Q2, Q4, OT y TOT; Q1/Q3 reciben 0 y el estado pasa a **FINA
 ## Validaciones
 
 - ESPN y FOX deben identificar el mismo partido y la misma fecha en America/New_York, independientemente de la zona de la PC.
-- H1/H2/OT deben sumar el total final y coincidir entre fuentes. Un cero es válido; un dato ausente no se convierte en cero.
+- H1/H2/OT deben sumar el total final y coincidir cuando ambas fuentes los publican. En el fallback FINAL, los parciales ausentes se recuperan de FOX únicamente con identidad, fecha, estado y ambos totales confirmados; la UI indica `Final · Parciales FOX`. Un cero es válido; un dato ausente no se convierte en cero.
 - En múltiples prórrogas se compara la suma OT; también se compara cada período cuando ambas fuentes ofrecen desglose múltiple.
 - Cancelado, pospuesto y suspendido no se interpretan como Final, aunque una fuente marque `completed`.
 - Un cambio de liga, fecha, SN o equipos durante la consulta invalida el llenado.

@@ -4814,6 +4814,7 @@
         const absent = value => value === "" || value === null || value === undefined;
         const recovered = [];
         const replacements = new Map();
+        let foxOtShape = null;
         for (const [a, b] of [[espn.roverAway, fox.away], [espn.roverHome, fox.home]]) {
             if (!isNumericScoreValue(a.final)) return reject("INCOMPLETE_ESPN_SCORE");
             if (!["h1", "h2", "ot", "final"].every(k => isNumericScoreValue(b[k])))
@@ -4824,6 +4825,15 @@
             const extra = b.otPeriods || [];
             if ((Number(b.ot) > 0 || ep >= 3 || fp >= 3) && !extra.length)
                 return reject("FOX_PERIODS_INCOMPLETE");
+            const otShape = extra.map(x => x.period).join(",");
+            if (foxOtShape !== null && foxOtShape !== otShape)
+                return reject("FOX_ESPN_SCORE_MISMATCH");
+            foxOtShape = otShape;
+            if (extra.length && fp === 2)
+                return reject("FOX_ESPN_SCORE_MISMATCH");
+            if (extra.length > 1 && (extra.some((x, i) => x.period !== i + 3) ||
+                (fp >= 3 && extra.length !== fp - 2)))
+                return reject("FOX_ESPN_SCORE_MISMATCH");
             if (extra.some(x => !isNumericScoreValue(x.value)) ||
                 extra.reduce((sum, x) => sum + Number(x.value), 0) !== Number(b.ot))
                 return reject("FOX_ESPN_SCORE_MISMATCH");
@@ -5545,6 +5555,7 @@
         const sourceValidationStartedAt =
             performance.now();
 
+        const originalEspnGame = game;
         if (needsFoxSplits) {
             const recovery = recoverFinalSplitsFromFox(game, foxLink);
             if (!recovery.ok) {
@@ -5573,7 +5584,7 @@
             );
 
         deferSourceResults(
-            game,
+            originalEspnGame,
             foxLink
         );
 

@@ -452,3 +452,15 @@ test('FOX fallback preserves a known matching ESPN half and handles reversed FOX
   assert.equal(result.ok,true);assert.equal(result.recovered.length,5);
   assert.equal(result.game.away.h1,44);assert.equal(result.game.home.h2,47);
 });
+
+test('FINAL fallback supports coherent overtime and rejects inconsistent period structure',()=>{
+  const {q}=load(),{game,foxLink}=samford(q);
+  game.status.period=3;foxLink.foxEvent.status.period=3;
+  for(const team of [foxLink.foxEvent.left,foxLink.foxEvent.right]){
+    team.h2-=5;team.ot=5;team.otPeriods=[{period:3,value:5}];
+  }
+  const result=q.recoverFinalSplitsFromFox(game,foxLink);
+  assert.equal(result.ok,true);assert.equal(result.game.away.ot,5);
+  foxLink.foxEvent.right.otPeriods=[{period:4,value:5}];
+  assert.equal(q.recoverFinalSplitsFromFox(game,foxLink).ok,false);
+});
